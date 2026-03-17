@@ -7,4 +7,7 @@ pluginManagement {
 
 rootProject.name = "declarative-gradle-jetbrains-ecosystem-plugin"
 
-include(":project-types:jvm-application")
+include(
+    ":ecosystem-plugin",
+    ":project-types:jvm-application",
+)
