@@ -4,3 +4,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+include(":project-types:jvm-application")
