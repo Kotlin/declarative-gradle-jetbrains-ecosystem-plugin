@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    id("common-publishing")
 }
 
 description = "Implements 'jvmApplication' Declarative Gradle project type"
@@ -10,4 +11,8 @@ kotlin {
 
 dependencies {
     api(gradleApi())
+}
+
+commonPublishing {
+    configureDefaultJvmPublication()
 }

@@ -1,16 +1,11 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
 pluginManagement {
-    includeBuild("gradle/build-logic")
     repositories {
         mavenCentral()
         gradlePluginPortal()
     }
 }
-
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-
-rootProject.name = "declarative-gradle-jetbrains-ecosystem-plugin"
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
@@ -19,8 +14,3 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-include(
-    ":ecosystem-plugin",
-    ":project-types:jvm-application",
-)
