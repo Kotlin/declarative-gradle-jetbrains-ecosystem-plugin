@@ -1,6 +1,7 @@
 package org.jetbrains.kotlin.gradle.declarative.buildmodels
 
-import org.gradle.api.internal.plugins.BuildModel
+import org.gradle.features.binding.BuildModel
+
 
 public interface JvmApplicationBuildModel : BuildModel {
 }
