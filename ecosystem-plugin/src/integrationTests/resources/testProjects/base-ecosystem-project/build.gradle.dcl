@@ -1,1 +1,3 @@
-//jvmApplication { }
+jvmApplication {
+
+}
