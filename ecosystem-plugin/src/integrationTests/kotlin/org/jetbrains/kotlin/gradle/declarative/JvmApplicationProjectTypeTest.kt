@@ -8,10 +8,10 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
 
-@DisplayName("Smoke ecosystem plugin tests")
-class SmokeBaseTest : BaseTest() {
+@DisplayName("'jvmApplication' project type tests")
+class JvmApplicationProjectTypeTest : BaseTest() {
 
-    @DisplayName("Ecosystem plugin is applied")
+    @DisplayName("project type is applied")
     @GradleTest
     fun testEcosystemPluginIsApplied(
         gradleVersion: GradleVersion

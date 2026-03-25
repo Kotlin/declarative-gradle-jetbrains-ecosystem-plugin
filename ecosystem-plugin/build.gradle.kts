@@ -10,6 +10,8 @@ kotlin {
 
 dependencies {
     api(project(":project-types:jvm-application"))
+
+    implementation(libs.kotlin.gradle.plugin)
 }
 
 gradlePlugin {
