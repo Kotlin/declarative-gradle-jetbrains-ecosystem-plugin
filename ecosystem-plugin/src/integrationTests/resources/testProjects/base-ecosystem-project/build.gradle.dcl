@@ -1,3 +1,3 @@
 jvmApplication {
-
+    packaging {}
 }
