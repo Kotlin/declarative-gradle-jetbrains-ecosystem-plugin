@@ -26,7 +26,6 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 // Recommended for now way to apply Gradle and 3rd party plugins, `apply(project)` method usage will be
                 // forbidden in the future releases
-                services.pluginManager.apply("application")
                 services.pluginManager.apply("org.jetbrains.kotlin.jvm")
             }
                 .withUnsafeApplyAction()
