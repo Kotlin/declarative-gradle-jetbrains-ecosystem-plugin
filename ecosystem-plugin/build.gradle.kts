@@ -52,6 +52,8 @@ testing {
                         val jdk17Provider = jdkToolchainHomeFor(17)
                         val jdk21Provider = jdkToolchainHomeFor(21)
 
+                        val publishedRepo = project.extensions.getByType<CommonPublishingExtension>().publishedRepo
+
                         doFirst {
                             systemProperty("jdk8Home", jdk8Provider.get())
                             systemProperty("jdk11Home", jdk11Provider.get())
@@ -59,10 +61,7 @@ testing {
                             systemProperty("jdk21Home", jdk21Provider.get())
                             systemProperty(
                                 "maven.repo.url",
-                                project.extensions
-                                    .getByType<CommonPublishingExtension>()
-                                    .publishedRepo
-                                    .absolutePath
+                                publishedRepo.absolutePath
                             )
                         }
                     }
