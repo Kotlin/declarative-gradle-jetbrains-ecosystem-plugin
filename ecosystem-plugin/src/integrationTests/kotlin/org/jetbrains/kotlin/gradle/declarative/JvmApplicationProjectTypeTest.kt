@@ -8,10 +8,10 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
 
-@DisplayName("'jvmApplication' project type tests")
+@DisplayName("'jvmApplication' project type")
 class JvmApplicationProjectTypeTest : BaseTest() {
 
-    @DisplayName("project type is applied")
+    @DisplayName("could be applied without any additional configuration")
     @GradleTest
     fun testEcosystemPluginIsApplied(
         gradleVersion: GradleVersion
@@ -22,5 +22,4 @@ class JvmApplicationProjectTypeTest : BaseTest() {
             }
         }
     }
-
 }
