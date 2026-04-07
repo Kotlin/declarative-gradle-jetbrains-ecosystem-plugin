@@ -1,4 +1,4 @@
-package org.jetbrains.kotlin.gradle.declarative.plugins
+package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -6,7 +6,6 @@ import org.gradle.api.plugins.PluginManager
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
-import org.jetbrains.kotlin.gradle.declarative.projecttypes.JvmApplicationProjectType
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")

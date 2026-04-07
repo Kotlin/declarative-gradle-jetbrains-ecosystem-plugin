@@ -9,7 +9,7 @@ import org.gradle.api.plugins.PluginManager
 import org.gradle.features.annotations.BindsProjectFeature
 import org.gradle.features.binding.ProjectFeatureBinding
 import org.gradle.features.binding.ProjectFeatureBindingBuilder
-import org.jetbrains.kotlin.gradle.declarative.projecttypes.PackagingExtension
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.PackagingExtension
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")

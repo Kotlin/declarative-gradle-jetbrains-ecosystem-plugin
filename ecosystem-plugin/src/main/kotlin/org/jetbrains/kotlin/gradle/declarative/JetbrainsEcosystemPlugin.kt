@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import org.gradle.api.logging.Logging
 import org.gradle.features.annotations.RegistersProjectFeatures
-import org.jetbrains.kotlin.gradle.declarative.plugins.JetBrainsJvmApplicationPlugin
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JetBrainsJvmApplicationPlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.distribution.DistributionSoftwareFeaturePlugin
 
 @Suppress("UnstableApiUsage")
