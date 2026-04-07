@@ -8,7 +8,7 @@ import javax.inject.Inject
 abstract class CommonPublishingExtension @Inject constructor(
     private val project: Project
 ) {
-    val publishedRepo = project.rootProject.layout.buildDirectory.dir("repo")
+    val publishedRepo = project.rootDir.resolve("build").resolve("repo")
 
     fun configureDefaultJvmPublication() {
         project.extensions.configure<PublishingExtension>() {

@@ -61,8 +61,8 @@ testing {
                                 "maven.repo.url",
                                 project.extensions
                                     .getByType<CommonPublishingExtension>()
-                                    .publishedRepo.get()
-                                    .asFile.absolutePath
+                                    .publishedRepo
+                                    .absolutePath
                             )
                         }
                     }
