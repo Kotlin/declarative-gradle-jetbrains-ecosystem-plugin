@@ -4,7 +4,7 @@ import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel> {
+public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel>, ApplicationDefinition {
 
     /**
      * Describes how the application should be packaged.
