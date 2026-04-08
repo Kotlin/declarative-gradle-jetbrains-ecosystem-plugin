@@ -10,8 +10,11 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.features.annotations.BindsProjectType
+import org.gradle.features.binding.ProjectFeatureApplicationContext
+import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
+import org.gradle.features.dsl.bindProjectType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import java.util.Locale.getDefault
@@ -26,39 +29,56 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
     public class Binding : ProjectTypeBinding {
         override fun bind(builder: ProjectTypeBindingBuilder) {
-            builder.bindProjectType(
-                "jvmApplication",
-                JvmApplicationProjectType::class.java
-            ) { context, definition, buildModel ->
-                val services = context.objectFactory.newInstance(Services::class.java)
-
-                // Recommended for now way to apply Gradle and 3rd party plugins, `apply(project)` method usage will be
-                // forbidden in the future releases
-                services.pluginManager.apply("org.jetbrains.kotlin.jvm")
-
-                val kotlinJvmExtension = services.project.extensions.getByType(KotlinJvmExtension::class.java)
-                kotlinJvmExtension.registerApplication(
-                    KotlinCompilation.MAIN_COMPILATION_NAME,
-                    definition,
-                    buildModel,
-                    services,
-                    context.objectFactory,
-                )
-            }
+            builder
+                .bindProjectType("jvmApplication", JvmApplicationApplyAction::class)
                 .withUnsafeApplyAction()
                 .withBuildModelImplementationType(DefaultJvmApplicationBuildModel::class.java)
+        }
+    }
+
+    internal abstract class JvmApplicationApplyAction :
+        ProjectTypeApplyAction<JvmApplicationProjectType, JvmApplicationBuildModel> {
+
+        // Unsafe service for apply action
+        @get:Inject
+        abstract val pluginManager: PluginManager
+
+        @get:Inject
+        abstract val project: Project
+
+        @get:Inject
+        abstract val projectLayout: ProjectLayout
+
+        @get:Inject
+        abstract val tasksContainer: TaskContainer
+
+        override fun apply(
+            context: ProjectFeatureApplicationContext,
+            definition: JvmApplicationProjectType,
+            buildModel: JvmApplicationBuildModel
+        ) {
+            // Recommended for now way to apply Gradle and 3rd party plugins, `apply(project)` method usage will be
+            // forbidden in the future releases
+            pluginManager.apply("org.jetbrains.kotlin.jvm")
+
+            val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
+            kotlinJvmExtension.registerApplication(
+                KotlinCompilation.MAIN_COMPILATION_NAME,
+                definition,
+                buildModel,
+                context.objectFactory,
+            )
         }
 
         private fun KotlinJvmExtension.registerApplication(
             name: String,
             definition: ApplicationDefinition,
             buildModel: JvmApplicationBuildModel,
-            services: Services,
             objectFactory: ObjectFactory,
         ) {
             buildModel.applications.create("main") { application ->
                 application.mainClassName.convention(definition.mainClass)
-                application.applicationName.convention(definition.name.orElse(services.project.name))
+                application.applicationName.convention(definition.name.orElse(project.name))
                 application.moduleName.convention(definition.moduleName)
                 application.jvmArgs.convention(definition.jvmArgs)
 
@@ -68,8 +88,8 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     mainCompilation.runtimeDependencyFiles
                 )
 
-                application.executionDirectory.convention(services.projectLayout.buildDirectory.dir("application/$name"))
-                (application as InternalJvmApplication).runTaskProvider = services.tasksContainer
+                application.executionDirectory.convention(projectLayout.buildDirectory.dir("application/$name"))
+                (application as InternalJvmApplication).runTaskProvider = tasksContainer
                     .registerJvmApplicationRunTask(application, objectFactory)
             }
         }
@@ -108,20 +128,5 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     ) else it.toString()
                 }
             }"
-
-        internal interface Services {
-            // Unsafe service for apply action
-            @get:Inject
-            val pluginManager: PluginManager
-
-            @get:Inject
-            val project: Project
-
-            @get:Inject
-            val projectLayout: ProjectLayout
-
-            @get:Inject
-            val tasksContainer: TaskContainer
-        }
     }
 }
