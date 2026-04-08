@@ -42,6 +42,7 @@ testing {
                         dependsOn("publishJetbrains-ecosystem-pluginPluginMarkerMavenPublicationToRepoLocalRepository")
                         dependsOn("publishPluginMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:jvm-application:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":common:publishMavenPublicationToRepoLocalRepository")
 
                         javaLauncher
                             .value(jdkLauncherFor(17))
