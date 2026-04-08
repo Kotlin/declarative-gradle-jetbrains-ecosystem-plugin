@@ -22,5 +22,6 @@ dependencyResolutionManagement {
 
 include(
     ":ecosystem-plugin",
+    ":common",
     ":project-types:jvm-application",
 )

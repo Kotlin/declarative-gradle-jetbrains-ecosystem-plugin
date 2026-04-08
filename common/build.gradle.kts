@@ -3,17 +3,12 @@ plugins {
     id("common-publishing")
 }
 
-description = "Implements 'jvmApplication' Declarative Gradle project type"
-
 kotlin {
     explicitApi()
 }
 
 dependencies {
     api(gradleApi())
-    api(project(":common"))
-
-    implementation(libs.kotlin.gradle.plugin)
 }
 
 commonPublishing {
