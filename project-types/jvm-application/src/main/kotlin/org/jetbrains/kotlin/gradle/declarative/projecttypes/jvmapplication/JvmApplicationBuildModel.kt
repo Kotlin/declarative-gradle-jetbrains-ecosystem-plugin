@@ -18,6 +18,7 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.features.binding.BuildModel
+import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationType
@@ -38,6 +39,7 @@ public interface JvmApplication : Named {
     public val applicationName: Property<String>
     public val moduleName: Property<String>
     public val jvmArgs: ListProperty<String>
+    public val jdkLauncher: Property<JavaLauncher>
 
     public val compiledClasses: ConfigurableFileCollection
     public val runtimeDependencies: ConfigurableFileCollection

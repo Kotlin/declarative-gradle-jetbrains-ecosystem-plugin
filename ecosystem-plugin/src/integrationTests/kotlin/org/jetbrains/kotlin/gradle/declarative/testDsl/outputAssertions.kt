@@ -1,10 +1,8 @@
 package org.jetbrains.kotlin.gradle.declarative.testDsl
 
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.logging.configuration.WarningMode
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.util.GradleVersion
-import java.util.*
+import org.intellij.lang.annotations.Language
 import kotlin.test.assertEquals
 
 /**
@@ -138,4 +136,111 @@ fun findParameterInOutput(name: String, output: String): String? =
         val (key, value) = line.split('=', limit = 2).takeIf { it.size == 2 } ?: return@mapNotNull null
         if (key.endsWith(name)) value else null
     }.firstOrNull()
+
+fun BuildResult.assertCompilerArgument(
+    taskPath: String,
+    expectedArgument: String,
+    logLevel: LogLevel = LogLevel.DEBUG
+) {
+    val compilerArguments = extractTaskCompilerArguments(taskPath, logLevel)
+
+    assert(
+        compilerArguments.contains(expectedArgument) || (expectedArgument.contains("=") && compilerArguments.contains(
+            expectedArgument.replaceFirst("=", " ")
+        ))
+    ) {
+        printBuildOutput()
+
+        "$taskPath task compiler arguments don't contain $expectedArgument. Actual content: $compilerArguments"
+    }
+}
+
+/**
+ * Extracts compiler arguments used in compilation for a given Kotlin task under [taskPath] path.
+ *
+ * @param logLevel [LogLevel] with which build was running, default to [LogLevel.INFO].
+ */
+fun BuildResult.extractTaskCompilerArguments(
+    taskPath: String,
+    logLevel: LogLevel = LogLevel.INFO
+): String {
+    val taskOutput = getOutputForTask(taskPath, logLevel)
+    return taskOutput.lines().first {
+        it.contains("Kotlin compiler args:")
+    }.substringAfter("Kotlin compiler args:")
+}
+
+/**
+ * Gets the output produced by a specific task during a Gradle build.
+ *
+ * @param taskPath The path of the task whose output should be retrieved.
+ * @param logLevel The given output contains no more than the [logLevel] logs.
+ *
+ * @return The output produced by the specified task during the build.
+ *
+ * @throws IllegalStateException if the specified task path does not match any tasks in the build.
+ */
+fun BuildResult.getOutputForTask(taskPath: String, logLevel: LogLevel = LogLevel.DEBUG): String =
+    getOutputForTask(taskPath, output, logLevel)
+
+/**
+ * Gets the output produced by a specific task during a Gradle build.
+ *
+ * @param taskPath The path of the task whose output should be retrieved.
+ * @param output The output from which we should extract task's output
+ * @param logLevel The given output contains no more than the [logLevel] logs.
+ *
+ * @return The output produced by the specified task during the build.
+ *
+ * @throws IllegalStateException if the specified task path does not match any tasks in the build.
+ */
+fun getOutputForTask(taskPath: String, output: String, logLevel: LogLevel = LogLevel.DEBUG): String = (
+        when (logLevel) {
+            LogLevel.INFO -> taskOutputRegexForInfoLog(taskPath)
+            LogLevel.DEBUG -> taskOutputRegexForDebugLog(taskPath)
+            else -> throw IllegalStateException("Unsupported log lever for task output was given: $logLevel")
+        })
+    .findAll(output)
+    .map {
+        when (logLevel) {
+            LogLevel.INFO -> it.groupValues[2] // `( FAILED)` defines a group with index 1
+            else -> it.groupValues[1]
+        }
+    }
+    .joinToString(System.lineSeparator())
+    .ifEmpty {
+        error(
+            """
+            Could not find output for task $taskPath.
+            =================
+            Build output is:
+            $output 
+            =================     
+            """.trimIndent()
+        )
+    }
+
+@Language("RegExp")
+private fun taskOutputRegexForDebugLog(
+    taskName: String,
+) = """
+    \[org\.gradle\.internal\.operations\.DefaultBuildOperationRunner] Build operation 'Task $taskName' started
+    ([\s\S]+?)
+    \[org\.gradle\.internal\.operations\.DefaultBuildOperationRunner] Build operation 'Task $taskName' completed
+    """.trimIndent()
+    .replace("\n", "")
+    .toRegex()
+
+@Language("RegExp")
+private fun taskOutputRegexForInfoLog(
+    taskName: String,
+) =
+    """
+    ^\s*$\r?
+    ^> Task $taskName( FAILED)?$\r?
+    ([\s\S]+?)\r?
+    ^\s*$\r?
+    """.trimIndent()
+        .toRegex(RegexOption.MULTILINE)
+
 
