@@ -145,6 +145,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             objectFactory: ObjectFactory,
         ) {
             buildModel.applications.create("main") { application ->
+                application as InternalJvmApplication
                 application.mainClassName.convention(definition.mainClass)
                 application.applicationName.convention(definition.name.orElse(project.name))
                 application.moduleName.convention(definition.moduleName)
@@ -157,15 +158,15 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
                 application.compiledClasses.from(mainCompilation.output.allOutputs)
-                mainCompilation.project.configurations
+                application.runtimeOnlyConfigurationProvider = mainCompilation.project.configurations
                     .getByName(mainCompilation.defaultSourceSet.runtimeOnlyConfigurationName)
-                    .dependencies.addAllLater(projectType.dependencies.runtimeOnly.dependencies)
-                application.runtimeDependencies.from(
-                    mainCompilation.runtimeDependencyFiles
-                )
+
+                application.runtimeOnlyConfiguration.dependencies
+                    .addAllLater(projectType.dependencies.runtimeOnly.dependencies)
+                application.runtimeClasspathProvider = mainCompilation.runtimeDependencyFiles!!
 
                 application.executionDirectory.convention(projectLayout.buildDirectory.dir("application/$name"))
-                (application as InternalJvmApplication).runTaskProvider = tasksContainer
+                application.runTaskProvider = tasksContainer
                     .registerJvmApplicationRunTask(application, objectFactory)
             }
         }
@@ -180,7 +181,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 val runtimeClasspath = objectFactory.fileCollection().from(
                     application.compiledClasses,
-                    application.runtimeDependencies,
+                    application.runtimeClasspath,
                 )
                 javaExecTask.classpath(runtimeClasspath)
                 javaExecTask.mainClass.value(application.mainClassName)
