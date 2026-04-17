@@ -9,6 +9,9 @@ public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel
     ApplicationDefinition,
     JvmEcosystemDefinition {
 
+    @get:Nested
+    public val dependencies: JvmApplicationDependenciesExtension
+
     /**
      * Describes how the application should be packaged.
      */

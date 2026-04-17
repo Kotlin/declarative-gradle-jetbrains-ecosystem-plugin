@@ -39,6 +39,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             builder
                 .bindProjectType("jvmApplication", JvmApplicationApplyAction::class)
                 .withUnsafeApplyAction()
+                .withUnsafeDefinition()
                 .withBuildModelImplementationType(DefaultJvmApplicationBuildModel::class.java)
         }
     }
@@ -97,6 +98,12 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     kotlinJvmCompilationUnit.kotlinCompilation = mainCompilation
 
                     kotlinJvmCompilationUnit.jvmEcosystem.jdkToolchain.bindToolchainDefinition(definition.toolchain)
+                    kotlinJvmCompilationUnit.jvmEcosystem.implementationConfiguration.dependencies.addAllLater(
+                        definition.dependencies.implementation.dependencies
+                    )
+                    kotlinJvmCompilationUnit.jvmEcosystem.compileOnlyConfiguration.dependencies.addAllLater(
+                        definition.dependencies.compileOnly.dependencies
+                    )
                     kotlinJvmCompilationUnit.jvmCompilations.create(
                         "kotlin",
                         KotlinJvmCompilationType::class.java
@@ -150,6 +157,9 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
                 application.compiledClasses.from(mainCompilation.output.allOutputs)
+                mainCompilation.project.configurations
+                    .getByName(mainCompilation.defaultSourceSet.runtimeOnlyConfigurationName)
+                    .dependencies.addAllLater(projectType.dependencies.runtimeOnly.dependencies)
                 application.runtimeDependencies.from(
                     mainCompilation.runtimeDependencyFiles
                 )
