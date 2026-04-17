@@ -15,6 +15,8 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
+import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import java.util.Locale.getDefault
@@ -62,12 +64,39 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.jvm")
 
             val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
+            kotlinJvmExtension.bindMainCompilation(
+                buildModel as DefaultJvmApplicationBuildModel
+            )
             kotlinJvmExtension.registerApplication(
                 KotlinCompilation.MAIN_COMPILATION_NAME,
                 definition,
                 buildModel,
                 context.objectFactory,
             )
+        }
+
+        private fun KotlinJvmExtension.bindMainCompilation(
+            buildModel: DefaultJvmApplicationBuildModel,
+        ) {
+            val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
+
+            buildModel.compilationUnits
+                .create(KotlinCompilation.MAIN_COMPILATION_NAME) { kotlinJvmCompilationUnit ->
+                    kotlinJvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit
+                    kotlinJvmCompilationUnit.kotlinCompilation = mainCompilation
+                    kotlinJvmCompilationUnit.jvmCompilations.create(
+                        "kotlin",
+                        KotlinJvmCompilationType::class.java
+                    ) { kotlinCompilation ->
+                        // TODO: wire properly
+                    }
+                    kotlinJvmCompilationUnit.jvmCompilations.create(
+                        "java",
+                        JavaJvmCompilationType::class.java
+                    ) { javaCompilation ->
+                        // TODO: wire properly
+                    }
+            }
         }
 
         private fun KotlinJvmExtension.registerApplication(
@@ -84,7 +113,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
                 application.compiledClasses.from(mainCompilation.output.allOutputs)
-                application.dependencies.from(
+                application.runtimeDependencies.from(
                     mainCompilation.runtimeDependencyFiles
                 )
 
@@ -104,7 +133,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                 val runtimeClasspath = objectFactory.fileCollection().from(
                     application.compiledClasses,
-                    application.dependencies,
+                    application.runtimeDependencies,
                 )
                 javaExecTask.classpath(runtimeClasspath)
                 javaExecTask.mainClass.value(application.mainClassName)
