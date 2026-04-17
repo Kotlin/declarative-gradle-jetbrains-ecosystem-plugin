@@ -4,18 +4,19 @@ import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.PolymorphicDomainObjectContainer
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.features.binding.BuildModel
 import org.gradle.jvm.toolchain.JavaLauncher
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationU
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmEcosystem
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import java.util.Locale.getDefault
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -41,7 +43,7 @@ public interface JvmApplication : Named {
     public val jvmArgs: ListProperty<String>
     public val jdkLauncher: Property<JavaLauncher>
 
-    public val compiledClasses: ConfigurableFileCollection
+    public val jvmCompilationUnit: JvmCompilationUnit
     public val runtimeOnlyConfiguration: Configuration
     public val runtimeClasspath: FileCollection
 
@@ -49,18 +51,55 @@ public interface JvmApplication : Named {
     public val executionDirectory: DirectoryProperty
 }
 
-internal interface InternalJvmApplication : JvmApplication {
-    var runTaskProvider: TaskProvider<JavaExec>
-    override val runTask: TaskProvider<JavaExec>
-        get() = runTaskProvider
+internal abstract class DefaultJvmApplication @Inject constructor(
+    override val jvmCompilationUnit: JvmCompilationUnit,
+    private val objectFactory: ObjectFactory
+): JvmApplication {
+    override fun getName(): String = jvmCompilationUnit.name
 
-    var runtimeOnlyConfigurationProvider: Configuration
+    private val kotlinCompilation
+        get() = (jvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit).kotlinCompilation
+
+    override val runTask: TaskProvider<JavaExec> = kotlinCompilation.project.tasks.registerJvmApplicationRunTask()
+
     override val runtimeOnlyConfiguration: Configuration
-        get() = runtimeOnlyConfigurationProvider
+        get() = kotlinCompilation.project.configurations
+            .getByName(kotlinCompilation.defaultSourceSet.runtimeOnlyConfigurationName)
 
-    var runtimeClasspathProvider: FileCollection
     override val runtimeClasspath: FileCollection
-        get() = runtimeClasspathProvider
+        get() = kotlinCompilation.runtimeDependencyFiles!!
+
+    private fun TaskContainer.registerJvmApplicationRunTask(): TaskProvider<JavaExec> =
+        register(runTaskName, JavaExec::class.java) { javaExecTask ->
+            javaExecTask.description = "Runs this project as a JVM application"
+            javaExecTask.group = ApplicationPlugin.APPLICATION_GROUP
+
+            val runtimeClasspath = objectFactory.fileCollection().from(
+                jvmCompilationUnit.outputs,
+                runtimeClasspath,
+            )
+            javaExecTask.classpath(runtimeClasspath)
+            javaExecTask.mainClass.value(mainClassName)
+            javaExecTask.mainModule.value(moduleName)
+            javaExecTask.jvmArguments.value(jvmArgs)
+            //TODO: javaExecTask.modularity.inferModulePath
+            javaExecTask.javaLauncher.convention(jdkLauncher)
+            javaExecTask.workingDir(
+                executionDirectory.map {
+                    it.asFile.mkdirs()
+                    it
+                }
+            )
+        }
+
+    private val JvmApplication.runTaskName
+        get() = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) "run" else "run${
+            name.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    getDefault()
+                ) else it.toString()
+            }
+        }"
 }
 
 internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
@@ -73,7 +112,11 @@ internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     override val applications: NamedDomainObjectContainer<JvmApplication> = objectFactory
-        .domainObjectContainer(InternalJvmApplication::class.java) as NamedDomainObjectContainer<JvmApplication>
+        .domainObjectContainer(JvmApplication::class.java) { name ->
+            val jvmCompilationUnit = compilationUnits.findByName(name)
+                ?: throw IllegalStateException("Could not find compilation unit '$name' to create application")
+            objectFactory.newInstance(DefaultJvmApplication::class.java, jvmCompilationUnit)
+        }
 
     abstract class DefaultJvmCompilationUnit @Inject constructor(
         private val entityName: String,
