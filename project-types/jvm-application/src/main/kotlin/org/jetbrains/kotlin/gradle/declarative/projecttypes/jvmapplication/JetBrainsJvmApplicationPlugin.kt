@@ -15,8 +15,13 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
+import org.gradle.jvm.toolchain.JavaToolchainSpec
+import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmToolchain
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import java.util.Locale.getDefault
@@ -54,6 +59,9 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         @get:Inject
         abstract val tasksContainer: TaskContainer
 
+        @get:Inject
+        abstract val javaToolchainService: JavaToolchainService
+
         override fun apply(
             context: ProjectFeatureApplicationContext,
             definition: JvmApplicationProjectType,
@@ -65,10 +73,12 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
             val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
             kotlinJvmExtension.bindMainCompilation(
+                definition,
                 buildModel as DefaultJvmApplicationBuildModel
             )
             kotlinJvmExtension.registerApplication(
                 KotlinCompilation.MAIN_COMPILATION_NAME,
+                definition,
                 definition,
                 buildModel,
                 context.objectFactory,
@@ -76,6 +86,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         }
 
         private fun KotlinJvmExtension.bindMainCompilation(
+            definition: JvmApplicationProjectType,
             buildModel: DefaultJvmApplicationBuildModel,
         ) {
             val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
@@ -84,6 +95,8 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 .create(KotlinCompilation.MAIN_COMPILATION_NAME) { kotlinJvmCompilationUnit ->
                     kotlinJvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit
                     kotlinJvmCompilationUnit.kotlinCompilation = mainCompilation
+
+                    kotlinJvmCompilationUnit.jvmEcosystem.jdkToolchain.bindToolchainDefinition(definition.toolchain)
                     kotlinJvmCompilationUnit.jvmCompilations.create(
                         "kotlin",
                         KotlinJvmCompilationType::class.java
@@ -99,8 +112,25 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             }
         }
 
+        private fun JavaToolchainSpec.bindToolchainDefinition(
+            toolchain: JvmToolchain
+        ) {
+            languageVersion.convention(
+                toolchain.releaseVersion
+                    .map { JavaLanguageVersion.of(it) }
+                    .orElse(JavaLanguageVersion.current())
+            )
+            vendor.convention(
+                toolchain.vendor.orElse(DefaultJvmVendorSpec.any())
+            )
+            nativeImageCapable.convention(
+                toolchain.nativeImageCapable.orElse(false)
+            )
+        }
+
         private fun KotlinJvmExtension.registerApplication(
             name: String,
+            projectType: JvmApplicationProjectType,
             definition: ApplicationDefinition,
             buildModel: JvmApplicationBuildModel,
             objectFactory: ObjectFactory,
@@ -110,6 +140,11 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 application.applicationName.convention(definition.name.orElse(project.name))
                 application.moduleName.convention(definition.moduleName)
                 application.jvmArgs.convention(definition.jvmArgs)
+                application.jdkLauncher.convention(
+                    javaToolchainService.launcherFor {
+                        it.bindToolchainDefinition(projectType.toolchain)
+                    }
+                )
 
                 val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
                 application.compiledClasses.from(mainCompilation.output.allOutputs)
@@ -140,7 +175,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 javaExecTask.mainModule.value(application.moduleName)
                 javaExecTask.jvmArguments.value(application.jvmArgs)
                 //TODO: javaExecTask.modularity.inferModulePath
-                //TODO: javaExecTask.javaLauncher
+                javaExecTask.javaLauncher.convention(application.jdkLauncher)
                 javaExecTask.workingDir(
                     application.executionDirectory.map {
                         it.asFile.mkdirs()

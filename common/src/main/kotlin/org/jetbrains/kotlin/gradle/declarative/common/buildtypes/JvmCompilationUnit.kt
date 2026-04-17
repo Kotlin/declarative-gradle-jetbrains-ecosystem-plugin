@@ -8,9 +8,11 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
+import org.gradle.features.binding.BuildModel
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 
-public interface JvmEcosystem {
+@Suppress("UnstableApiUsage")
+public interface JvmEcosystem : BuildModel {
     public val implementationConfiguration: Configuration
     public val compileOnlyConfiguration: Configuration
     public val compilationClasspath: FileCollection
