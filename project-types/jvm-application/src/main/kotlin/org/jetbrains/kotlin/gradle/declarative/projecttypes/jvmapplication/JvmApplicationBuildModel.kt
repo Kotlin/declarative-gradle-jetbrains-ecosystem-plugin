@@ -42,7 +42,8 @@ public interface JvmApplication : Named {
     public val jdkLauncher: Property<JavaLauncher>
 
     public val compiledClasses: ConfigurableFileCollection
-    public val runtimeDependencies: ConfigurableFileCollection
+    public val runtimeOnlyConfiguration: Configuration
+    public val runtimeClasspath: FileCollection
 
     public val runTask: TaskProvider<JavaExec>
     public val executionDirectory: DirectoryProperty
@@ -52,6 +53,14 @@ internal interface InternalJvmApplication : JvmApplication {
     var runTaskProvider: TaskProvider<JavaExec>
     override val runTask: TaskProvider<JavaExec>
         get() = runTaskProvider
+
+    var runtimeOnlyConfigurationProvider: Configuration
+    override val runtimeOnlyConfiguration: Configuration
+        get() = runtimeOnlyConfigurationProvider
+
+    var runtimeClasspathProvider: FileCollection
+    override val runtimeClasspath: FileCollection
+        get() = runtimeClasspathProvider
 }
 
 internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
