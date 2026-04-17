@@ -11,4 +11,9 @@ interface TestVersions {
     object Kotlin {
         const val CURRENT = "2.3.20"
     }
+
+    object Dependencies {
+        const val COROUTINES = "1.10.2"
+        const val DATETIME = "0.7.1"
+    }
 }
