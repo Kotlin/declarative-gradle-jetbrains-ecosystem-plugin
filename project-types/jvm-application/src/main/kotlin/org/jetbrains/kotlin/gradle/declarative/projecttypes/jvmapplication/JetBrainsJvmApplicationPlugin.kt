@@ -3,12 +3,8 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.PluginManager
-import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.TaskProvider
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
 import org.gradle.features.binding.ProjectTypeApplyAction
@@ -20,11 +16,11 @@ import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
+import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationUnit
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmToolchain
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import java.util.Locale.getDefault
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -73,26 +69,24 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.jvm")
 
             val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
-            kotlinJvmExtension.bindMainCompilation(
+            val mainJvmCompilationUnit = kotlinJvmExtension.bindMainCompilation(
                 definition,
                 buildModel as DefaultJvmApplicationBuildModel
             )
-            kotlinJvmExtension.registerApplication(
-                KotlinCompilation.MAIN_COMPILATION_NAME,
-                definition,
+            registerApplication(
                 definition,
                 buildModel,
-                context.objectFactory,
+                mainJvmCompilationUnit,
             )
         }
 
         private fun KotlinJvmExtension.bindMainCompilation(
             definition: JvmApplicationProjectType,
             buildModel: DefaultJvmApplicationBuildModel,
-        ) {
+        ): JvmCompilationUnit {
             val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
 
-            buildModel.compilationUnits
+            return buildModel.compilationUnits
                 .create(KotlinCompilation.MAIN_COMPILATION_NAME) { kotlinJvmCompilationUnit ->
                     kotlinJvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit
                     kotlinJvmCompilationUnit.kotlinCompilation = mainCompilation
@@ -137,73 +131,28 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             )
         }
 
-        private fun KotlinJvmExtension.registerApplication(
-            name: String,
-            projectType: JvmApplicationProjectType,
-            definition: ApplicationDefinition,
+        private fun registerApplication(
+            definition: JvmApplicationProjectType,
             buildModel: JvmApplicationBuildModel,
-            objectFactory: ObjectFactory,
+            jvmCompilationUnit: JvmCompilationUnit,
         ) {
-            buildModel.applications.create("main") { application ->
-                application as InternalJvmApplication
+            buildModel.applications.create(jvmCompilationUnit.name) { application ->
+                application as DefaultJvmApplication
                 application.mainClassName.convention(definition.mainClass)
                 application.applicationName.convention(definition.name.orElse(project.name))
                 application.moduleName.convention(definition.moduleName)
                 application.jvmArgs.convention(definition.jvmArgs)
                 application.jdkLauncher.convention(
                     javaToolchainService.launcherFor {
-                        it.bindToolchainDefinition(projectType.toolchain)
+                        it.bindToolchainDefinition(definition.toolchain)
                     }
                 )
-
-                val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
-                application.compiledClasses.from(mainCompilation.output.allOutputs)
-                application.runtimeOnlyConfigurationProvider = mainCompilation.project.configurations
-                    .getByName(mainCompilation.defaultSourceSet.runtimeOnlyConfigurationName)
-
                 application.runtimeOnlyConfiguration.dependencies
-                    .addAllLater(projectType.dependencies.runtimeOnly.dependencies)
-                application.runtimeClasspathProvider = mainCompilation.runtimeDependencyFiles!!
-
-                application.executionDirectory.convention(projectLayout.buildDirectory.dir("application/$name"))
-                application.runTaskProvider = tasksContainer
-                    .registerJvmApplicationRunTask(application, objectFactory)
+                    .addAllLater(definition.dependencies.runtimeOnly.dependencies)
+                application.executionDirectory.convention(
+                    projectLayout.buildDirectory.dir("application/${application.name}")
+                )
             }
         }
-
-        private fun TaskContainer.registerJvmApplicationRunTask(
-            application: JvmApplication,
-            objectFactory: ObjectFactory,
-        ): TaskProvider<JavaExec> =
-            register(application.runTaskName, JavaExec::class.java) { javaExecTask ->
-                javaExecTask.description = "Runs this project as a JVM application"
-                javaExecTask.group = ApplicationPlugin.APPLICATION_GROUP
-
-                val runtimeClasspath = objectFactory.fileCollection().from(
-                    application.compiledClasses,
-                    application.runtimeClasspath,
-                )
-                javaExecTask.classpath(runtimeClasspath)
-                javaExecTask.mainClass.value(application.mainClassName)
-                javaExecTask.mainModule.value(application.moduleName)
-                javaExecTask.jvmArguments.value(application.jvmArgs)
-                //TODO: javaExecTask.modularity.inferModulePath
-                javaExecTask.javaLauncher.convention(application.jdkLauncher)
-                javaExecTask.workingDir(
-                    application.executionDirectory.map {
-                        it.asFile.mkdirs()
-                        it
-                    }
-                )
-            }
-
-        private val JvmApplication.runTaskName
-            get() = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) "run" else "run${
-                name.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(
-                        getDefault()
-                    ) else it.toString()
-                }
-            }"
     }
 }
