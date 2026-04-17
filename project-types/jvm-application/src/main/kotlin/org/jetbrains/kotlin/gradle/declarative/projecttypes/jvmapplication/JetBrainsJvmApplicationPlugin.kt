@@ -121,7 +121,9 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     .orElse(JavaLanguageVersion.current())
             )
             vendor.convention(
-                toolchain.vendor.orElse(DefaultJvmVendorSpec.any())
+                toolchain.vendor
+                    .map { it.toVendorSpec() }
+                    .orElse(DefaultJvmVendorSpec.any())
             )
             nativeImageCapable.convention(
                 toolchain.nativeImageCapable.orElse(false)
