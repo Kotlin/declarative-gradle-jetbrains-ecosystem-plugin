@@ -1,8 +1,10 @@
+@file:Suppress("INVISIBLE_REFERENCE")
 package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.api.tasks.TaskContainer
@@ -17,11 +19,18 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
+import org.jetbrains.kotlin.gradle.tasks.DefaultKotlinJavaToolchain
+import org.jetbrains.kotlin.gradle.plugin.mpp.baseModuleName
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationUnit
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmToolchain
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit.DefaultKotlinJvmCompilationType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.jetbrains.kotlin.gradle.plugin.COMPILER_CLASSPATH_CONFIGURATION_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import javax.inject.Inject
 
@@ -61,6 +70,9 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         @get:Inject
         abstract val javaToolchainService: JavaToolchainService
 
+        @get:Inject
+        abstract val objectFactory: ObjectFactory
+
         override fun apply(
             context: ProjectFeatureApplicationContext,
             definition: JvmApplicationProjectType,
@@ -73,7 +85,8 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
             val mainJvmCompilationUnit = kotlinJvmExtension.bindMainCompilation(
                 definition,
-                buildModel as DefaultJvmApplicationBuildModel
+                buildModel as DefaultJvmApplicationBuildModel,
+                kotlinJvmExtension,
             )
             registerApplication(
                 definition,
@@ -85,6 +98,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         private fun KotlinJvmExtension.bindMainCompilation(
             definition: JvmApplicationProjectType,
             buildModel: DefaultJvmApplicationBuildModel,
+            kotlinJvmExtension: KotlinJvmExtension,
         ): JvmCompilationUnit {
             val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
 
@@ -100,12 +114,34 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     kotlinJvmCompilationUnit.jvmEcosystem.compileOnlyConfiguration.dependencies.addAllLater(
                         definition.dependencies.compileOnly.dependencies
                     )
+
+                    val defaultOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
+                    defaultOptions.moduleName.convention(
+                        project.baseModuleName()
+                    )
+                    syncKotlinJvmCompilerOptionsAsConvention(
+                        from = definition.kotlin.compilerOptions,
+                        into = kotlinJvmExtension.compilerOptions,
+                        fallback = defaultOptions,
+                    )
+                    // KGP does this before wiring above, and this loses toolchain information
+                    // repeating it again
+                    DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(
+                        kotlinJvmExtension.compilerOptions,
+                        project
+                    )
+
                     kotlinJvmCompilationUnit.jvmCompilations.create(
                         "kotlin",
                         KotlinJvmCompilationType::class.java
                     ) { kotlinCompilation ->
-                        // TODO: wire properly
+                        (kotlinCompilation as DefaultKotlinJvmCompilationType).kotlinCompilerClasspathProvider =
+                            mainCompilation.project.configurations.getByName(COMPILER_CLASSPATH_CONFIGURATION_NAME)
+
+                        kotlinCompilation.kotlinJvmCompilerOptions = mainCompilation
+                            .compileTaskProvider.get().compilerOptions as KotlinJvmCompilerOptions
                     }
+
                     kotlinJvmCompilationUnit.jvmCompilations.create(
                         "java",
                         JavaJvmCompilationType::class.java

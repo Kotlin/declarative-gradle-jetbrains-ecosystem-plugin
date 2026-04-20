@@ -9,6 +9,7 @@ kotlin {
 
 dependencies {
     api(gradleApi())
+    api(libs.kotlin.gradle.plugin)
 }
 
 commonPublishing {

@@ -3,15 +3,16 @@ package org.jetbrains.kotlin.gradle.declarative.common.buildtypes
 import org.gradle.api.Named
 import org.gradle.api.PolymorphicDomainObjectContainer
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.BuildModel
 import org.gradle.jvm.toolchain.JavaCompiler
 import org.gradle.jvm.toolchain.JavaToolchainSpec
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 @Suppress("UnstableApiUsage")
 public interface JvmEcosystem : BuildModel {
@@ -24,12 +25,15 @@ public interface JvmEcosystem : BuildModel {
 public sealed interface JvmCompilationType : Named
 
 public interface KotlinJvmCompilationType : JvmCompilationType {
-    // Missing Kotlin compiler args
-    public val kotlinCompilerClasspath: ConfigurableFileCollection
+    override fun getName(): String = "kotlin"
+
+    public val kotlinCompilerClasspath: FileCollection
+
+    @get:Nested
+    public val compilerOptions: KotlinJvmCompilerOptions
 }
 
-@Suppress("UnstableApiUsage")
-public interface JavaJvmCompilationType : JvmCompilationType, BuildModel {
+public interface JavaJvmCompilationType : JvmCompilationType {
     override fun getName(): String = "java"
 
     // Missing Java compiler args

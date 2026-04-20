@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationT
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationUnit
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmEcosystem
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import java.util.Locale.getDefault
 import javax.inject.Inject
@@ -179,6 +180,14 @@ internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
             private val compilationName: String
         ) : KotlinJvmCompilationType {
             override fun getName(): String = compilationName
+
+            internal lateinit var kotlinCompilerClasspathProvider: Configuration
+            override val kotlinCompilerClasspath: Configuration
+                get() = kotlinCompilerClasspathProvider
+
+            internal lateinit var kotlinJvmCompilerOptions: KotlinJvmCompilerOptions
+            override val compilerOptions: KotlinJvmCompilerOptions
+                get() = kotlinJvmCompilerOptions
         }
 
         abstract class DefaultJavaJvmCompilationType @Inject constructor(

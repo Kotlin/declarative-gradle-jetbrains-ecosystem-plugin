@@ -197,4 +197,54 @@ class JvmApplicationProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("it is possible to configure Kotlin compilation options")
+    @GradleTest
+    fun testKotlinCompilerOptions(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.MainKt"
+                |    
+                |    kotlin {
+                |        compilerOptions {
+                |            languageVersion = KOTLIN_2_2
+                |            apiVersion = KOTLIN_2_2
+                |            allWarningsAsErrors = true
+                |            jvmDefault = ENABLE
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("run", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+                assertTasksExecuted(":compileKotlin", ":run")
+                assertOutputContains("Hello, DCL!")
+
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-api-version 2.2",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-language-version 2.2",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-Werror",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-jvm-default=enable",
+                    logLevel = LogLevel.INFO,
+                )
+            }
+        }
+    }
 }
