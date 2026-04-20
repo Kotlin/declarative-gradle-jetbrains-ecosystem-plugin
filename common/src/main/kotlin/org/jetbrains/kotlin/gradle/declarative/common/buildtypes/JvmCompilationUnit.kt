@@ -6,9 +6,11 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.features.binding.BuildModel
+import org.gradle.jvm.toolchain.JavaCompiler
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 
 @Suppress("UnstableApiUsage")
@@ -19,19 +21,21 @@ public interface JvmEcosystem : BuildModel {
     public val jdkToolchain: JavaToolchainSpec
 }
 
-public sealed interface JvmCompilationType : Named {
-    public val compilationName: String
+public sealed interface JvmCompilationType : Named
 
-    override fun getName(): String = compilationName
-}
 public interface KotlinJvmCompilationType : JvmCompilationType {
     // Missing Kotlin compiler args
     public val kotlinCompilerClasspath: ConfigurableFileCollection
 }
 
-public interface JavaJvmCompilationType : JvmCompilationType {
+@Suppress("UnstableApiUsage")
+public interface JavaJvmCompilationType : JvmCompilationType, BuildModel {
+    override fun getName(): String = "java"
+
     // Missing Java compiler args
-    public val javacPath: RegularFileProperty
+    public val javaCompiler: Property<JavaCompiler>
+
+    public val compileArguments: ListProperty<String>
 }
 
 public interface JvmCompilationUnit : CompilationUnit {

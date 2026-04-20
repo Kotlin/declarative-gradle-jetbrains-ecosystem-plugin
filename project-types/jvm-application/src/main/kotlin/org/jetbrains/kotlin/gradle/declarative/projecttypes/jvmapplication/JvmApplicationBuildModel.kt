@@ -176,12 +176,16 @@ internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
         }
 
         abstract class DefaultKotlinJvmCompilationType @Inject constructor(
-            override val compilationName: String
-        ) : KotlinJvmCompilationType
+            private val compilationName: String
+        ) : KotlinJvmCompilationType {
+            override fun getName(): String = compilationName
+        }
 
         abstract class DefaultJavaJvmCompilationType @Inject constructor(
-            override val compilationName: String
-        ) : JavaJvmCompilationType
+            private val compilationName: String
+        ) : JavaJvmCompilationType {
+            override fun getName(): String = compilationName
+        }
     }
 }
 

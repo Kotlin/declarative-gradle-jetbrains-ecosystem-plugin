@@ -3,8 +3,10 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
 import org.gradle.features.binding.ProjectTypeApplyAction
@@ -108,7 +110,30 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                         "java",
                         JavaJvmCompilationType::class.java
                     ) { javaCompilation ->
-                        // TODO: wire properly
+                        javaCompilation.compileArguments
+                            .convention(
+                                definition.java.compilerOptions.compilerArgs.orElse(emptyList())
+                            )
+                        val javaExtension = project.extensions.getByType(JavaPluginExtension::class.java)
+                        val javaCompileTaskName = javaExtension
+                            .sourceSets
+                            .getByName(kotlinJvmCompilationUnit.name)
+                            .compileJavaTaskName
+
+                        javaCompilation.javaCompiler.convention(javaToolchainService
+                            .compilerFor {
+                                it.bindToolchainDefinition(definition.toolchain)
+                            }
+                        )
+
+                        project
+                            .tasks
+                            .named(javaCompileTaskName, JavaCompile::class.java) {
+                                it.javaCompiler.convention(javaCompilation.javaCompiler)
+                                it.options.compilerArgumentProviders.add {
+                                    javaCompilation.compileArguments.get()
+                                }
+                            }
                     }
             }
         }

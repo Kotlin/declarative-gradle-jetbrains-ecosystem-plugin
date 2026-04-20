@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
+import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
@@ -126,6 +127,73 @@ class JvmApplicationProjectTypeTest : BaseTest() {
             build("run", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
                 assertTasksExecuted(":compileKotlin", ":run")
                 assertOutputContains("Hello, DCL!")
+            }
+        }
+    }
+
+    @DisplayName("possible to configure java compiler arguments")
+    @GradleTest
+    fun testConfigureJavaCompilerArguments(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.MainKt"
+                |    
+                |    java {
+                |        compilerOptions {
+                |            compilerArgs = listOf("-Xlint:empty")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            javaSourcesDir().source("org/example/LintExample.java") {
+                //language=java
+                """
+                |package org.example;
+                |
+                |class LintExample {
+                |    /**
+                |     * This method demonstrates how javac's -Xlint:empty works. Note that javac's
+                |     * -Xlint:empty will only flag the empty statement involved in the "if" block,
+                |     * but does not flag the empty statements associated with the do-while loop,
+                |     * the while loop, the for loop, or the if-else. NetBeans does flag these if
+                |     * the appropriate "Hints" are turned on.
+                |     */
+                |    private static void demonstrateEmptyWarning() {
+                |       int[] integers = {1, 2, 3, 4, 5};
+                |       if (integers.length != 5);
+                |          System.out.println("Not five?");
+                |    
+                |       if (integers.length == 5)
+                |          System.out.println("Five!");
+                |       else;
+                |          System.out.println("Not Five!");
+                |    
+                |       do;
+                |       while (integers.length > 0);
+                |    
+                |       for (int integer : integers);
+                |          System.out.println("Another integer found!");
+                |    
+                |       int counter = 0;
+                |       while (counter < 5);
+                |    
+                |       System.out.println("Extra semicolons.");;;;
+                |    }
+                |}
+                """.trimMargin()
+            }
+
+            build("run") {
+                assertTasksExecuted(":compileKotlin", ":compileJava", ":run")
+                assertOutputContains("Hello, DCL!")
+                assertOutputContains("warning: [empty] empty statement after if")
             }
         }
     }
