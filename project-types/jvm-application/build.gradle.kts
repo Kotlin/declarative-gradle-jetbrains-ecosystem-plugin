@@ -12,8 +12,6 @@ kotlin {
 dependencies {
     api(gradleApi())
     api(project(":common"))
-
-    implementation(libs.kotlin.gradle.plugin)
 }
 
 commonPublishing {

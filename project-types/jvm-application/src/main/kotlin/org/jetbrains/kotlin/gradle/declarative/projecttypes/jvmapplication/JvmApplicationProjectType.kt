@@ -4,6 +4,7 @@ import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JavaJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmEcosystemDefinition
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinJvmCompilationExtension
 
 @Suppress("UnstableApiUsage")
 public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel>,
@@ -12,6 +13,9 @@ public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel
 
     @get:Nested
     public val java: JavaJvmCompilationExtension
+
+    @get:Nested
+    public val kotlin: KotlinJvmCompilationExtension
 
     @get:Nested
     public val dependencies: JvmApplicationDependenciesExtension
