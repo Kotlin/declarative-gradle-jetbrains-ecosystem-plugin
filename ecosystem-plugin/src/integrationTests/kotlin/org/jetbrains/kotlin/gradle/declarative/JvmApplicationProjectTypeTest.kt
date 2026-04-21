@@ -247,4 +247,52 @@ class JvmApplicationProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("kotlin serialization is enabled")
+    @GradleTest
+    fun testKotlinSerializationSoftwareFeature(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.SerializationKt"
+                |    
+                |    kotlin {
+                |        serialization {
+                |            enabledFormats = listOf("json")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir().source("org/example/serialization.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlinx.serialization.*
+                |import kotlinx.serialization.json.*
+                |
+                |@Serializable 
+                |data class Project(val name: String, val language: String)
+                |
+                |fun main() {
+                |    val data = Project("kotlinx.serialization", "Kotlin")
+                |    val string = Json.encodeToString(data)  
+                |    println(string)
+                |    val obj = Json.decodeFromString<Project>(string)
+                |    println(obj)
+                |}
+                """.trimMargin()
+            }
+
+            build("run", "-Pkotlin.internal.compiler.arguments.log.level=warning", forwardBuildOutput = true) {
+                assertTasksExecuted(":compileKotlin", ":run")
+            }
+        }
+    }
 }

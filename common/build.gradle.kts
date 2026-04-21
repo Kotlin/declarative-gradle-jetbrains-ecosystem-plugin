@@ -10,6 +10,8 @@ kotlin {
 dependencies {
     api(gradleApi())
     api(libs.kotlin.gradle.plugin)
+
+    implementation(libs.kotlin.gradle.plugin.serialization)
 }
 
 commonPublishing {
