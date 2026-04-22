@@ -7,6 +7,7 @@ import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
+import org.gradle.api.plugins.jvm.JvmTestSuite
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.features.annotations.BindsProjectType
@@ -19,6 +20,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.JavaToolchainSpec
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+import org.gradle.testing.base.TestingExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.tasks.DefaultKotlinJavaToolchain
 import org.jetbrains.kotlin.gradle.plugin.mpp.baseModuleName
@@ -86,19 +88,23 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             val mainJvmCompilationUnit = kotlinJvmExtension.bindMainCompilation(
                 definition,
                 buildModel as DefaultJvmApplicationBuildModel,
-                kotlinJvmExtension,
             )
+
             registerApplication(
                 definition,
                 buildModel,
                 mainJvmCompilationUnit,
+            )
+
+            kotlinJvmExtension.bindTestCompilation(
+                definition,
+                buildModel,
             )
         }
 
         private fun KotlinJvmExtension.bindMainCompilation(
             definition: JvmApplicationProjectType,
             buildModel: DefaultJvmApplicationBuildModel,
-            kotlinJvmExtension: KotlinJvmExtension,
         ): JvmCompilationUnit {
             val mainCompilation = target.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
 
@@ -121,13 +127,13 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     )
                     syncKotlinJvmCompilerOptionsAsConvention(
                         from = definition.kotlin.compilerOptions,
-                        into = kotlinJvmExtension.compilerOptions,
+                        into = compilerOptions,
                         fallback = defaultOptions,
                     )
                     // KGP does this before wiring above, and this loses toolchain information
                     // repeating it again
                     DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(
-                        kotlinJvmExtension.compilerOptions,
+                        compilerOptions,
                         project
                     )
 
@@ -214,6 +220,80 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                     projectLayout.buildDirectory.dir("application/${application.name}")
                 )
             }
+        }
+
+        private fun KotlinJvmExtension.bindTestCompilation(
+            definition: JvmApplicationProjectType,
+            buildModel: DefaultJvmApplicationBuildModel,
+        ) {
+            val testCompilation = target.compilations.getByName(KotlinCompilation.TEST_COMPILATION_NAME)
+            project.plugins.apply("jvm-test-suite")
+            val jvmTestSuiteExtension = project.extensions.getByType(TestingExtension::class.java)
+            jvmTestSuiteExtension.suites.named("test", JvmTestSuite::class.java) { jvmTestSuite ->
+                if (definition.testing.useJunitPlatform.getOrElse(false)) {
+                    jvmTestSuite.useJUnitJupiter()
+                } else {
+                    jvmTestSuite.useJUnit()
+                }
+                definition.dependencies.runtimeOnly.dependencies.getOrElse(emptySet()).forEach {
+                    jvmTestSuite.dependencies.runtimeOnly.add(it)
+                }
+            }
+
+            buildModel.compilationUnits
+                .create(KotlinCompilation.TEST_COMPILATION_NAME) { kotlinJvmCompilationUnit ->
+                    kotlinJvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit
+                    kotlinJvmCompilationUnit.kotlinCompilation = testCompilation
+
+                    kotlinJvmCompilationUnit.jvmEcosystem.jdkToolchain.bindToolchainDefinition(definition.toolchain)
+                    kotlinJvmCompilationUnit.jvmEcosystem.implementationConfiguration.dependencies.addAllLater(
+                        definition.testing.dependencies.implementation.dependencies
+                    )
+                    kotlinJvmCompilationUnit.jvmEcosystem.compileOnlyConfiguration.dependencies.addAllLater(
+                        definition.testing.dependencies.compileOnly.dependencies
+                    )
+
+                    kotlinJvmCompilationUnit.jvmCompilations.create(
+                        "kotlin",
+                        KotlinJvmCompilationType::class.java
+                    ) { kotlinCompilation ->
+                        (kotlinCompilation as DefaultKotlinJvmCompilationType).kotlinCompilerClasspathProvider =
+                            project.configurations.getByName(COMPILER_CLASSPATH_CONFIGURATION_NAME)
+
+                        kotlinCompilation.kotlinJvmCompilerOptions =
+                            testCompilation.compileTaskProvider.get().compilerOptions as KotlinJvmCompilerOptions
+                    }
+
+                    kotlinJvmCompilationUnit.jvmCompilations.create(
+                        "java",
+                        JavaJvmCompilationType::class.java
+                    ) { javaCompilation ->
+                        javaCompilation.compileArguments
+                            .convention(
+                                definition.java.compilerOptions.compilerArgs.orElse(emptyList())
+                            )
+                        val javaExtension = project.extensions.getByType(JavaPluginExtension::class.java)
+                        val javaCompileTaskName = javaExtension
+                            .sourceSets
+                            .getByName(kotlinJvmCompilationUnit.name)
+                            .compileJavaTaskName
+
+                        javaCompilation.javaCompiler.convention(javaToolchainService
+                            .compilerFor {
+                                it.bindToolchainDefinition(definition.toolchain)
+                            }
+                        )
+
+                        project
+                            .tasks
+                            .named(javaCompileTaskName, JavaCompile::class.java) {
+                                it.javaCompiler.convention(javaCompilation.javaCompiler)
+                                it.options.compilerArgumentProviders.add {
+                                    javaCompilation.compileArguments.get()
+                                }
+                            }
+                    }
+                }
         }
     }
 }
