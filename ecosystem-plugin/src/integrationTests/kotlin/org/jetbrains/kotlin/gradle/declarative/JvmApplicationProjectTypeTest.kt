@@ -290,8 +290,55 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 """.trimMargin()
             }
 
-            build("run", "-Pkotlin.internal.compiler.arguments.log.level=warning", forwardBuildOutput = true) {
+            build("run", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
                 assertTasksExecuted(":compileKotlin", ":run")
+            }
+        }
+    }
+
+    @DisplayName("testing is possible to configure")
+    @GradleTest
+    fun testTestingConfiguration(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.SerializationKt"
+                |    
+                |    testing {
+                |        useJunitPlatform = true
+                |        dependencies {
+                |            implementation(platform("org.junit:junit-bom:5.14.3"))
+	            |            implementation("org.junit.jupiter:junit-jupiter")
+	            |            runtimeOnly("org.junit.platform:junit-platform-launcher")
+                |        }
+                |    } 
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("test").source("org/example/Test.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import org.junit.jupiter.api.Test
+                |import org.junit.jupiter.api.Assertions.assertEquals
+                |
+                |class OneTest {
+                |     @Test
+                |     fun testOne() {
+                |          assertEquals(1, 0 + 1)
+                |     }    
+                |}
+                """.trimMargin()
+            }
+
+            build("test", forwardBuildOutput = true) {
+                assertTasksExecuted(":compileKotlin", ":compileTestKotlin", ":test")
             }
         }
     }
