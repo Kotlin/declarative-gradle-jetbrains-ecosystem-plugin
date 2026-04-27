@@ -24,4 +24,5 @@ include(
     ":ecosystem-plugin",
     ":common",
     ":project-types:jvm-application",
+    ":spring",
 )
