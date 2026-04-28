@@ -4,7 +4,7 @@
 
 A [Declarative Gradle](https://declarative.gradle.org/) prototype plugin covering JVM ecosystem including Kotlin Multiplatform (KMP).
 
-Currently, the plugin is tied to the specific Gradle release – 9.5.0.
+Currently, the plugin is tied to the specific Gradle release – 9.6.0.
  
 ## Available project types
 
@@ -15,7 +15,7 @@ Currently, the plugin is tied to the specific Gradle release – 9.5.0.
 If you want to use this prototype plugin in your project, you should do the following steps:
 - Run `gradle publishAllPublicationsToRepoLocalRepository` in this repository
 - Published publications are located in the `build/repo` directory
-- Ensure your project is using Gradle `9.5.0` release
+- Ensure your project is using Gradle `9.6.0` (project is using `9.6.0-milestone-1`) release
 - Change your project settings `.kts` extension to `.dcl` and ensure it looks the following:
 ```kotlin
 pluginManagement {
