@@ -5,7 +5,9 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksFailed
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
+import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
 import kotlin.io.path.writeText
@@ -78,6 +80,36 @@ class SpringSoftwareFeatureTest : BaseTest() {
 
             build("bootRun") {
                 assertTasksExecuted(":bootRun")
+            }
+        }
+    }
+
+    @DisplayName("Add Spring packaging configuration")
+    @GradleTest
+    fun testSpringPackaging(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.MainKt"
+                |    
+                |    spring {}
+                |    
+                |    packaging {
+                |        spring {
+                |             bootBuildImage {
+                |                 environment = mapOf("BP_JVM_CDS_ENABLED" to "true")
+                |             }
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("tasks") {
+                // This task requires Docker to run
+                //assertTasksExecuted(":bootBuildImage")
             }
         }
     }

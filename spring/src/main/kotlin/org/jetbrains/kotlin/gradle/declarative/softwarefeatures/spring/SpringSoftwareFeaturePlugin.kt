@@ -15,7 +15,9 @@ import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JvmApplicationDependenciesExtension
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JvmApplicationProjectType
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.PackagingExtension
 import org.springframework.boot.gradle.dsl.SpringBootExtension
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import javax.inject.Inject
 import kotlin.jvm.java
 
@@ -40,6 +42,13 @@ public class SpringSoftwareFeaturePlugin : Plugin<Project> {
                 )
                 .withUnsafeApplyAction()
                 .withUnsafeDefinition()
+
+            builder
+                .bindProjectFeature(
+                    "spring",
+                    SpringPackagingSoftwareFeatureApplyAction::class
+                )
+                .withUnsafeApplyAction()
         }
     }
 
@@ -103,6 +112,29 @@ public class SpringSoftwareFeaturePlugin : Plugin<Project> {
             definition.resource.dependencies.getOrElse(emptySet()).forEach { dependency ->
                 require(dependency is ProjectDependency) { "Only project to project dependency types are supported" }
                 throw GradleException("Not yet implemented")
+            }
+        }
+    }
+
+    internal abstract class SpringPackagingSoftwareFeatureApplyAction :
+            ProjectFeatureApplyAction<SpringPackagingDefinition, SpringPackagingBuildModel, PackagingExtension> {
+
+        @get:Inject
+        abstract val pluginManager: PluginManager
+
+        @get:Inject
+        abstract val project: Project
+
+        override fun apply(
+            context: ProjectFeatureApplicationContext,
+            definition: SpringPackagingDefinition,
+            buildModel: SpringPackagingBuildModel,
+            parentDefinition: PackagingExtension
+        ) {
+            pluginManager.apply("org.springframework.boot")
+
+            project.tasks.named("bootBuildImage", BootBuildImage::class.java).configure {
+                it.environment.putAll(definition.bootBuildImage.environment)
             }
         }
     }
