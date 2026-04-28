@@ -56,6 +56,10 @@ public class SpringSoftwareFeaturePlugin : Plugin<Project> {
             val springExtension = project.extensions.getByType(SpringBootExtension::class.java)
             val jvmApplicationBuildModel = context.getBuildModel(parentDefinition)
             springExtension.mainClass.set(jvmApplicationBuildModel.applications.getByName("main").mainClassName)
+            jvmApplicationBuildModel.compilationUnits.getByName("main").jvmEcosystem
+                .implementationConfiguration
+                .dependencies
+                .add(project.dependencies.platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
         }
     }
 }
