@@ -54,4 +54,31 @@ class SpringSoftwareFeatureTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("Add Spring dependencies")
+    @GradleTest
+    fun testSpringDependencies(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |jvmApplication {
+                |    mainClass = "org.example.MainKt"
+                |    
+                |    spring {}
+                |    
+                |    dependencies {
+                |        spring {
+                |             developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("bootRun") {
+                assertTasksExecuted(":bootRun")
+            }
+        }
+    }
 }
