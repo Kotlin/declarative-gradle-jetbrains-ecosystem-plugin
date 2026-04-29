@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.jetbrains.ecosystem"
-version = "0.0.1-SNAPSHOT"
+version = providers.gradleProperty("projectVersion").orElse("0.0.1-SNAPSHOT").get()
 
 val extension = extensions.create<CommonPublishingExtension>("commonPublishing")
 

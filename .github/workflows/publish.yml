@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v5
         with:
@@ -23,6 +25,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Publish to GitHub packages
-        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository
+        run: |
+          VERSION_COUNTER=$(git rev-list --count HEAD)
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository -PprojectVersion=0.${VERSION_COUNTER}.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
