@@ -10,6 +10,7 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -45,6 +46,12 @@ public class WebApplicationPlugin : Plugin<Project> {
             logger.info("Applying JetBrains Web Application plugin to ${project.path}")
 
             pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+
+            val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+            kmpExtension.js {
+                browser()
+                binaries.executable()
+            }
         }
     }
 }
