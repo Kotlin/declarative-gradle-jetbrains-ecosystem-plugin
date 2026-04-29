@@ -11,7 +11,9 @@ import org.gradle.features.binding.ProjectFeatureBinding
 import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinJvmCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinWebCompilationExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import javax.inject.Inject
 
@@ -26,13 +28,20 @@ public class KotlinSerializationSoftwareFeaturePlugin : Plugin<Project> {
             builder
                 .bindProjectFeature(
                     "serialization",
-                    KotlinSerializationSoftwareFeatureApplyAction::class
+                    KotlinSerializationJvmSoftwareFeatureApplyAction::class
+                )
+                .withUnsafeApplyAction()
+
+            builder
+                .bindProjectFeature(
+                    "serialization",
+                    KotlinSerializationWebSoftwareFeatureApplyAction::class
                 )
                 .withUnsafeApplyAction()
         }
     }
 
-    internal abstract class KotlinSerializationSoftwareFeatureApplyAction :
+    internal abstract class KotlinSerializationJvmSoftwareFeatureApplyAction :
         ProjectFeatureApplyAction<KotlinSerializationDefinition, KotlinSerializationBuildModel, KotlinJvmCompilationExtension> {
 
         @get:Inject
@@ -79,6 +88,55 @@ public class KotlinSerializationSoftwareFeaturePlugin : Plugin<Project> {
                         }
                     }
                 )
+            }
+        }
+    }
+
+    internal abstract class KotlinSerializationWebSoftwareFeatureApplyAction :
+        ProjectFeatureApplyAction<KotlinSerializationDefinition, KotlinSerializationBuildModel, KotlinWebCompilationExtension> {
+
+        @get:Inject
+        abstract val pluginManager: PluginManager
+
+        @get:Inject
+        abstract val project: Project
+
+        private val logger = Logging.getLogger(this::class.simpleName)
+
+        override fun apply(
+            context: ProjectFeatureApplicationContext,
+            definition: KotlinSerializationDefinition,
+            buildModel: KotlinSerializationBuildModel,
+            parentDefinition: KotlinWebCompilationExtension,
+        ) {
+            logger.info("Applying Kotlin Serialization software feature to project")
+
+            pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
+
+            buildModel.version.convention(definition.version.orElse(DEFAULT_SERIALIZATION_VERSION))
+            buildModel.enabledFormats.convention(definition.enabledFormats.map { enabledFormats ->
+                enabledFormats.map { entry ->
+                    KotlinSerializationFormats.entries.singleOrNull {
+                        it.name.equals(entry, ignoreCase = true)
+                    } ?: throw IllegalArgumentException(
+                        "Unknown Kotlin serialization format: $entry\n" +
+                                "Available serialization formats: ${KotlinSerializationFormats.entries.map { it.name }}"
+                    )
+                }
+            })
+
+            // TODO: figure out how to access parent build model?
+            // context.getBuildModel(parentDefinition) is not working here are build model there is BuildModel.None
+            pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+                val kotlinMultiplatformExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+
+                kotlinMultiplatformExtension.sourceSets.getByName("webMain").dependencies {
+                    buildModel.version.zip(buildModel.enabledFormats) { version, formats ->
+                        formats.map { format ->
+                            "org.jetbrains.kotlinx:kotlinx-serialization-${format.name.lowercase()}:$version"
+                        }
+                    }.get().forEach { api(it) }
+                }
             }
         }
     }

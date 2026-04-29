@@ -117,4 +117,47 @@ class WebApplicationProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("enable Kotlin serialization")
+    @GradleTest
+    fun testKotlinSerializationFeature(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |webApplication {
+                |    kotlin {
+                |        serialization {
+                |            enabledFormats = listOf("json")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("jsMain").source("main.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlinx.serialization.*
+                |import kotlinx.serialization.json.*
+                |
+                |@Serializable 
+                |data class Project(val name: String, val language: String)
+                |
+                |fun main() {
+                |    println("Hello, web application!")
+                |    
+                |    val data = Project("kotlinx.serialization", "Kotlin")
+                |    val string = Json.encodeToString(data)  
+                |}
+                """.trimMargin()
+            }
+
+            build("compileKotlinJs") {
+                assertTasksExecuted(":compileKotlinJs")
+            }
+        }
+    }
 }
