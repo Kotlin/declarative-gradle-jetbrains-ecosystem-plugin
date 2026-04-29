@@ -1,8 +1,11 @@
+@file:Suppress("INVISIBLE_REFERENCE")
+
 package org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.PluginManager
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
@@ -11,6 +14,7 @@ import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import javax.inject.Inject
 
@@ -38,6 +42,9 @@ public class WebApplicationPlugin : Plugin<Project> {
         @get:Inject
         abstract val project: Project
 
+        @get:Inject
+        abstract val objectFactory: ObjectFactory
+
         private val logger = Logging.getLogger(WebApplicationPlugin::class.qualifiedName)
 
         override fun apply(
@@ -50,12 +57,12 @@ public class WebApplicationPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.multiplatform")
 
             val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
-            kmpExtension.js {
+            val jsTarget = kmpExtension.js {
                 browser()
                 binaries.executable()
             }
             @OptIn(ExperimentalWasmDsl::class)
-            kmpExtension.wasmJs {
+            val wasmTarget = kmpExtension.wasmJs {
                 browser()
                 binaries.executable()
             }
@@ -66,6 +73,21 @@ public class WebApplicationPlugin : Plugin<Project> {
             definition.dependencies.implementation.dependencies.getOrElse(emptySet()).forEach { dependency ->
                 webMainSourceSet.dependencies { implementation(dependency) }
             }
+
+            val defaultJsCompilerOptions = objectFactory.newInstance(jsTarget.compilerOptions.javaClass)
+            val defaultWasmCompilerOptions = objectFactory.newInstance(wasmTarget.compilerOptions.javaClass)
+
+            syncKotlinJsCompilerOptionsAsConvention(
+                from = definition.kotlin.compilerOptions,
+                into = jsTarget.compilerOptions,
+                fallback = defaultJsCompilerOptions,
+            )
+
+            syncKotlinJsCompilerOptionsAsConvention(
+                from = definition.kotlin.compilerOptions,
+                into = wasmTarget.compilerOptions,
+                fallback = defaultWasmCompilerOptions,
+            )
         }
     }
 }
