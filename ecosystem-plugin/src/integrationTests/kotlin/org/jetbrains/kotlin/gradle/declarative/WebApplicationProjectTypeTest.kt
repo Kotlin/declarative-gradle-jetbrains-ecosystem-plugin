@@ -42,6 +42,9 @@ class WebApplicationProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |webApplication {
+                |    dependencies {
+                |         implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
+                |    }
                 |}
                 """.trimMargin()
             )
@@ -51,13 +54,16 @@ class WebApplicationProjectTypeTest : BaseTest() {
                 """
                 |package org.example
                 |
+                |import kotlinx.browser.document
+                |
                 |fun main() {
                 |    println("Hello, web application!")
+                |    document.bgColor = "FFAA12"
                 |}
                 """.trimMargin()
             }
 
-            build("jsBrowserDevelopmentExecutableDistribution", forwardBuildOutput = true) {
+            build("jsBrowserDevelopmentExecutableDistribution") {
                 assertTasksExecuted(":jsBrowserDevelopmentExecutableDistribution")
             }
         }
