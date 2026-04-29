@@ -10,6 +10,7 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import javax.inject.Inject
 
@@ -23,6 +24,7 @@ public class WebApplicationPlugin : Plugin<Project> {
             builder
                 .bindProjectType("webApplication", WebApplicationApplyAction::class)
                 .withUnsafeApplyAction()
+                .withUnsafeDefinition()
         }
     }
 
@@ -51,6 +53,18 @@ public class WebApplicationPlugin : Plugin<Project> {
             kmpExtension.js {
                 browser()
                 binaries.executable()
+            }
+            @OptIn(ExperimentalWasmDsl::class)
+            kmpExtension.wasmJs {
+                browser()
+                binaries.executable()
+            }
+            kmpExtension.applyDefaultHierarchyTemplate()
+
+            val webMainSourceSet = kmpExtension.sourceSets.getByName("webMain")
+
+            definition.dependencies.implementation.dependencies.getOrElse(emptySet()).forEach { dependency ->
+                webMainSourceSet.dependencies { implementation(dependency) }
             }
         }
     }
