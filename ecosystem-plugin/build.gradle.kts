@@ -10,6 +10,7 @@ kotlin {
 
 dependencies {
     api(project(":project-types:jvm-application"))
+    api(project(":project-types:web-application"))
     api(project(":spring"))
 
     implementation(libs.kotlin.gradle.plugin)
@@ -43,6 +44,7 @@ testing {
                         dependsOn("publishJetbrains-ecosystem-pluginPluginMarkerMavenPublicationToRepoLocalRepository")
                         dependsOn("publishPluginMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:jvm-application:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":project-types:web-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":common:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":spring:publishMavenPublicationToRepoLocalRepository")
 
