@@ -12,7 +12,9 @@ import org.gradle.features.binding.ProjectFeatureApplyAction
 import org.gradle.features.binding.ProjectFeatureBinding
 import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JvmApplicationDependenciesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBinaryMode
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
@@ -32,6 +34,14 @@ public abstract class ResourceSoftwareFeaturePlugin : Plugin<Project> {
                     ResourceBindingPackagingApplyAction::class
                 )
                 .withUnsafeApplyAction()
+
+            builder
+                .bindProjectFeature(
+                    "resources",
+                    ResourceBindingDependenciesApplyAction::class
+                )
+                .withUnsafeApplyAction()
+                .withUnsafeDefinition()
         }
     }
 
@@ -79,10 +89,50 @@ public abstract class ResourceSoftwareFeaturePlugin : Plugin<Project> {
                                 it.add(
                                 resourcesConfiguration.name,
                                     executable.distribution.outputDirectory
-                                )
+                                ) {
+                                    // FIXME: proper wire to execution distribution task
+                                    it.builtBy(project.tasks.named("wasmJsBrowserDistribution"))
+                                }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    internal abstract class ResourceBindingDependenciesApplyAction :
+            ProjectFeatureApplyAction<ResourceDependencyDefinition, BuildModel.None, JvmApplicationDependenciesExtension> {
+
+        @get:Inject
+        abstract val project: Project
+
+        private val logger = Logging.getLogger(this::class.simpleName)
+
+        override fun apply(
+            context: ProjectFeatureApplicationContext,
+            definition: ResourceDependencyDefinition,
+            buildModel: BuildModel.None,
+            parentDefinition: JvmApplicationDependenciesExtension
+        ) {
+            logger.info("Applying resource packaging software feature")
+
+            val depConf = project.configurations.dependencyScope("resources") {
+                it.fromDependencyCollector(definition.resource)
+            }
+            val resConf = project.configurations.resolvable("resolvedResources") { configuration ->
+                configuration.extendsFrom(depConf)
+                configuration.attributes {attributeContainer ->
+                    attributeContainer.attribute(
+                        PackagingAttribute.attribute,
+                        PackagingAttribute.RESOURCE,
+                    )
+                }
+            }
+
+            project.tasks.named("processResources", ProcessResources::class.java) {
+                it.from(resConf.get()) {
+                    it.into("static")
                 }
             }
         }
