@@ -41,6 +41,31 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Publish to local repo
+        run: ./gradlew publishAllPublicationsToRepoLocalRepository -PprojectVersion=${PROJECT_VERSION}
+
+      - name: Checkout maven2 branch
+        uses: actions/checkout@v6
+        with:
+          ref: maven2
+          path: maven2-branch
+
+      - name: Update maven2 branch with new artifacts
+        run: |
+          rsync -av build/repo/ maven2-branch/
+
+          cd maven2-branch
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "New release ${PROJECT_VERSION}"
+          git push origin maven2
+
       - name: Create GitHub pre-release
         uses: softprops/action-gh-release@v2
         with:
