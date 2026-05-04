@@ -12,6 +12,7 @@ dependencies {
     api(project(":project-types:jvm-application"))
     api(project(":project-types:web-application"))
     api(project(":spring"))
+    api(project(":resource-packaging"))
 
     implementation(libs.kotlin.gradle.plugin)
 }
@@ -47,6 +48,7 @@ testing {
                         dependsOn(":project-types:web-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":common:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":spring:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":resource-packaging:publishMavenPublicationToRepoLocalRepository")
 
                         javaLauncher
                             .value(jdkLauncherFor(17))

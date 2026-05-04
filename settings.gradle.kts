@@ -26,4 +26,5 @@ include(
     ":project-types:jvm-application",
     ":project-types:web-application",
     ":spring",
+    ":resource-packaging",
 )
