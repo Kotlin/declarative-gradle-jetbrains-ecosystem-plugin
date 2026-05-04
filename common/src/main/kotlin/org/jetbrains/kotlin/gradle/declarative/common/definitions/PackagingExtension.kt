@@ -1,4 +1,4 @@
-package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
+package org.jetbrains.kotlin.gradle.declarative.common.definitions
 
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition

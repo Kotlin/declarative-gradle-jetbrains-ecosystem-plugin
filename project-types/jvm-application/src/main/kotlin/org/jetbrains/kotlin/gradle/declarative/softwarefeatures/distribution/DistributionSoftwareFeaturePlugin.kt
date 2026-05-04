@@ -12,7 +12,7 @@ import org.gradle.features.binding.ProjectFeatureApplyAction
 import org.gradle.features.binding.ProjectFeatureBinding
 import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
-import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.PackagingExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
