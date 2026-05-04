@@ -1,0 +1,145 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "ecosystem-plugin",
+    "version": "0.71.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-milestone-1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "web-application",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "spring",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "resource-packaging",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ecosystem-plugin-0.71.0.jar",
+          "url": "ecosystem-plugin-0.71.0.jar",
+          "size": 3385,
+          "sha512": "73d6f8be2f8eab6324959d9a41b6e43b2cea6a9b78a183c8e1c995f89f5606dcf463706a41cf9ab49ae7a705e1b61602f2422d67254820b011ddbfa66143dbea",
+          "sha256": "d8c5af8da64579de1229d6372c82ad95d6de091a42ab735a5cef629a842bb560",
+          "sha1": "ba3660bdb05714f6d168b88bb69bf922c06ede84",
+          "md5": "692e744d82a9025aeae0e8313f41a952"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "web-application",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "spring",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "resource-packaging",
+          "version": {
+            "requires": "0.71.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ecosystem-plugin-0.71.0.jar",
+          "url": "ecosystem-plugin-0.71.0.jar",
+          "size": 3385,
+          "sha512": "73d6f8be2f8eab6324959d9a41b6e43b2cea6a9b78a183c8e1c995f89f5606dcf463706a41cf9ab49ae7a705e1b61602f2422d67254820b011ddbfa66143dbea",
+          "sha256": "d8c5af8da64579de1229d6372c82ad95d6de091a42ab735a5cef629a842bb560",
+          "sha1": "ba3660bdb05714f6d168b88bb69bf922c06ede84",
+          "md5": "692e744d82a9025aeae0e8313f41a952"
+        }
+      ]
+    }
+  ]
+}
