@@ -15,7 +15,7 @@ import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JvmApplicationDependenciesExtension
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JvmApplicationProjectType
-import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.PackagingExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
 import org.springframework.boot.gradle.dsl.SpringBootExtension
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import javax.inject.Inject

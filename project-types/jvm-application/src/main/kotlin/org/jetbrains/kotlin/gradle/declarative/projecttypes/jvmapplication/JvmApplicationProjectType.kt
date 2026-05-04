@@ -5,7 +5,7 @@ import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JavaJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmEcosystemDefinition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinJvmCompilationExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.TestingExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
 
 @Suppress("UnstableApiUsage")
 public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel>,
