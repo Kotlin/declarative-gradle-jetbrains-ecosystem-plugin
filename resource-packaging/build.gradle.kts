@@ -12,6 +12,7 @@ kotlin {
 dependencies {
     api(gradleApi())
     api(project(":common"))
+    api(project(":project-types:jvm-application"))
 }
 
 commonPublishing {
