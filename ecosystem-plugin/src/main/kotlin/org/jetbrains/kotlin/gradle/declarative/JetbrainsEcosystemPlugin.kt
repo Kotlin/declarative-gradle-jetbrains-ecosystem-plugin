@@ -9,6 +9,7 @@ import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.JetBrainsJvmApplicationPlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.distribution.DistributionSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.common.softwarefeatures.kotlinserialization.KotlinSerializationSoftwareFeaturePlugin
+import org.jetbrains.kotlin.gradle.declarative.projecttypes.JetBrainsLibraryPlugin
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication.WebApplicationPlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeature.resource.ResourceSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSoftwareFeaturePlugin
@@ -17,6 +18,7 @@ import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSof
 @RegistersProjectFeatures(
     JetBrainsJvmApplicationPlugin::class,
     WebApplicationPlugin::class,
+    JetBrainsLibraryPlugin::class,
     DistributionSoftwareFeaturePlugin::class,
     KotlinSerializationSoftwareFeaturePlugin::class,
     SpringSoftwareFeaturePlugin::class,

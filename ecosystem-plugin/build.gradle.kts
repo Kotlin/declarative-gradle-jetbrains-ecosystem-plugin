@@ -11,6 +11,7 @@ kotlin {
 dependencies {
     api(project(":project-types:jvm-application"))
     api(project(":project-types:web-application"))
+    api(project(":project-types:library"))
     api(project(":spring"))
     api(project(":resource-packaging"))
 
@@ -46,6 +47,7 @@ testing {
                         dependsOn("publishPluginMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:jvm-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:web-application:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":project-types:library:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":common:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":spring:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":resource-packaging:publishMavenPublicationToRepoLocalRepository")
