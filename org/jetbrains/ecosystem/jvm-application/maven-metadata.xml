@@ -3,11 +3,11 @@
   <groupId>org.jetbrains.ecosystem</groupId>
   <artifactId>jvm-application</artifactId>
   <versioning>
-    <latest>0.71.0</latest>
-    <release>0.71.0</release>
+    <latest>0.73.0</latest>
+    <release>0.73.0</release>
     <versions>
-      <version>0.71.0</version>
+      <version>0.73.0</version>
     </versions>
-    <lastUpdated>20260504184352</lastUpdated>
+    <lastUpdated>20260505163459</lastUpdated>
   </versioning>
 </metadata>
