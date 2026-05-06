@@ -2,10 +2,14 @@ package org.jetbrains.kotlin.gradle.declarative
 
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
+import org.jetbrains.kotlin.gradle.declarative.testDsl.BuildOptions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
+import org.jetbrains.kotlin.gradle.declarative.testDsl.TestVersions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
+import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
 import kotlin.io.path.writeText
 
@@ -65,6 +69,101 @@ class LibraryProjectTypeTest : BaseTest() {
 
             build("help") {
                 assertOutputContains("Enabling Kotlin/KMP plugin with 'jvm()' target")
+            }
+        }
+    }
+
+    @DisplayName("Add dependency to jvm project")
+    @GradleTest
+    fun testJvmAddDependencies(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    dependencies {
+                |        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${TestVersions.Dependencies.COROUTINES}")
+                |        implementation("org.jetbrains.kotlinx:kotlinx-datetime:${TestVersions.Dependencies.DATETIME}")
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir().source("com/example/coroutines.kt") {
+                //language=kotlin
+                """
+                |package com.example
+                |
+                |import kotlinx.coroutines.*
+                |import java.time.LocalDate
+                |import kotlinx.datetime.*
+                |
+                |fun main() = runBlocking { 
+                |   println("Hello, DCL!")
+                |   val day = LocalDate(2020, 2, 21)
+                |   val yearMonth: YearMonth = day.yearMonth    
+                |}
+                """.trimMargin()
+            }
+
+            build("compileKotlin", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+                assertTasksExecuted(":compileKotlin")
+            }
+        }
+    }
+
+    @DisplayName("Add common dependency")
+    @GradleTest
+    fun testAddCommonDependency(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED),
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm", "web")
+                |    
+                |    dependencies {
+                |        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${TestVersions.Dependencies.COROUTINES}")
+                |        implementation("org.jetbrains.kotlinx:kotlinx-datetime:${TestVersions.Dependencies.DATETIME}")
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            setOf("jvmMain", "webMain").forEach {
+                kotlinSourcesDir(it).source("com/example/coroutines.kt") {
+                    //language=kotlin
+                    """
+                |package com.example
+                |
+                |import kotlinx.coroutines.*
+                |import kotlinx.datetime.*
+                |
+                |suspend fun main() = coroutineScope {
+                |    async { 
+                |        println(DatePeriod().toString())
+                |    }
+                |}
+                """.trimMargin()
+                }
+            }
+
+            build(
+                "compileKotlinJvm",
+                "compileKotlinJs",
+                "compileKotlinWasmJs",
+            ) {
+                assertTasksExecuted(
+                    ":compileKotlinJvm",
+                    ":compileKotlinJs",
+                    ":compileKotlinWasmJs",
+                )
             }
         }
     }
