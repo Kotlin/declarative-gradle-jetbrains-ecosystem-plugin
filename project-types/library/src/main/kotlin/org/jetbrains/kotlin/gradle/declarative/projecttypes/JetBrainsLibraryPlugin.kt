@@ -11,7 +11,11 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -27,6 +31,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     LibraryApplyAction::class
                 )
                 .withUnsafeApplyAction()
+                .withUnsafeDefinition()
         }
     }
 
@@ -60,6 +65,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             )
 
             applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
+
+            definition.dependencies.wireDependencies()
         }
 
         private fun applyKotlinPlugin(
@@ -75,29 +82,76 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 }
                 enabledPlatforms.size == 2 && enabledPlatforms == setOf(LibraryPlatforms.jvm, LibraryPlatforms.common) -> {
                     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
-                    val multiplatformExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
-                    multiplatformExtension.jvm()
-                    logger.info("Enabling Kotlin/KMP plugin with 'jvm()' target")
+                    withKmpPlugin {
+                        applyDefaultHierarchyTemplate()
+                        jvm()
+                        logger.info("Enabling Kotlin/KMP plugin with 'jvm()' target")
+                    }
                 }
                 else -> {
                     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
-                    val multiplatformExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
-                    enabledPlatforms.forEach { platform ->
-                        when(platform) {
-                            LibraryPlatforms.jvm -> multiplatformExtension.jvm()
-                            LibraryPlatforms.common -> logger.warn("'common' platform is only used in conjunction with 'jvm' platform. Please remove it.")
-                            LibraryPlatforms.web -> {
-                                multiplatformExtension.js { browser() }
-                                multiplatformExtension.wasmJs { browser() }
-                            }
-                            LibraryPlatforms.ios -> {
-                                multiplatformExtension.iosArm64()
-                                multiplatformExtension.iosSimulatorArm64()
-                                multiplatformExtension.iosX64()
+                    withKmpPlugin {
+                        logger.info("Enabling Kotlin/KMP plugin for the following platforms: ${enabledPlatforms.joinToString { it.name }}")
+                        applyDefaultHierarchyTemplate()
+                        enabledPlatforms.forEach { platform ->
+                            when (platform) {
+                                LibraryPlatforms.jvm -> jvm()
+                                LibraryPlatforms.common -> logger.warn("'common' platform is only used in conjunction with 'jvm' platform. Please remove it.")
+                                LibraryPlatforms.web -> {
+                                    js { browser() }
+                                    wasmJs { browser() }
+                                }
+
+                                LibraryPlatforms.ios -> {
+                                    iosArm64()
+                                    iosSimulatorArm64()
+                                    iosX64()
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        private fun LibraryDependenciesExtension.wireDependencies() {
+            val configurations = this@LibraryApplyAction.project.configurations
+            withJvmPlugin {
+                @Suppress("UNCHECKED_CAST")
+                val mainCompilation = (target as KotlinWithJavaTarget<*, KotlinJvmCompilerOptions>).compilations
+                    .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
+
+                configurations
+                    .getByName(mainCompilation.apiConfigurationName)
+                    .fromDependencyCollector(api)
+                configurations
+                    .getByName(mainCompilation.implementationConfigurationName)
+                    .fromDependencyCollector(implementation)
+            }
+
+            withKmpPlugin {
+                val commonSourceSet = sourceSets.getByName("commonMain")
+
+                configurations
+                    .getByName(commonSourceSet.apiConfigurationName)
+                    .fromDependencyCollector(api)
+                configurations
+                    .getByName(commonSourceSet.implementationConfigurationName)
+                    .fromDependencyCollector(implementation)
+            }
+        }
+
+        private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {
+            pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+                val kotlinJvmExtension = project.extensions.getByType(KotlinJvmExtension::class.java)
+                action(kotlinJvmExtension)
+            }
+        }
+
+        private fun withKmpPlugin(action: KotlinMultiplatformExtension.() -> Unit) {
+            pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+                val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+                action(kmpExtension)
             }
         }
     }
