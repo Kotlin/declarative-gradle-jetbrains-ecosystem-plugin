@@ -1,0 +1,159 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "ecosystem-plugin",
+    "version": "0.74.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-milestone-1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "web-application",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "library",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "spring",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "resource-packaging",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ecosystem-plugin-0.74.0.jar",
+          "url": "ecosystem-plugin-0.74.0.jar",
+          "size": 3404,
+          "sha512": "8a228f31337623c80fbe85f5d48cbb8ad5595e9f00536ca47d1992247e5c398869e48fd7c33233b94805bc232f738ec29eb4490cf71421d9b47e9fb8f37066e2",
+          "sha256": "ae8f2269db211c240c0eb6e4a9fabc3b4b5ee2033a1100b4122921d1cb946598",
+          "sha1": "fee55ccb93a156f733f760c29d2ab9b344d6ecc4",
+          "md5": "7bfb4b9fa80d3509b2869344de5a3e49"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "web-application",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "library",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "spring",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "resource-packaging",
+          "version": {
+            "requires": "0.74.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ecosystem-plugin-0.74.0.jar",
+          "url": "ecosystem-plugin-0.74.0.jar",
+          "size": 3404,
+          "sha512": "8a228f31337623c80fbe85f5d48cbb8ad5595e9f00536ca47d1992247e5c398869e48fd7c33233b94805bc232f738ec29eb4490cf71421d9b47e9fb8f37066e2",
+          "sha256": "ae8f2269db211c240c0eb6e4a9fabc3b4b5ee2033a1100b4122921d1cb946598",
+          "sha1": "fee55ccb93a156f733f760c29d2ab9b344d6ecc4",
+          "md5": "7bfb4b9fa80d3509b2869344de5a3e49"
+        }
+      ]
+    }
+  ]
+}
