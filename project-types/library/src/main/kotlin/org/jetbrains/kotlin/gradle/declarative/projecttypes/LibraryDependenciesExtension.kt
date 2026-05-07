@@ -16,6 +16,9 @@ public interface LibraryDependenciesExtension : Definition<BuildModel.None>, Dep
 
     @get:Nested
     public val webPlatform: LibraryWebPlatformDependencies
+
+    @get:Nested
+    public val iosPlatformDependencies: LibraryIosPlatformDependencies
 }
 
 @Suppress("UnstableApiUsage")
@@ -28,6 +31,12 @@ public interface LibraryJvmPlatformDependencies : Definition<BuildModel.None>, D
 
 @Suppress("UnstableApiUsage")
 public interface LibraryWebPlatformDependencies : Definition<BuildModel.None>, Dependencies {
+    public val api: DependencyCollector
+    public val implementation: DependencyCollector
+}
+
+@Suppress("UnstableApiUsage")
+public interface LibraryIosPlatformDependencies : Definition<BuildModel.None>, Dependencies {
     public val api: DependencyCollector
     public val implementation: DependencyCollector
 }
