@@ -3,6 +3,7 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.dsl.DependencyCollector
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.PluginManager
 import org.gradle.features.annotations.BindsProjectType
@@ -66,7 +67,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
             applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
 
-            definition.dependencies.wireDependencies()
+            definition.dependencies.wireDependencies(buildModel.enabledPlatforms.get().toSet())
         }
 
         private fun applyKotlinPlugin(
@@ -114,30 +115,42 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryDependenciesExtension.wireDependencies() {
+        private fun LibraryDependenciesExtension.wireDependencies(
+            enabledPlatforms: Set<LibraryPlatforms>
+        ) {
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
                 @Suppress("UNCHECKED_CAST")
                 val mainCompilation = (target as KotlinWithJavaTarget<*, KotlinJvmCompilerOptions>).compilations
                     .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
 
-                configurations
-                    .getByName(mainCompilation.apiConfigurationName)
-                    .fromDependencyCollector(api)
-                configurations
+                val apiConfiguration = configurations.getByName(mainCompilation.apiConfigurationName)
+                val implementationConfiguration = configurations
                     .getByName(mainCompilation.implementationConfigurationName)
-                    .fromDependencyCollector(implementation)
+                val compileOnlyConfiguration = configurations.getByName(mainCompilation.compileOnlyConfigurationName)
+                val runtimeOnlyConfiguration = configurations.getByName(mainCompilation.runtimeOnlyConfigurationName)
+
+                apiConfiguration.fromDependencyCollector(api)
+                apiConfiguration.fromDependencyCollector(jvmPlatform.api)
+                implementationConfiguration.fromDependencyCollector(implementation)
+                implementationConfiguration.fromDependencyCollector(jvmPlatform.implementation)
+                compileOnlyConfiguration.fromDependencyCollector(jvmPlatform.compileOnly)
+                runtimeOnlyConfiguration.fromDependencyCollector(jvmPlatform.runtimeOnly)
             }
 
             withKmpPlugin {
                 val commonSourceSet = sourceSets.getByName("commonMain")
 
-                configurations
-                    .getByName(commonSourceSet.apiConfigurationName)
-                    .fromDependencyCollector(api)
-                configurations
-                    .getByName(commonSourceSet.implementationConfigurationName)
-                    .fromDependencyCollector(implementation)
+                addDependencies(commonSourceSet.apiConfigurationName, api)
+                addDependencies(commonSourceSet.implementationConfigurationName, implementation)
+
+                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                    val jvmMainSourceSet = sourceSets.getByName("jvmMain")
+                    addDependencies(jvmMainSourceSet.apiConfigurationName, jvmPlatform.api)
+                    addDependencies(jvmMainSourceSet.implementationConfigurationName, jvmPlatform.implementation)
+                    addDependencies(jvmMainSourceSet.compileOnlyConfigurationName, jvmPlatform.compileOnly)
+                    addDependencies(jvmMainSourceSet.runtimeOnlyConfigurationName, jvmPlatform.runtimeOnly)
+                }
             }
         }
 
@@ -153,6 +166,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
                 action(kmpExtension)
             }
+        }
+
+        private fun addDependencies(name: String, dependencies: DependencyCollector) {
+            project.configurations.getByName(name).fromDependencyCollector(dependencies)
         }
     }
 }
