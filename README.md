@@ -9,6 +9,8 @@ Currently, the plugin is tied to the specific Gradle release – 9.6.0.
 ## Available project types
 
 - `jvmApplication` - JVM based application project
+- `webApplication` - An application project for web (browser-based)
+- `library` - a library project
 
 ## How to try it
 
