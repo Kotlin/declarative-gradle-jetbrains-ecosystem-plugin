@@ -5,6 +5,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyCollector
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
@@ -12,6 +14,8 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -68,6 +72,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
 
             definition.dependencies.wireDependencies(buildModel.enabledPlatforms.get().toSet())
+
+            if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
+                definition.configureJvmPlatform()
+            }
         }
 
         private fun applyKotlinPlugin(
@@ -165,6 +173,21 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
                     addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
                 }
+            }
+        }
+
+        private fun LibraryProjectType.configureJvmPlatform() {
+            project.plugins.withType(JavaBasePlugin::class.java) {
+                val toolchain = project.extensions.getByType(JavaPluginExtension::class.java).toolchain
+                toolchain.languageVersion.convention(
+                    jvmPlatform.toolchain.releaseVersion.map { JavaLanguageVersion.of(it) }
+                        .orElse(JavaLanguageVersion.current())
+                )
+                toolchain.vendor.convention(jvmPlatform.toolchain.vendor.map { it.toVendorSpec() }
+                    .orElse(DefaultJvmVendorSpec.any()))
+                toolchain.nativeImageCapable.convention(
+                    jvmPlatform.toolchain.nativeImageCapable.orElse(false)
+                )
             }
         }
 
