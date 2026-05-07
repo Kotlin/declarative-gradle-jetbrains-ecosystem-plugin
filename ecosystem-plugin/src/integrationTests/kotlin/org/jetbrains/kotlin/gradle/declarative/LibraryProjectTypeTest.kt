@@ -108,7 +108,50 @@ class LibraryProjectTypeTest : BaseTest() {
                 """.trimMargin()
             }
 
-            build("compileKotlin", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+            build("compileKotlin") {
+                assertTasksExecuted(":compileKotlin")
+            }
+        }
+    }
+
+    @DisplayName("Add platform dependency to jvm project")
+    @GradleTest
+    fun testAddJvmPlatformDependencies(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    dependencies {
+                |        jvmPlatform {
+                |            api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${TestVersions.Dependencies.COROUTINES}")
+                |            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${TestVersions.Dependencies.DATETIME}")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir().source("com/example/coroutines.kt") {
+                //language=kotlin
+                """
+                |package com.example
+                |
+                |import kotlinx.coroutines.*
+                |import java.time.LocalDate
+                |import kotlinx.datetime.*
+                |
+                |fun main() = runBlocking { 
+                |   println("Hello, DCL!")
+                |   val day = LocalDate(2020, 2, 21)
+                |   val yearMonth: YearMonth = day.yearMonth    
+                |}
+                """.trimMargin()
+            }
+
+            build("compileKotlin") {
                 assertTasksExecuted(":compileKotlin")
             }
         }
