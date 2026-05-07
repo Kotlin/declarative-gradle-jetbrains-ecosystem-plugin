@@ -1,13 +1,16 @@
 package org.jetbrains.kotlin.gradle.declarative
 
+import org.gradle.api.logging.LogLevel
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BuildOptions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.TestVersions
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
+import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
@@ -267,6 +270,43 @@ class LibraryProjectTypeTest : BaseTest() {
                     ":compileKotlinJvm",
                     ":compileKotlinJs",
                     ":compileKotlinWasmJs",
+                )
+            }
+        }
+    }
+
+    @DisplayName("it is possible configure JVM toolchain")
+    @GradleTest
+    fun testJvmToolchainConfiguration(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    jvmPlatform {
+                |        toolchain {
+                |            releaseVersion = 21
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("assemble", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+                assertTasksExecuted(":compileKotlin")
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-jvm-target 21",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-jdk-home ${jdk21Info.javaHome.absolutePath}",
+                    logLevel = LogLevel.INFO,
                 )
             }
         }

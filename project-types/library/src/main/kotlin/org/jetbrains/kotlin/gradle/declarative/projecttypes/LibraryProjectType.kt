@@ -3,6 +3,7 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmEcosystemDefinition
 
 @Suppress("UnstableApiUsage")
 public interface LibraryProjectType : Definition<LibraryBuildModel> {
@@ -11,6 +12,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
      * See available platforms at [LibraryPlatforms].
      */
     public val platforms: ListProperty<String>
+
+    @get:Nested
+    public val jvmPlatform: JvmEcosystemDefinition
 
     @get:Nested
     public val dependencies: LibraryDependenciesExtension
