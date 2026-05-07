@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -188,6 +189,29 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 toolchain.nativeImageCapable.convention(
                     jvmPlatform.toolchain.nativeImageCapable.orElse(false)
                 )
+            }
+
+            withJvmPlugin {
+                @Suppress("UNCHECKED_CAST")
+                val mainCompilation = (target as KotlinWithJavaTarget<*, KotlinJvmCompilerOptions>).compilations
+                    .getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
+
+                mainCompilation.compileJavaTaskProvider.configure {
+                    it.options.compilerArgumentProviders.add {
+                        java.compilerOptions.compilerArgs.get()
+                    }
+                }
+            }
+
+            withKmpPlugin {
+                val jvmTarget = targets.getByName("jvm") as KotlinJvmTarget
+                val mainCompilation = jvmTarget.compilations.getByName(KotlinCompilation.MAIN_COMPILATION_NAME)
+
+                mainCompilation.compileJavaTaskProvider!!.configure {
+                    it.options.compilerArgumentProviders.add {
+                        java.compilerOptions.compilerArgs.get()
+                    }
+                }
             }
         }
 
