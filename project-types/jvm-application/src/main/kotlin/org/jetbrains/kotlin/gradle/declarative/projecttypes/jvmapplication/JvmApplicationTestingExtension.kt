@@ -9,5 +9,5 @@ public interface JvmApplicationTestingExtension : TestingExtension {
     public val useJunitPlatform: Property<Boolean>
 
     @get:Nested
-    public val dependencies: JvmApplicationDependenciesExtension
+    public val dependencies: JvmApplicationTestingDependenciesExtension
 }
