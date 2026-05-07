@@ -158,6 +158,13 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     addDependencies(webMainSourceSet.apiConfigurationName, webPlatform.api)
                     addDependencies(webMainSourceSet.implementationConfigurationName, webPlatform.implementation)
                 }
+
+                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                    val iosMainSourceSet = sourceSets.getByName("iosMain")
+
+                    addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
+                    addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
+                }
             }
         }
 
