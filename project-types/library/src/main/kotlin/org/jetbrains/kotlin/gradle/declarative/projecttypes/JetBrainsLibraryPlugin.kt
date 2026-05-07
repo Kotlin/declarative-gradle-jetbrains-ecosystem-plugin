@@ -151,6 +151,13 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     addDependencies(jvmMainSourceSet.compileOnlyConfigurationName, jvmPlatform.compileOnly)
                     addDependencies(jvmMainSourceSet.runtimeOnlyConfigurationName, jvmPlatform.runtimeOnly)
                 }
+
+                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                    val webMainSourceSet = sourceSets.getByName("webMain")
+
+                    addDependencies(webMainSourceSet.apiConfigurationName, webPlatform.api)
+                    addDependencies(webMainSourceSet.implementationConfigurationName, webPlatform.implementation)
+                }
             }
         }
 
