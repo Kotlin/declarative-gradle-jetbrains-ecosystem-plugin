@@ -18,15 +18,17 @@ import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import org.jetbrains.kotlin.gradle.tasks.DefaultKotlinJavaToolchain
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -77,8 +79,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
             applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
 
-            definition.dependencies.wireDependencies(buildModel.enabledPlatforms.get().toSet())
-            definition.kotlin.wireCommonOptions(context.objectFactory)
+            val enabledPlatforms = buildModel.enabledPlatforms.get().toSet()
+            definition.dependencies.wireDependencies(enabledPlatforms)
+            definition.wireKotlinCompilerOptions(context.objectFactory, enabledPlatforms)
 
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
@@ -221,23 +224,61 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun KotlinCompilationExtension.wireCommonOptions(
-            objectFactory: ObjectFactory
+        private fun LibraryProjectType.wireKotlinCompilerOptions(
+            objectFactory: ObjectFactory,
+            enabledPlatforms: Set<LibraryPlatforms>,
         ) {
-            val defaultCommonOptions = objectFactory.newInstance(KotlinCommonCompilerOptionsDefault::class.java)
             withJvmPlugin {
+                val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
+                val intermediateJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
                 syncKotlinCommonCompilerOptionsAsConvention(
-                    this@wireCommonOptions.compilerOptions,
+                    this@wireKotlinCompilerOptions.kotlin.compilerOptions,
+                    intermediateJvmOptions,
+                    defaultJvmOptions,
+                )
+                syncKotlinJvmCompilerOptionsAsConvention(
+                    this@wireKotlinCompilerOptions.jvmPlatform.kotlin.compilerOptions,
                     compilerOptions,
-                    defaultCommonOptions,
+                    intermediateJvmOptions
+                )
+
+                // KGP does this before wiring above, and this loses toolchain information
+                // repeating it again
+                DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(
+                    compilerOptions,
+                    project
                 )
             }
+
             withKmpPlugin {
+                val defaultCommonOptions = objectFactory.newInstance(KotlinCommonCompilerOptionsDefault::class.java)
                 syncKotlinCommonCompilerOptionsAsConvention(
-                    this@wireCommonOptions.compilerOptions,
+                    this@wireKotlinCompilerOptions.kotlin.compilerOptions,
                     compilerOptions,
                     defaultCommonOptions,
                 )
+
+                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                    val jvmTarget = targets.getByName("jvm") as KotlinJvmTarget
+                    val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
+                    syncKotlinCommonCompilerOptionsAsConvention(
+                        compilerOptions,
+                        defaultJvmOptions,
+                        defaultCommonOptions
+                    )
+                    syncKotlinJvmCompilerOptionsAsConvention(
+                        this@wireKotlinCompilerOptions.jvmPlatform.kotlin.compilerOptions,
+                        jvmTarget.compilerOptions,
+                        defaultJvmOptions
+                    )
+
+                    // KGP does this before wiring above, and this loses toolchain information
+                    // repeating it again
+                    DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(
+                        jvmTarget.compilerOptions,
+                        project
+                    )
+                }
             }
         }
 

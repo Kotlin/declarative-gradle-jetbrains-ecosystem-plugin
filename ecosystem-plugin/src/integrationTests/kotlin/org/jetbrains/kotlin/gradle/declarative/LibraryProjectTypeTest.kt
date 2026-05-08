@@ -326,8 +326,17 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    
                 |    kotlin {
                 |        compilerOptions {
-                |            languageVersion = KOTLIN_2_3
+                |            languageVersion = KOTLIN_2_2
                 |            allWarningsAsErrors = true
+                |        }
+                |    }
+                |    
+                |    jvmPlatform {
+                |        kotlin {
+                |            compilerOptions {
+                |                languageVersion = KOTLIN_2_3
+                |                jvmDefault = ENABLE
+                |            }
                 |        }
                 |    }
                 |}
@@ -345,6 +354,11 @@ class LibraryProjectTypeTest : BaseTest() {
                 assertCompilerArgument(
                     ":compileKotlin",
                     "-Werror",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-jvm-default=enable",
                     logLevel = LogLevel.INFO,
                 )
             }
@@ -365,8 +379,17 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    
                 |    kotlin {
                 |        compilerOptions {
-                |            languageVersion = KOTLIN_2_3
+                |            languageVersion = KOTLIN_2_2
                 |            allWarningsAsErrors = true
+                |        }
+                |    }
+                |    
+                |    jvmPlatform {
+                |        kotlin {
+                |            compilerOptions {
+                |                languageVersion = KOTLIN_2_3
+                |                jvmDefault = ENABLE
+                |            }
                 |        }
                 |    }
                 |}
@@ -395,6 +418,11 @@ class LibraryProjectTypeTest : BaseTest() {
                 assertCompilerArgument(
                     ":compileKotlinJvm",
                     "-Werror",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlinJvm",
+                    "-jvm-default=enable",
                     logLevel = LogLevel.INFO,
                 )
             }
