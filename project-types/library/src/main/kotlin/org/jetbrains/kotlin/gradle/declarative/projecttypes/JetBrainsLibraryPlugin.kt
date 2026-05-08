@@ -18,6 +18,7 @@ import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.IosSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
@@ -98,11 +99,28 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 .getOrElse(WebSubplatforms.entries.toList())
                 // ListProperty default value is empty list
                 .ifEmpty { WebSubplatforms.entries.toList() }
+            val enabledIosSubplatforms = definition.iosPlatform.subplatforms
+                .map {
+                    it.map { name ->
+                        IosSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
+                            ?: throw GradleException(
+                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
+                            )
+                    }
+                }
+                .getOrElse(IosSubplatforms.entries.toList())
+                // ListProperty default value is empty list
+                .ifEmpty { IosSubplatforms.entries.toList() }
 
-            applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms)
+            applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
 
             definition.dependencies.wireDependencies(enabledPlatforms)
-            definition.wireKotlinCompilerOptions(context.objectFactory, enabledPlatforms, enabledWebSubplatforms)
+            definition.wireKotlinCompilerOptions(
+                context.objectFactory,
+                enabledPlatforms,
+                enabledWebSubplatforms,
+                enabledIosSubplatforms,
+            )
 
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
@@ -112,6 +130,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         private fun applyKotlinPlugin(
             enabledPlatforms: Set<LibraryPlatforms>,
             enabledWebSubplatforms: List<WebSubplatforms>,
+            enabledIosSubplatforms: List<IosSubplatforms>,
         ) {
             when {
                 enabledPlatforms.isEmpty() -> throw GradleException(
@@ -144,9 +163,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                                 }
 
                                 LibraryPlatforms.ios -> {
-                                    iosArm64()
-                                    iosSimulatorArm64()
-                                    iosX64()
+                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosArm64)) iosArm64()
+                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosSimulatorArm64)) iosSimulatorArm64()
+                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosX64)) iosX64()
                                 }
                             }
                         }
@@ -250,6 +269,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             objectFactory: ObjectFactory,
             enabledPlatforms: Set<LibraryPlatforms>,
             enabledWebSubplatforms: List<WebSubplatforms>,
+            enabledIosSubplatforms: List<IosSubplatforms>,
         ) {
             withJvmPlugin {
                 val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
@@ -303,30 +323,22 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     )
                 }
                 if (enabledPlatforms.contains(LibraryPlatforms.web)) {
-                    val jsTarget = if (enabledWebSubplatforms.contains(WebSubplatforms.js)) {
-                        targets.getByName("js") as KotlinJsTargetDsl
-                    } else null
-                    val wasmJsTarget = if (enabledWebSubplatforms.contains(WebSubplatforms.wasmJs)) {
-                        targets.getByName("wasmJs") as KotlinWasmJsTargetDsl
-                    } else null
-
                     val defaultJsOptions = objectFactory.newInstance(KotlinJsCompilerOptionsDefault::class.java)
                     syncKotlinCommonCompilerOptionsAsConvention(
                         compilerOptions,
                         defaultJsOptions,
                         defaultCommonOptions
                     )
-                    jsTarget?.let {
+
+                    enabledWebSubplatforms.forEach { subplatform ->
+                        val target = when (subplatform) {
+                            WebSubplatforms.js -> targets.getByName(subplatform.name) as KotlinJsTargetDsl
+                            WebSubplatforms.wasmJs -> targets.getByName(subplatform.name) as KotlinWasmJsTargetDsl
+                        }
+
                         syncKotlinJsCompilerOptionsAsConvention(
                             this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
-                            jsTarget.compilerOptions,
-                            defaultJsOptions
-                        )
-                    }
-                    wasmJsTarget?.let {
-                        syncKotlinJsCompilerOptionsAsConvention(
-                            this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
-                            wasmJsTarget.compilerOptions,
+                            target.compilerOptions,
                             defaultJsOptions
                         )
                     }
@@ -339,12 +351,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         defaultCommonOptions
                     )
 
-                    val nativeTargets = listOf("iosArm64", "iosSimulatorArm64", "iosX64")
-                        .map { targetName -> targets.getByName(targetName) as KotlinNativeTarget }
-                    nativeTargets.forEach { nativeTarget ->
+                    enabledIosSubplatforms.forEach { subplatform ->
+                        val target = targets.getByName(subplatform.name) as KotlinNativeTarget
                         syncKotlinNativeCompilerOptionsAsConvention(
                             this@wireKotlinCompilerOptions.iosPlatform.kotlin.compilerOptions,
-                            nativeTarget.compilerOptions,
+                            target.compilerOptions,
                             defaultNativeOptions,
                         )
                     }
