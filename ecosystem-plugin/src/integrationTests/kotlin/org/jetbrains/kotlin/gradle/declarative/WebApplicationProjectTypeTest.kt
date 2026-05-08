@@ -1,7 +1,6 @@
 package org.jetbrains.kotlin.gradle.declarative
 
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.project.IsolatedProject
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BuildOptions
@@ -9,7 +8,6 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
-import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName

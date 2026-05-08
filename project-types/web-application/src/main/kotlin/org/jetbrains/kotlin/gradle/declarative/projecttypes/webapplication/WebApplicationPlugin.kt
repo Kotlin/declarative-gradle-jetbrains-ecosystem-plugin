@@ -2,6 +2,7 @@
 
 package org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
@@ -14,6 +15,7 @@ import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import javax.inject.Inject
@@ -57,15 +59,34 @@ public class WebApplicationPlugin : Plugin<Project> {
             pluginManager.apply("org.jetbrains.kotlin.multiplatform")
 
             val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
-            val jsTarget = kmpExtension.js {
-                browser()
-                binaries.executable()
-            }
+            val enabledSubplatforms = definition.subplatforms
+                .map {
+                    it.map { name ->
+                        WebSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
+                            ?: throw GradleException(
+                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
+                            )
+                    }
+                }
+                .getOrElse(WebSubplatforms.entries.toList())
+                // ListProperty default value is empty list
+                .ifEmpty { WebSubplatforms.entries.toList() }
+
+            val jsTarget = if (enabledSubplatforms.contains(WebSubplatforms.js)) {
+                kmpExtension.js {
+                    browser()
+                    binaries.executable()
+                }
+            } else null
+
             @OptIn(ExperimentalWasmDsl::class)
-            val wasmTarget = kmpExtension.wasmJs {
-                browser()
-                binaries.executable()
-            }
+            val wasmTarget = if (enabledSubplatforms.contains(WebSubplatforms.wasmJs)) {
+                kmpExtension.wasmJs {
+                    browser()
+                    binaries.executable()
+                }
+            } else null
+
             kmpExtension.applyDefaultHierarchyTemplate()
 
             val webMainSourceSet = kmpExtension.sourceSets.getByName("webMain")
@@ -74,20 +95,24 @@ public class WebApplicationPlugin : Plugin<Project> {
                 webMainSourceSet.dependencies { implementation(dependency) }
             }
 
-            val defaultJsCompilerOptions = objectFactory.newInstance(jsTarget.compilerOptions.javaClass)
-            val defaultWasmCompilerOptions = objectFactory.newInstance(wasmTarget.compilerOptions.javaClass)
+            jsTarget?.let {
+                val defaultJsCompilerOptions = objectFactory.newInstance(jsTarget.compilerOptions.javaClass)
+                syncKotlinJsCompilerOptionsAsConvention(
+                    from = definition.kotlin.compilerOptions,
+                    into = jsTarget.compilerOptions,
+                    fallback = defaultJsCompilerOptions,
+                )
+            }
 
-            syncKotlinJsCompilerOptionsAsConvention(
-                from = definition.kotlin.compilerOptions,
-                into = jsTarget.compilerOptions,
-                fallback = defaultJsCompilerOptions,
-            )
+            wasmTarget?.let {
+                val defaultWasmCompilerOptions = objectFactory.newInstance(wasmTarget.compilerOptions.javaClass)
 
-            syncKotlinJsCompilerOptionsAsConvention(
-                from = definition.kotlin.compilerOptions,
-                into = wasmTarget.compilerOptions,
-                fallback = defaultWasmCompilerOptions,
-            )
+                syncKotlinJsCompilerOptionsAsConvention(
+                    from = definition.kotlin.compilerOptions,
+                    into = wasmTarget.compilerOptions,
+                    fallback = defaultWasmCompilerOptions,
+                )
+            }
         }
     }
 }
