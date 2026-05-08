@@ -18,6 +18,7 @@ import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
@@ -84,11 +85,24 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 }
             )
 
-            applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
-
             val enabledPlatforms = buildModel.enabledPlatforms.get().toSet()
+            val enabledWebSubplatforms = definition.webPlatform.subplatforms
+                .map {
+                    it.map { name ->
+                        WebSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
+                            ?: throw GradleException(
+                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
+                            )
+                    }
+                }
+                .getOrElse(WebSubplatforms.entries.toList())
+                // ListProperty default value is empty list
+                .ifEmpty { WebSubplatforms.entries.toList() }
+
+            applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms)
+
             definition.dependencies.wireDependencies(enabledPlatforms)
-            definition.wireKotlinCompilerOptions(context.objectFactory, enabledPlatforms)
+            definition.wireKotlinCompilerOptions(context.objectFactory, enabledPlatforms, enabledWebSubplatforms)
 
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
@@ -96,7 +110,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun applyKotlinPlugin(
-            enabledPlatforms: Set<LibraryPlatforms>
+            enabledPlatforms: Set<LibraryPlatforms>,
+            enabledWebSubplatforms: List<WebSubplatforms>,
         ) {
             when {
                 enabledPlatforms.isEmpty() -> throw GradleException(
@@ -124,8 +139,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                                 LibraryPlatforms.jvm -> jvm()
                                 LibraryPlatforms.common -> logger.warn("'common' platform is only used in conjunction with 'jvm' platform. Please remove it.")
                                 LibraryPlatforms.web -> {
-                                    js { browser() }
-                                    wasmJs { browser() }
+                                    if (enabledWebSubplatforms.contains(WebSubplatforms.js)) js { browser() }
+                                    if (enabledWebSubplatforms.contains(WebSubplatforms.wasmJs)) wasmJs { browser() }
                                 }
 
                                 LibraryPlatforms.ios -> {
@@ -234,6 +249,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         private fun LibraryProjectType.wireKotlinCompilerOptions(
             objectFactory: ObjectFactory,
             enabledPlatforms: Set<LibraryPlatforms>,
+            enabledWebSubplatforms: List<WebSubplatforms>,
         ) {
             withJvmPlugin {
                 val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
@@ -287,8 +303,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     )
                 }
                 if (enabledPlatforms.contains(LibraryPlatforms.web)) {
-                    val jsTarget = targets.getByName("js") as KotlinJsTargetDsl
-                    val wasmJsTarget = targets.getByName("wasmJs") as KotlinWasmJsTargetDsl
+                    val jsTarget = if (enabledWebSubplatforms.contains(WebSubplatforms.js)) {
+                        targets.getByName("js") as KotlinJsTargetDsl
+                    } else null
+                    val wasmJsTarget = if (enabledWebSubplatforms.contains(WebSubplatforms.wasmJs)) {
+                        targets.getByName("wasmJs") as KotlinWasmJsTargetDsl
+                    } else null
 
                     val defaultJsOptions = objectFactory.newInstance(KotlinJsCompilerOptionsDefault::class.java)
                     syncKotlinCommonCompilerOptionsAsConvention(
@@ -296,16 +316,20 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         defaultJsOptions,
                         defaultCommonOptions
                     )
-                    syncKotlinJsCompilerOptionsAsConvention(
-                        this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
-                        jsTarget.compilerOptions,
-                        defaultJsOptions
-                    )
-                    syncKotlinJsCompilerOptionsAsConvention(
-                        this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
-                        wasmJsTarget.compilerOptions,
-                        defaultJsOptions
-                    )
+                    jsTarget?.let {
+                        syncKotlinJsCompilerOptionsAsConvention(
+                            this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
+                            jsTarget.compilerOptions,
+                            defaultJsOptions
+                        )
+                    }
+                    wasmJsTarget?.let {
+                        syncKotlinJsCompilerOptionsAsConvention(
+                            this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
+                            wasmJsTarget.compilerOptions,
+                            defaultJsOptions
+                        )
+                    }
                 }
                 if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
                     val defaultNativeOptions = objectFactory.newInstance(KotlinNativeCompilerOptionsDefault::class.java)
