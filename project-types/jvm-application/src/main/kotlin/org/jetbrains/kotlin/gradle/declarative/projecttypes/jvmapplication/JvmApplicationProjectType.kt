@@ -16,9 +16,6 @@ public interface JvmApplicationProjectType : Definition<JvmApplicationBuildModel
     public val java: JavaJvmCompilationExtension
 
     @get:Nested
-    public val kotlin: KotlinJvmCompilationExtension
-
-    @get:Nested
     public val dependencies: JvmApplicationDependenciesExtension
 
     /**
