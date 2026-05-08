@@ -311,4 +311,93 @@ class LibraryProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("Jvm-only: configure compiler options")
+    @GradleTest
+    fun testJvmCompilerOptions(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    kotlin {
+                |        compilerOptions {
+                |            languageVersion = KOTLIN_2_3
+                |            allWarningsAsErrors = true
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("assemble", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+                assertTasksExecuted(":compileKotlin")
+
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-language-version 2.3",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlin",
+                    "-Werror",
+                    logLevel = LogLevel.INFO,
+                )
+            }
+        }
+    }
+
+    @DisplayName("KMP: configure compiler options")
+    @GradleTest
+    fun testKmpCompilerOptions(
+        gradleVersion: GradleVersion
+    ) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm", "common")
+                |    
+                |    kotlin {
+                |        compilerOptions {
+                |            languageVersion = KOTLIN_2_3
+                |            allWarningsAsErrors = true
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("commonMain").source("src/kotlin/main.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |fun main() {
+                |   println("Hello")
+                |}
+                """.trimMargin()
+            }
+
+            build("assemble", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
+                assertTasksExecuted(":compileKotlinJvm")
+
+                assertCompilerArgument(
+                    ":compileKotlinJvm",
+                    "-language-version 2.3",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlinJvm",
+                    "-Werror",
+                    logLevel = LogLevel.INFO,
+                )
+            }
+        }
+    }
 }

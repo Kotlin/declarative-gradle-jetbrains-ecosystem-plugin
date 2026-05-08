@@ -1,3 +1,4 @@
+@file:Suppress("INVISIBLE_REFERENCE")
 package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
 import org.gradle.api.GradleException
@@ -5,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyCollector
 import org.gradle.api.logging.Logging
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
@@ -16,6 +18,9 @@ import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -73,6 +78,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             applyKotlinPlugin(buildModel.enabledPlatforms.get().toSet())
 
             definition.dependencies.wireDependencies(buildModel.enabledPlatforms.get().toSet())
+            definition.kotlin.wireCommonOptions(context.objectFactory)
 
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
@@ -212,6 +218,26 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         java.compilerOptions.compilerArgs.get()
                     }
                 }
+            }
+        }
+
+        private fun KotlinCompilationExtension.wireCommonOptions(
+            objectFactory: ObjectFactory
+        ) {
+            val defaultCommonOptions = objectFactory.newInstance(KotlinCommonCompilerOptionsDefault::class.java)
+            withJvmPlugin {
+                syncKotlinCommonCompilerOptionsAsConvention(
+                    this@wireCommonOptions.compilerOptions,
+                    compilerOptions,
+                    defaultCommonOptions,
+                )
+            }
+            withKmpPlugin {
+                syncKotlinCommonCompilerOptionsAsConvention(
+                    this@wireCommonOptions.compilerOptions,
+                    compilerOptions,
+                    defaultCommonOptions,
+                )
             }
         }
 
