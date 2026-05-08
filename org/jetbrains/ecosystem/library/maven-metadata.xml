@@ -3,11 +3,11 @@
   <groupId>org.jetbrains.ecosystem</groupId>
   <artifactId>library</artifactId>
   <versioning>
-    <latest>0.78.0</latest>
-    <release>0.78.0</release>
+    <latest>0.84.0</latest>
+    <release>0.84.0</release>
     <versions>
-      <version>0.78.0</version>
+      <version>0.84.0</version>
     </versions>
-    <lastUpdated>20260507120118</lastUpdated>
+    <lastUpdated>20260508145330</lastUpdated>
   </versioning>
 </metadata>
