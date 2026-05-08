@@ -21,13 +21,16 @@ import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinNativeCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptionsDefault
+import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
@@ -303,6 +306,24 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         wasmJsTarget.compilerOptions,
                         defaultJsOptions
                     )
+                }
+                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                    val defaultNativeOptions = objectFactory.newInstance(KotlinNativeCompilerOptionsDefault::class.java)
+                    syncKotlinCommonCompilerOptionsAsConvention(
+                        compilerOptions,
+                        defaultNativeOptions,
+                        defaultCommonOptions
+                    )
+
+                    val nativeTargets = listOf("iosArm64", "iosSimulatorArm64", "iosX64")
+                        .map { targetName -> targets.getByName(targetName) as KotlinNativeTarget }
+                    nativeTargets.forEach { nativeTarget ->
+                        syncKotlinNativeCompilerOptionsAsConvention(
+                            this@wireKotlinCompilerOptions.iosPlatform.kotlin.compilerOptions,
+                            nativeTarget.compilerOptions,
+                            defaultNativeOptions,
+                        )
+                    }
                 }
             }
         }
