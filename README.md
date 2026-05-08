@@ -4,7 +4,7 @@
 
 A prototype JetBrains Ecosystem Plugin for [Declarative Gradle](https://declarative.gradle.org/) — Gradle's experimental declarative build language. You can use this plugin to explore both Declarative Gradle itself and the new approach to organizing Kotlin build scripts.
 
-You can mix Declarative Gradle sub-projects with non-declarative ones. In its' current state the JetBrains Ecosystem Plugin provides an option to create `jvmApplication`, `webApplication`, and `library` (supporting `jvm` and `web` platforms) sub-projects.
+You can mix Declarative Gradle sub-projects with non-declarative ones. In its' current state the JetBrains Ecosystem Plugin provides an option to create `jvmApplication`, `webApplication`, and `library` (supporting `jvm`, `web`, and `ios` platforms) sub-projects.
 
 ⚠️ Both Declarative Gradle itself and this plugin are still in pre-stable stable. Expect rough edges, no compatibility guarantees, and breaking changes between releases.
 
@@ -48,7 +48,7 @@ plugins {
 We advise to use `latest.release` as the project is under active development with new updates being released daily. If you prefer to pin a version to [a specific release](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/releases) simplify specify the version explicitely:
 ```
 plugins {
-    id("org.jetbrains.ecosystem").version("0.74")
+    id("org.jetbrains.ecosystem").version("0.74.0")
 }
 ```
 3. After the changes your Settings file should look like this:
