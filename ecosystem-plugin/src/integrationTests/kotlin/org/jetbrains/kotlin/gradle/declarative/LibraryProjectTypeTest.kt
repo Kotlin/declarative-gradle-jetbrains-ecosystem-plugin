@@ -450,4 +450,53 @@ class LibraryProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("with Kotlin serialization")
+    @GradleTest
+    fun testKotlinSerializationFeature(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED)
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm", "web")
+                |    
+                |    kotlin {
+                |        serialization {
+                |            enabledFormats = listOf("json")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("commonMain").source("main.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlinx.serialization.*
+                |import kotlinx.serialization.json.*
+                |
+                |@Serializable 
+                |data class Project(val name: String, val language: String)
+                |
+                |fun main() {
+                |    println("Hello, web application!")
+                |    
+                |    val data = Project("kotlinx.serialization", "Kotlin")
+                |    val string = Json.encodeToString(data)  
+                |}
+                """.trimMargin()
+            }
+
+            build("compileKotlinJvm") {
+                assertTasksExecuted(":compileKotlinJvm")
+            }
+        }
+    }
 }
