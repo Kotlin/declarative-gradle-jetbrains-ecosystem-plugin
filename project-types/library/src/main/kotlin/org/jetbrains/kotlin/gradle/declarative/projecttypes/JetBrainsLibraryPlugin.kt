@@ -20,13 +20,17 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.DefaultKotlinJavaToolchain
 import javax.inject.Inject
@@ -277,6 +281,27 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(
                         jvmTarget.compilerOptions,
                         project
+                    )
+                }
+                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                    val jsTarget = targets.getByName("js") as KotlinJsTargetDsl
+                    val wasmJsTarget = targets.getByName("wasmJs") as KotlinWasmJsTargetDsl
+
+                    val defaultJsOptions = objectFactory.newInstance(KotlinJsCompilerOptionsDefault::class.java)
+                    syncKotlinCommonCompilerOptionsAsConvention(
+                        compilerOptions,
+                        defaultJsOptions,
+                        defaultCommonOptions
+                    )
+                    syncKotlinJsCompilerOptionsAsConvention(
+                        this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
+                        jsTarget.compilerOptions,
+                        defaultJsOptions
+                    )
+                    syncKotlinJsCompilerOptionsAsConvention(
+                        this@wireKotlinCompilerOptions.webPlatform.kotlin.compilerOptions,
+                        wasmJsTarget.compilerOptions,
+                        defaultJsOptions
                     )
                 }
             }

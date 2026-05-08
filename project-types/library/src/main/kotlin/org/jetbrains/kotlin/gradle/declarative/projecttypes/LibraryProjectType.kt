@@ -18,6 +18,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
     public val jvmPlatform: LibraryJvmEcosystemDefinition
 
     @get:Nested
+    public val webPlatform: LibraryWebEcosystemDefinition
+
+    @get:Nested
     public val java: JavaJvmCompilationExtension
 
     @get:Nested
