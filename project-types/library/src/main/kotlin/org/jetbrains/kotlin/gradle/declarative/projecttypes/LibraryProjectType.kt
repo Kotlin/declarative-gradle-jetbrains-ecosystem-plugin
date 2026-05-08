@@ -4,7 +4,6 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JavaJvmCompilationExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmEcosystemDefinition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilationExtension
 
 @Suppress("UnstableApiUsage")
@@ -16,7 +15,7 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
     public val platforms: ListProperty<String>
 
     @get:Nested
-    public val jvmPlatform: JvmEcosystemDefinition
+    public val jvmPlatform: LibraryJvmEcosystemDefinition
 
     @get:Nested
     public val java: JavaJvmCompilationExtension
