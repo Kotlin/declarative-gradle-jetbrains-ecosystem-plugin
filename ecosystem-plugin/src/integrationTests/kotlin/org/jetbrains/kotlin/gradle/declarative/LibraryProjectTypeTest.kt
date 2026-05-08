@@ -370,12 +370,16 @@ class LibraryProjectTypeTest : BaseTest() {
     fun testKmpCompilerOptions(
         gradleVersion: GradleVersion
     ) {
-        project("base-ecosystem-project", gradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED)
+        ) {
             buildGradleDcl.writeText(
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "common")
+                |    platforms = listOf("jvm", "web")
                 |    
                 |    kotlin {
                 |        compilerOptions {
@@ -389,6 +393,14 @@ class LibraryProjectTypeTest : BaseTest() {
                 |            compilerOptions {
                 |                languageVersion = KOTLIN_2_3
                 |                jvmDefault = ENABLE
+                |            }
+                |        }
+                |    }
+                |    
+                |    webPlatform {
+                |        kotlin {
+                |            compilerOptions {
+                |               languageVersion = KOTLIN_2_3
                 |            }
                 |        }
                 |    }
@@ -408,7 +420,7 @@ class LibraryProjectTypeTest : BaseTest() {
             }
 
             build("assemble", "-Pkotlin.internal.compiler.arguments.log.level=warning") {
-                assertTasksExecuted(":compileKotlinJvm")
+                assertTasksExecuted(":compileKotlinJvm", ":compileKotlinJs", ":compileKotlinWasmJs")
 
                 assertCompilerArgument(
                     ":compileKotlinJvm",
@@ -423,6 +435,16 @@ class LibraryProjectTypeTest : BaseTest() {
                 assertCompilerArgument(
                     ":compileKotlinJvm",
                     "-jvm-default=enable",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlinJs",
+                    "-language-version 2.3",
+                    logLevel = LogLevel.INFO,
+                )
+                assertCompilerArgument(
+                    ":compileKotlinWasmJs",
+                    "-language-version 2.3",
                     logLevel = LogLevel.INFO,
                 )
             }
