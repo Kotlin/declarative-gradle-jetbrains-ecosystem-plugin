@@ -337,7 +337,7 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 """.trimMargin()
             }
 
-            build("test", forwardBuildOutput = true) {
+            build("test") {
                 assertTasksExecuted(":compileKotlin", ":compileTestKotlin", ":test")
             }
         }

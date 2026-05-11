@@ -115,6 +115,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
 
             definition.dependencies.wireDependencies(enabledPlatforms)
+            definition.testing.dependencies.wireTestingDependencies(enabledPlatforms)
+
             definition.wireKotlinCompilerOptions(
                 context.objectFactory,
                 enabledPlatforms,
@@ -223,6 +225,52 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
                     addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
                     addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
+                }
+            }
+        }
+
+        private fun LibraryTestingDependenciesExtension.wireTestingDependencies(
+            enabledPlatforms: Set<LibraryPlatforms>
+        ) {
+            val configurations = this@LibraryApplyAction.project.configurations
+            withJvmPlugin {
+                @Suppress("UNCHECKED_CAST")
+                val testCompilation = (target as KotlinWithJavaTarget<*, KotlinJvmCompilerOptions>).compilations
+                    .getByName(KotlinCompilation.TEST_COMPILATION_NAME)
+
+                val implementationConfiguration = configurations
+                    .getByName(testCompilation.implementationConfigurationName)
+                val compileOnlyConfiguration = configurations.getByName(testCompilation.compileOnlyConfigurationName)
+                val runtimeOnlyConfiguration = configurations.getByName(testCompilation.runtimeOnlyConfigurationName)
+
+                implementationConfiguration.fromDependencyCollector(implementation)
+                implementationConfiguration.fromDependencyCollector(jvmPlatform.implementation)
+                compileOnlyConfiguration.fromDependencyCollector(jvmPlatform.compileOnly)
+                runtimeOnlyConfiguration.fromDependencyCollector(jvmPlatform.runtimeOnly)
+            }
+
+            withKmpPlugin {
+                val commonSourceSet = sourceSets.getByName("commonTest")
+
+                addDependencies(commonSourceSet.implementationConfigurationName, implementation)
+
+                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                    val jvmTestSourceSet = sourceSets.getByName("jvmTest")
+                    addDependencies(jvmTestSourceSet.implementationConfigurationName, jvmPlatform.implementation)
+                    addDependencies(jvmTestSourceSet.compileOnlyConfigurationName, jvmPlatform.compileOnly)
+                    addDependencies(jvmTestSourceSet.runtimeOnlyConfigurationName, jvmPlatform.runtimeOnly)
+                }
+
+                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                    val webTestSourceSet = sourceSets.getByName("webTest")
+
+                    addDependencies(webTestSourceSet.implementationConfigurationName, webPlatform.implementation)
+                }
+
+                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                    val iosTestSourceSet = sourceSets.getByName("iosTest")
+
+                    addDependencies(iosTestSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
                 }
             }
         }
