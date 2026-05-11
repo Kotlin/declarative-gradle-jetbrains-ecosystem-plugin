@@ -106,9 +106,11 @@ public class SpringSoftwareFeaturePlugin : Plugin<Project> {
             pluginManager.apply("org.springframework.boot")
 
             val developmentOnlyConfiguration = project.configurations.getByName("developmentOnly")
-            definition.developmentOnly.dependencies.getOrElse(emptySet()).forEach { dependency ->
-                developmentOnlyConfiguration.dependencies.add(dependency)
-            }
+            developmentOnlyConfiguration.fromDependencyCollector(definition.developmentOnly)
+            developmentOnlyConfiguration.dependencies.add(
+                project.dependencies.platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+            )
+
             definition.resource.dependencies.getOrElse(emptySet()).forEach { dependency ->
                 require(dependency is ProjectDependency) { "Only project to project dependency types are supported" }
                 throw GradleException("Not yet implemented")
