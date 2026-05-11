@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
+import org.jetbrains.kotlin.gradle.declarative.testDsl.makeSnapshotTo
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
@@ -496,6 +497,161 @@ class LibraryProjectTypeTest : BaseTest() {
 
             build("compileKotlinJvm") {
                 assertTasksExecuted(":compileKotlinJvm")
+            }
+        }
+    }
+
+    @DisplayName("common test dependencies is possible to configure")
+    @GradleTest
+    fun testCommonTestDependencies(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(
+                // Fixme: JavaCompile inputs are causing CC serialization error
+                configurationCache = BuildOptions.ConfigurationCacheValue.DISABLED,
+                isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED
+            )
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm", "web")
+                |    
+                |    testing {
+                |        dependencies {
+                |            implementation("org.jetbrains.kotlin:kotlin-test")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("commonTest").source("someTest.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlin.test.assertEquals
+                |import kotlin.test.Test
+                |
+                |class OneTest {
+                |     @Test
+                |     fun testOne() {
+                |          assertEquals(1, 0 + 1)
+                |     }    
+                |}
+                """.trimMargin()
+            }
+
+            build("jvmTest", "jsTest") {
+                assertTasksExecuted(":jvmTest", ":jsTest")
+            }
+        }
+    }
+
+    @DisplayName("platform test dependencies is possible to configure")
+    @GradleTest
+    fun testPlatformTestDependencies(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(
+                // Fixme: JavaCompile inputs are causing CC serialization error
+                configurationCache = BuildOptions.ConfigurationCacheValue.DISABLED,
+                isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED
+            )
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm", "web")
+                |    
+                |    testing {
+                |        dependencies {
+                |            jvmPlatform {
+                |                implementation("org.jetbrains.kotlin:kotlin-test")
+                |            }
+                |            webPlatform {
+                |                implementation("org.jetbrains.kotlin:kotlin-test")
+                |            }
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("commonTest").source("someTest.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlin.test.assertEquals
+                |import kotlin.test.Test
+                |
+                |class OneTest {
+                |     @Test
+                |     fun testOne() {
+                |          assertEquals(1, 0 + 1)
+                |     }    
+                |}
+                """.trimMargin()
+            }
+
+            build("jvmTest", "jsTest") {
+                assertTasksExecuted(":jvmTest", ":jsTest")
+            }
+        }
+    }
+
+    @DisplayName("Jvm-only dependencies is possible to configure")
+    @GradleTest
+    fun testJvmDependencies(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+            buildOptions = defaultBuildOptions.copy(
+                // Fixme: JavaCompile inputs are causing CC serialization error
+                configurationCache = BuildOptions.ConfigurationCacheValue.DISABLED,
+                isolatedProjects = BuildOptions.IsolatedProjectsMode.DISABLED
+            )
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    testing {
+                |        dependencies {
+                |            implementation("org.jetbrains.kotlin:kotlin-test")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("test").source("someTest.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |import kotlin.test.assertEquals
+                |import kotlin.test.Test
+                |
+                |class OneTest {
+                |     @Test
+                |     fun testOne() {
+                |          assertEquals(1, 0 + 1)
+                |     }    
+                |}
+                """.trimMargin()
+            }
+
+            build("test") {
+                assertTasksExecuted(":test")
             }
         }
     }

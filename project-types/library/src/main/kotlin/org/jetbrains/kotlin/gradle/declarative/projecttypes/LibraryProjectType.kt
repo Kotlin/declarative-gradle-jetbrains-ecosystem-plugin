@@ -31,6 +31,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 
     @get:Nested
     public val dependencies: LibraryDependenciesExtension
+
+    @get:Nested
+    public val testing: LibraryTestingExtension
 }
 
 public enum class LibraryPlatforms {
