@@ -10,6 +10,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
+import org.gradle.api.tasks.testing.Test
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
 import org.gradle.features.binding.ProjectTypeApplyAction
@@ -17,6 +18,7 @@ import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.IosSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
@@ -65,6 +67,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
         @get:Inject
         abstract val project: Project
+
+        @get:Inject
+        abstract val javaToolchainServices: JavaToolchainService
 
         private val logger = Logging.getLogger(this::class.simpleName)
 
@@ -299,6 +304,22 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         java.compilerOptions.compilerArgs.get()
                     }
                 }
+
+                @Suppress("UNCHECKED_CAST")
+                val testCompilation = (target as KotlinWithJavaTarget<*, KotlinJvmCompilerOptions>).compilations
+                    .getByName(KotlinCompilation.TEST_COMPILATION_NAME)
+
+                testCompilation.compileJavaTaskProvider.configure {
+                    it.options.compilerArgumentProviders.add {
+                        java.compilerOptions.compilerArgs.get()
+                    }
+                }
+
+                project.tasks.named("test", Test::class.java) {
+                    it.javaLauncher.convention(javaToolchainServices.launcherFor(
+                        project.extensions.getByType(JavaPluginExtension::class.java).toolchain
+                    ))
+                }
             }
 
             withKmpPlugin {
@@ -309,6 +330,20 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     it.options.compilerArgumentProviders.add {
                         java.compilerOptions.compilerArgs.get()
                     }
+                }
+
+                val testCompilation = jvmTarget.compilations.getByName(KotlinCompilation.TEST_COMPILATION_NAME)
+
+                testCompilation.compileJavaTaskProvider!!.configure {
+                    it.options.compilerArgumentProviders.add {
+                        java.compilerOptions.compilerArgs.get()
+                    }
+                }
+
+                project.tasks.named("jvmTest", Test::class.java) {
+                    it.javaLauncher.convention(javaToolchainServices.launcherFor(
+                        project.extensions.getByType(JavaPluginExtension::class.java).toolchain
+                    ))
                 }
             }
         }
