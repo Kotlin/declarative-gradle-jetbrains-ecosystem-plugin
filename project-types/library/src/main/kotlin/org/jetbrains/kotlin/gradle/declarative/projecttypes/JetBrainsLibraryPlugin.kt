@@ -132,6 +132,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
             }
+
+            definition.testing.configureTesting(
+                enabledPlatforms,
+                enabledWebSubplatforms
+            )
         }
 
         private fun applyKotlinPlugin(
@@ -441,6 +446,43 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                             target.compilerOptions,
                             defaultNativeOptions,
                         )
+                    }
+                }
+            }
+        }
+
+        private fun LibraryTestingExtension.configureTesting(
+            enabledPlatforms: Set<LibraryPlatforms>,
+            enabledWebSubplatforms: List<WebSubplatforms>,
+        ) {
+            if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                project.tasks.withType(Test::class.java).configureEach {
+                    if (jvmPlatform.useJunitPlatform.getOrElse(false)) {
+                        it.useJUnitPlatform()
+                    }
+                }
+            }
+
+            withKmpPlugin {
+                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                    enabledWebSubplatforms.forEach {
+                        val target = targets.getByName(it.name)
+                        when (it) {
+                            WebSubplatforms.wasmJs -> {
+                                (target as KotlinWasmJsTargetDsl).browser {
+                                    testTask {
+                                        it.enabled = !webPlatform.skip.getOrElse(false)
+                                    }
+                                }
+                            }
+                            WebSubplatforms.js -> {
+                                (target as KotlinJsTargetDsl).browser {
+                                    testTask {
+                                        it.enabled = !webPlatform.skip.getOrElse(false)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
