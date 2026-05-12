@@ -655,4 +655,29 @@ class LibraryProjectTypeTest : BaseTest() {
             }
         }
     }
+
+    @DisplayName("Generic publishing configuration")
+    @GradleTest
+    fun testGenericPublishingConfiguration(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("jvm")
+                |    
+                |    publishing {
+                |        group = "org.example"
+                |        version = "1.0.0"
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("help")
+        }
+    }
 }

@@ -137,6 +137,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledPlatforms,
                 enabledWebSubplatforms
             )
+
+            definition.publishing.configurePublishing()
         }
 
         private fun applyKotlinPlugin(
@@ -486,6 +488,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     }
                 }
             }
+        }
+
+        private fun LibraryPublishingExtension.configurePublishing() {
+            project.group = group.getOrElse(project.path.replace(":", "."))
+            project.version = version.getOrElse(Project.DEFAULT_VERSION)
         }
 
         private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {
