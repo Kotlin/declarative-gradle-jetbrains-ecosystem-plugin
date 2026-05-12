@@ -33,6 +33,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
     public val dependencies: LibraryDependenciesExtension
 
     @get:Nested
+    public val publishing: LibraryPublishingExtension
+
+    @get:Nested
     public val testing: LibraryTestingExtension
 }
 
