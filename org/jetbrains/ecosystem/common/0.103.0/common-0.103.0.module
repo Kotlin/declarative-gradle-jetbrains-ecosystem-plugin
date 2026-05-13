@@ -1,0 +1,103 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "common",
+    "version": "0.103.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-milestone-2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-0.103.0.jar",
+          "url": "common-0.103.0.jar",
+          "size": 66334,
+          "sha512": "75d579907ceeaa9bfe710c373560cbb22b0bd58d7fe881fb8bf7ac478366efa05c20433528df3715768793f4e22307076b271240cbaec989b3f06e65e63176f5",
+          "sha256": "dc51e76de2173ad12162b67167630a84c825b154cf0f78150e20620ba9830c6d",
+          "sha1": "ee67a8cb0584ea0bac8395a6b56909b4a6df0d41",
+          "md5": "3b3d839fb0397b08056a542a5bd2f5d9"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-serialization",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-0.103.0.jar",
+          "url": "common-0.103.0.jar",
+          "size": 66334,
+          "sha512": "75d579907ceeaa9bfe710c373560cbb22b0bd58d7fe881fb8bf7ac478366efa05c20433528df3715768793f4e22307076b271240cbaec989b3f06e65e63176f5",
+          "sha256": "dc51e76de2173ad12162b67167630a84c825b154cf0f78150e20620ba9830c6d",
+          "sha1": "ee67a8cb0584ea0bac8395a6b56909b4a6df0d41",
+          "md5": "3b3d839fb0397b08056a542a5bd2f5d9"
+        }
+      ]
+    }
+  ]
+}
