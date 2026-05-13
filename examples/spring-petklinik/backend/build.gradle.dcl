@@ -8,7 +8,7 @@ jvmApplication {
     dependencies {
         implementation(project(":shared"))
         implementation("org.springframework.boot:spring-boot-starter-webmvc") {
-            //exclude("org.springframework.boot:spring-boot-starter-jackson")
+            exclude(mapOf("group" to "org.springframework.boot", "module" to "spring-boot-starter-jackson"))
         }
         implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
         implementation("org.springframework.boot:spring-boot-starter-cache")
