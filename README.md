@@ -1,33 +1,40 @@
 [![Incubator](https://jb.gg/badges/incubator-plastic.svg)](https://github.com/JetBrains#jetbrains-on-github)
 
-# JetBrains Ecosystem Plugin
+# JetBrains ecosystem plugin
 
-A prototype JetBrains Ecosystem Plugin for [Declarative Gradle](https://declarative.gradle.org/) — Gradle's experimental declarative build language. You can use this plugin to explore both Declarative Gradle itself and the new approach to organizing Kotlin build scripts.
+The JetBrains ecosystem plugin is an experimental plugin for [Declarative Gradle](https://declarative.gradle.org/), Gradle's new declarative build language. You can use this plugin to explore Declarative Gradle itself and a new approach to organizing Kotlin build scripts.
 
-You can mix Declarative Gradle sub-projects with non-declarative ones. In its' current state the JetBrains Ecosystem Plugin provides an option to create `jvmApplication`, `webApplication`, and `library` (supporting `jvm`, `web`, and `ios` platforms) sub-projects.
+You can mix Declarative Gradle subprojects with non-declarative ones. In its current state, the JetBrains ecosystem plugin lets you create `jvmApplication`, `webApplication`, and `library` (supporting `jvm`, `web`, and `ios` platforms) subprojects.
 
-⚠️ Both Declarative Gradle itself and this plugin are still in pre-stable stable. Expect rough edges, no compatibility guarantees, and breaking changes between releases.
+> [!WARNING]
+> Both Declarative Gradle and this plugin are pre-stable. Expect rough edges, breaking changes between releases, and no compatibility guarantees.
 
 ## Setup
 
 ### Switch to Gradle version `9.6.0`
 
-_Note: As of now a pre-release Gradle version `9.6.0-milestone-1` is needed._
+> [!IMPORTANT]
+> Declarative Gradle currently needs Gradle version `9.6.0-milestone-2`.
 
-The following command upgrade the Gradle Wrapper to the required version:
+You can change the Gradle version in the Gradle Wrapper from the command line or by updating the `distributionUrl` property.
+
+For the command line, use the following:
+
 ```
-./gradlew wrapper --gradle-version 9.6.0-milestone-1
+./gradlew wrapper --gradle-version 9.6.0-milestone-2
 ```
 
-Another way to upgrade the Gradle version is by manually changing the `distributionUrl` property in the Wrapper’s `gradle-wrapper.properties` file in `gradle/wrapper/`. After the change it should look like this:
+For the property, in the `gradle/wrapper/gradle-wrapper.properties` file, update the `distributionUrl` property as follows:
+
 ```
-distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.0-milestone-1-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.0-milestone-2-bin.zip
 ```
 
-### Update the Settings file
+### Update your settings file
 
-1. Rename your settings file (`settings.gradle(.kts)`) to `settings.gradle.dcl`.
-2. Add this repository in `pluginManagement`:
+1. Rename your settings file from `settings.gradle(.kts)` to `settings.gradle.dcl`.
+2. In your `settings.gradle.dcl` file, add this repository in the `pluginManagement {}` block:
+
 ```
 pluginManagement {
     repositories {
@@ -39,19 +46,25 @@ pluginManagement {
     }
 }
 ```
-3. Apply the JetBrains Ecosystem Plugin
+
+3. Apply the JetBrains ecosystem plugin:
 ```
 plugins {
     id("org.jetbrains.ecosystem").version("latest.release")
 }
 ```
-We advise to use `latest.release` as the project is under active development with new updates being released daily. If you prefer to pin a version to [a specific release](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/releases) simplify specify the version explicitely:
+
+> [!TIP]
+> We recommend using the `latest.release` variable to automatically stay up to date with the latest version because the project is under active development. If you prefer to use [a specific release](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/releases), set the version explicitly:
+
 ```
 plugins {
     id("org.jetbrains.ecosystem").version("0.74.0")
 }
 ```
-3. After the changes your Settings file should look like this:
+
+After making these changes, your `settings.gradle.dcl` file should look like this:
+
 ```
 pluginManagement {
     repositories {
@@ -79,31 +92,47 @@ include(":utils")
 
 rootProject.name = "MySimpleApp"
 ```
-4. Sync project to make sure the changes were applied correctly. 
-⚠️ The build may fail with a version resolution conflict for some of the plugins. The Declarative Gradle uses a single classloader for all projects which means you cannot apply the same plugin with different version in different projects.
-5. Remove version references of any Kotlin plugins:
+
+### Sync and update your project
+
+Sync your project to apply the changes and verify that everything works correctly.
+
+> [!WARNING] 
+> The build may fail with a version resolution conflict for some plugins. Declarative Gradle uses a single classloader for all projects, so you can't apply the same plugin with different versions in different projects.
+
+To avoid conflicts, remove any version references from Kotlin plugins:
+
 a. In `build.gradle(.kts)` files:
+
 ❌ **Don't do this:**
 `kotlin("jvm").version("2.3.20")`
 `id("org.jetbrains.kotlin.multiplatform").version("2.3.20")`
+
 ✅ **Do this:**
 `kotlin("jvm")`
 `id("org.jetbrains.kotlin.multiplatform")`
-b. In `libs.versions.toml`:
+
+b. In the `libs.versions.toml` file:
+
 ❌ **Don't do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.3.30" }`
+
 ✅ **Do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization"}`
 
 ### Enable IDE support in IntelliJ IDEA and Android Studio
-1. Enable the IDE internal mode by selecting _Help_ -> _Edit Custom Properties_. This selection opens the `idea.properties` file. If it does not exist, the IDE will prompt to create one. Add a line with `idea.is.internal=true` and save the file.
-2. Restart the IDE
-3. Open _Tools_ -> _Internal Actions_ -> _Registry_
-4. Search for the Declarative Gradle flags by typing declarative
-5. Enable the `gradle.declarative.studio.support` and `gradle.declarative.ide.support` flags
-6. Restart the IDE
 
-## How to convert a sub-project to the Declarative Gradle? 
+1. Enable internal mode in the IDE: 
+   1. Select **Help** | **Edit Custom Properties**. 
+   This action opens the `idea.properties` file. If the file doesn't exist, the IDE will prompt you to create one. 
+   2. Add a line with `idea.is.internal=true` and save the file.
+2. Restart the IDE.
+3. Select **Tools** | **Internal Actions** | **Registry**.
+4. Search for Declarative Gradle keys by typing "declarative".
+5. Enable the `gradle.declarative.studio.support` and `gradle.declarative.ide.support` keys.
+6. Restart the IDE again.
+
+## Convert a subproject to Declarative Gradle 
 
 🚧🚧🚧 **Work in progress** 🚧🚧🚧
 
@@ -111,12 +140,13 @@ b. In `libs.versions.toml`:
 
 🚧🚧🚧 **Work in progress** 🚧🚧🚧
 
-## DSL Reference
+## DSL reference
 
 🚧🚧🚧 **Work in progress** 🚧🚧🚧
 
-## Feedback and issues
+## Feedback and issue reporting
 
-We've changed quite a bit in a mental model behind how Kotlin application build scripts can be built. We would apreciate your feedback on design choices we've made.
-* Please provide feedback on `#declarative-gradle` channel on [KotlinLang Slack](https://slack-chats.kotlinlang.org/?_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_gl=1*1wo5sn9*_gcl_au*MTA5MzcwNjY2Mi4xNzcwODA3NjExLjE2NTI5NjM2NTguMTc3NDI1NzU0OC4xNzc0MjU3NTQ4*_ga*NzczNDU5MDM2LjE3NDY2OTg2Njk.*_ga_9J976DJZ68*czE3NzgyNTIxODckbzE1MSRnMSR0MTc3ODI1MjUxOCRqMzUkbDAkaDA.)
-* Please report any issues found through [GitHub Issues](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/issues/new/choose)
+While developing this plugin, we've significantly changed the mental model behind how Kotlin application build scripts can be built. We would appreciate your feedback on the design choices we've made.
+
+* Share your feedback in the `#declarative-gradle` channel in [Slack](https://slack-chats.kotlinlang.org/?_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_gl=1*1wo5sn9*_gcl_au*MTA5MzcwNjY2Mi4xNzcwODA3NjExLjE2NTI5NjM2NTguMTc3NDI1NzU0OC4xNzc0MjU3NTQ4*_ga*NzczNDU5MDM2LjE3NDY2OTg2Njk.*_ga_9J976DJZ68*czE3NzgyNTIxODckbzE1MSRnMSR0MTc3ODI1MjUxOCRqMzUkbDAkaDA.).
+* Report any issues you find through [GitHub Issues](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/issues/new/choose).
