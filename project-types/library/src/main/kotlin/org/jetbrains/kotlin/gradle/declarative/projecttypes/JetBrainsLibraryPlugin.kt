@@ -71,6 +71,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         @get:Inject
         abstract val javaToolchainServices: JavaToolchainService
 
+        @get:Inject
+        abstract val objectFactory: ObjectFactory
+
         private val logger = Logging.getLogger(this::class.simpleName)
 
         override fun apply(
@@ -123,7 +126,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             definition.testing.dependencies.wireTestingDependencies(enabledPlatforms)
 
             definition.wireKotlinCompilerOptions(
-                context.objectFactory,
                 enabledPlatforms,
                 enabledWebSubplatforms,
                 enabledIosSubplatforms,
@@ -356,7 +358,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun LibraryProjectType.wireKotlinCompilerOptions(
-            objectFactory: ObjectFactory,
             enabledPlatforms: Set<LibraryPlatforms>,
             enabledWebSubplatforms: List<WebSubplatforms>,
             enabledIosSubplatforms: List<IosSubplatforms>,
