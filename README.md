@@ -148,5 +148,5 @@ b. In the `libs.versions.toml` file:
 
 While developing this plugin, we've significantly changed the mental model behind how Kotlin application build scripts can be built. We would appreciate your feedback on the design choices we've made.
 
-* Share your feedback in the `#declarative-gradle` channel in [Slack](https://slack-chats.kotlinlang.org/?_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_cl=MTsxOzE7OEZiZXJieTM5dTg3S09oVUpoM21ZZTB3RkRvanBRQVl2elhrMnJ2N1hSc01hTkUwOWRvY3JtVDczeGJPWlViTjs=&_gl=1*1wo5sn9*_gcl_au*MTA5MzcwNjY2Mi4xNzcwODA3NjExLjE2NTI5NjM2NTguMTc3NDI1NzU0OC4xNzc0MjU3NTQ4*_ga*NzczNDU5MDM2LjE3NDY2OTg2Njk.*_ga_9J976DJZ68*czE3NzgyNTIxODckbzE1MSRnMSR0MTc3ODI1MjUxOCRqMzUkbDAkaDA.).
+* Share your feedback in the `#declarative-gradle` channel in [Slack](https://slack-chats.kotlinlang.org/c/declarative-gradle).
 * Report any issues you find through [GitHub Issues](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/issues/new/choose).
