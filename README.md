@@ -59,7 +59,7 @@ plugins {
 
 ```
 plugins {
-    id("org.jetbrains.ecosystem").version("0.74.0")
+    id("org.jetbrains.ecosystem").version("0.103.0")
 }
 ```
 
