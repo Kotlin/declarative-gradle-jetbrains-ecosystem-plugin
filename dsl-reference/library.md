@@ -4,6 +4,7 @@
 library {
     // Enables platforms library supports
     // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios".
+    // These are the all platforms supported for now.
     platforms = listOf("common", "jvm", "web", "ios")
     
     kotlin { // Kotlin compilation configuration common for all platforms
@@ -45,7 +46,7 @@ library {
     webPlatform { // Web platform specific configurations
         // Limits "web" platform to given sub-platforms
         // Accepted values are WebSubplatforms names as strings: "js", "wasmJs".
-        // If omitted (or empty), both subplatforms are enabled by default.
+        // If omitted (or empty), all subplatforms are enabled by default.
         subplatforms = listOf("js", "wasmJs")
 
         kotlin { // Kotlin compilation configuration, overrides common configuration

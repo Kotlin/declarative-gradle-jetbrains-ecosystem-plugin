@@ -43,8 +43,6 @@ pluginManagement {
         maven {
             url = uri("https://raw.githubusercontent.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/refs/heads/maven2")
         }
-        mavenCentral()
-        gradlePluginPortal()
     }
 }
 ```
@@ -122,6 +120,15 @@ b. In the `libs.versions.toml` file:
 ✅ **Do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization"}`
 
+#### Known problems
+1. Batch `include()` does not work in the settings file:
+❌ **Don't do this:**
+`include("frontend", "backend")`
+✅ **Do this:**
+`include("frontend")`
+`include("backend")`
+2. Some of APIs unfortunately are not yet available in Declarative Gradle including all annotations.
+
 ### Enable IDE support in IntelliJ IDEA and Android Studio
 
 1. Enable internal mode in the IDE: 
@@ -134,17 +141,38 @@ b. In the `libs.versions.toml` file:
 5. Enable the `gradle.declarative.studio.support` and `gradle.declarative.ide.support` keys.
 6. Restart the IDE again.
 
-## Convert a subproject to Declarative Gradle 
+### Enable Declarative DSL auto-completion in Kotlin DSL
+1. In the `gradle.properties` file add a following property:
+`org.gradle.kotlin.dsl.dcl=true`
+2. Sync the project
 
-🚧🚧🚧 **Work in progress** 🚧🚧🚧
+This will allow auto-completion for the Declarative DSL within `.kts` files for a smooth migration.
+> [!WARNING]
+> If your project does not have the properties file you may need to create it in the root project directory.
 
-## Examples
+## Try out the prototype
 
-🚧🚧🚧 **Work in progress** 🚧🚧🚧
+Keep in mind that this is a prototype - not every project can be migrated today. Since Declarative Gradle subprojects can sit alongside non-declarative ones, you can start by picking a single subproject and converting just that one to start.
+
+Two places to look first:
+
+- The [`examples`](examples) of simple applications migrated to the Declarative DSL.
+- The [`dsl-reference`](dsl-reference) documents what the DSL currently exposes. Expect differences from the regular Kotlin DSL — the mapping is intentionally not 1:1, and some features aren't available yet.
+
+### Known Declarative Gradle limitations
+1. Version Catalogs are not yet supported. When declaring a dependency you have to provide the coordinates of the dependency instead of the version catalog reference.
+2. `kotlin()` alias for dependencies is not supported. You have to provide full coordinates for the dependency.
+3. Combining JetBrains ecosystem plugin with Android ecosystem plugin may or may not work. We don't yet support an explicit `android` type in the `library` project type, but `jvm` platform should support some general use cases.
+
+## Examples of migrated applications
+
+1. [Multi-module Kotlin project from IntelliJ IDEA new project wizard](examples/idea-wizard/)
+2. [Spring-PetKlinik - a Kotlin fullstack Spring sample application](examples/spring-petklinik/)
 
 ## DSL reference
-
-🚧🚧🚧 **Work in progress** 🚧🚧🚧
+* [jvmApplication](dsl-reference/jvm-application.md)
+* [webApplication](dsl-reference/web-application.md)
+* [library](dsl-reference/library.md)
 
 ## Feedback and issue reporting
 

@@ -19,7 +19,7 @@ webApplication {
 
     // Limits "web" platform to given sub-platforms
     // Accepted values are WebSubplatforms names as strings: "js", "wasmJs"
-    // If omitted (or empty), both subplatforms are enabled by default
+    // If omitted (or empty), all subplatforms are enabled by default
     subplatforms = listOf("js", "wasmJs")
 
     dependencies { // Web application dependencies
