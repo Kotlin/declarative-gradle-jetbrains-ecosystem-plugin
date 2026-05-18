@@ -8,6 +8,11 @@ You can mix Declarative Gradle subprojects with non-declarative ones. In its cur
 lets you create [jvmApplication](./dsl-reference/jvm-application.md), [webApplication](./dsl-reference/web-application.md),
 and [library](./dsl-reference/library.md) (supporting `jvm`, `web`, and `ios` platforms) subprojects.
 
+While developing this plugin, we've significantly changed the mental model behind how Kotlin application build scripts can be built. We would appreciate your feedback on the design choices we've made.
+
+* Share your feedback in the `#declarative-gradle` channel in [Slack](https://slack-chats.kotlinlang.org/c/declarative-gradle).
+* Report any issues you find through [GitHub Issues](https://github.com/Kotlin/declarative-gradle-jetbrains-ecosystem-plugin/issues/new/choose).
+
 > [!WARNING]
 > Both Declarative Gradle and this plugin are pre-stable. Expect rough edges, breaking changes between releases, and no compatibility guarantees.
 
