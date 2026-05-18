@@ -7,6 +7,7 @@ jvmApplication {
     moduleName = "com.example.app" // The name of the application's Java module if it should run as a module
     jvmArgs = listOf("-Xmx512m", "-Dfile.encoding=UTF-8") // Application JVM arguments
 
+
     toolchain { // JDK toolchain which is used both for compilation and test tasks
         releaseVersion = 21 // JDK release version
         vendor = JvmVendor.ADOPTIUM // JDK vendor
@@ -18,12 +19,10 @@ jvmApplication {
             compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
         }
     }
-    
-    spring { } // Enables Spring framework support by applying "org.springframework.boot" plugin and adding Spring bom to the dependencies
 
     kotlin { // Kotlin compilation configuration
         compilerOptions { // Compiler arguments to apply for all Kotlin compilations
-            // KotlinJvmCompilerOptions members are available here, see more at:
+            // KotlinJvmCompilerOptions members are also available here, see more at:
             // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-jvm-compiler-options/
             // (for example: languageVersion, apiVersion, jvmTarget, freeCompilerArgs, etc.)
         }
@@ -35,6 +34,8 @@ jvmApplication {
             enabledFormats = listOf("json")
         }
     }
+
+    spring { } // Enables Spring framework support by applying "org.springframework.boot" plugin and adding Spring bom to the dependencies
 
     dependencies { // Application dependencies
         implementation(project(":shared"))
