@@ -121,13 +121,17 @@ b. In the `libs.versions.toml` file:
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization"}`
 
 #### Known problems
-1. Batch `include()` does not work in the settings file:
+
+1. The `include()` function with multiple arguments isn't supported in the `settings.gradle.dcl` file. You have to use a separate entry for each argument:
+
 ❌ **Don't do this:**
 `include("frontend", "backend")`
+
 ✅ **Do this:**
 `include("frontend")`
 `include("backend")`
-2. Some of APIs unfortunately are not yet available in Declarative Gradle including all annotations.
+
+2. Some APIs, including all annotations, aren't available yet in Declarative Gradle.
 
 ### Enable IDE support in IntelliJ IDEA and Android Studio
 
@@ -142,34 +146,45 @@ b. In the `libs.versions.toml` file:
 6. Restart the IDE again.
 
 ### Enable Declarative DSL auto-completion in Kotlin DSL
-1. In the `gradle.properties` file add a following property:
-`org.gradle.kotlin.dsl.dcl=true`
-2. Sync the project
 
-This will allow auto-completion for the Declarative DSL within `.kts` files for a smooth migration.
-> [!WARNING]
-> If your project does not have the properties file you may need to create it in the root project directory.
+1. Check that your project has a `gradle.properties` file. If it doesn't exist, create one in the root of your project.
+2. In your `gradle.properties` file, add the following property:
 
-## Try out the prototype
+```
+org.gradle.kotlin.dsl.dcl=true
+```
 
-Keep in mind that this is a prototype - not every project can be migrated today. Since Declarative Gradle subprojects can sit alongside non-declarative ones, you can start by picking a single subproject and converting just that one to start.
+3. Sync the project.
 
-Two places to look first:
+This property enables auto-completion for the Declarative DSL in `.kts` files, supporting a smooth migration.
 
-- The [`examples`](examples) of simple applications migrated to the Declarative DSL.
-- The [`dsl-reference`](dsl-reference) documents what the DSL currently exposes. Expect differences from the regular Kotlin DSL — the mapping is intentionally not 1:1, and some features aren't available yet.
+## Try the prototype
+
+> [!IMPORTANT] 
+> Keep in mind that this is a prototype, so not every project can be migrated yet.
+
+Because Declarative Gradle subprojects can coexist with non-declarative ones, you can start by selecting a single subproject and converting it first.
+
+Start with these resources:
+
+- The [`examples`](examples), which show simple applications migrated to the Declarative DSL.
+- The [`dsl-reference`](dsl-reference), which documents the DSL's current capabilities. Expect differences from the regular Kotlin DSL. The mapping is intentionally not 1:1, and some features aren't available yet.
 
 ### Known Declarative Gradle limitations
-1. Version Catalogs are not yet supported. When declaring a dependency you have to provide the coordinates of the dependency instead of the version catalog reference.
-2. `kotlin()` alias for dependencies is not supported. You have to provide full coordinates for the dependency.
-3. Combining JetBrains ecosystem plugin with Android ecosystem plugin may or may not work. We don't yet support an explicit `android` type in the `library` project type, but `jvm` platform should support some general use cases.
+
+1. Version catalogs aren't supported yet. When declaring a dependency, you must provide the dependency coordinates instead of a version catalog reference.
+2. The `kotlin()` alias for dependencies isn't supported. You must provide the full dependency coordinates.
+3. Combining the JetBrains ecosystem plugin with the Android ecosystem plugin may not work in all cases. Declarative Gradle doesn't support an explicit `android` type in the `library` project type yet, but the `jvm` platform should support some general use cases.
 
 ## Examples of migrated applications
 
-1. [Multi-module Kotlin project from IntelliJ IDEA new project wizard](examples/idea-wizard/)
-2. [Spring-PetKlinik - a Kotlin fullstack Spring sample application](examples/spring-petklinik/)
+* [A multi-module Kotlin project from IntelliJ IDEA's new project wizard](examples/idea-wizard/)
+* [Spring-PetKlinik – A Kotlin full-stack Spring sample application](examples/spring-petklinik/)
 
 ## DSL reference
+
+See the following for useful entries in the DSL reference:
+
 * [jvmApplication](dsl-reference/jvm-application.md)
 * [webApplication](dsl-reference/web-application.md)
 * [library](dsl-reference/library.md)
