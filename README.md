@@ -179,7 +179,7 @@ Start with these resources:
 
 1. Version catalogs aren't supported yet. When declaring a dependency, you must provide the dependency coordinates instead of a version catalog reference.
 2. The `kotlin()` alias for dependencies isn't supported. You must provide the full dependency coordinates.
-3. Combining the JetBrains ecosystem plugin with the Android ecosystem plugin may not work in all cases. Declarative Gradle doesn't support an explicit `android` type in the `library` project type yet, but the `jvm` platform should support some general use cases.
+3. Combining the JetBrains ecosystem plugin with the Android ecosystem plugin may not work in all cases. An explicit `android` type in the `library` project type is not supported yet, but the `jvm` platform should support most of the general use cases.
 
 ## Examples of migrated applications
 
