@@ -29,4 +29,12 @@ jvmApplication {
             resource(project(":frontend"))
         }
     }
+
+    testing {
+        dependencies {
+            implementation("org.springframework.boot:spring-boot-starter-test")
+            implementation("org.jetbrains.kotlin:kotlin-test-junit5")
+            runtimeOnly("org.junit.platform:junit-platform-launcher")
+        }
+    }
 }
