@@ -30,7 +30,7 @@ defaults {
         }
 
         testing {
-            useJunitPlatform = true
+            useJUnitPlatform = true
         }
     }
 
@@ -43,7 +43,7 @@ defaults {
 
         testing {
             jvmPlatform {
-                useJunitPlatform = true
+                useJUnitPlatform = true
             }
         }
     }

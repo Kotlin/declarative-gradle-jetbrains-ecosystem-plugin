@@ -94,7 +94,7 @@ library {
 
     testing { // Library testing configuration
         jvmPlatform { // Testing configuration for JVM platform 
-            useJunitPlatform = true // Enable JUnit5 platform for tests
+            useJUnitPlatform = true // Enable JUnit5 platform for tests
         }
 
         webPlatform { // Testing configuration for Web platform

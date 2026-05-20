@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.declarative.common.definitions.TestingExtensi
 
 public interface JvmApplicationTestingExtension : TestingExtension {
 
-    public val useJunitPlatform: Property<Boolean>
+    public val useJUnitPlatform: Property<Boolean>
 
     @get:Nested
     public val dependencies: JvmApplicationTestingDependenciesExtension

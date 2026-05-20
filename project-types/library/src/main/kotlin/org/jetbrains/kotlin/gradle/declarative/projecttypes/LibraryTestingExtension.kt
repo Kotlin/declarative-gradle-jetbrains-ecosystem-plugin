@@ -23,7 +23,7 @@ public interface LibraryTestingExtension : TestingExtension {
 
 @Suppress("UnstableApiUsage")
 public interface LibraryTestingJvmEcosystemDefinition : Definition<BuildModel.None> {
-    public val useJunitPlatform: Property<Boolean>
+    public val useJUnitPlatform: Property<Boolean>
 }
 
 @Suppress("UnstableApiUsage")

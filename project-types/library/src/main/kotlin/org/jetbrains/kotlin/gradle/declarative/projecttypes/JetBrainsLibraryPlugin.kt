@@ -460,7 +460,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         ) {
             if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
                 project.tasks.withType(Test::class.java).configureEach {
-                    if (jvmPlatform.useJunitPlatform.getOrElse(false)) {
+                    if (jvmPlatform.useJUnitPlatform.getOrElse(false)) {
                         it.useJUnitPlatform()
                     }
                 }

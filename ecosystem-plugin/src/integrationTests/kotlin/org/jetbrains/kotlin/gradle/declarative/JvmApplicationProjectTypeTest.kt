@@ -309,7 +309,7 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 |    mainClass = "org.example.SerializationKt"
                 |    
                 |    testing {
-                |        useJunitPlatform = true
+                |        useJUnitPlatform = true
                 |        dependencies {
                 |            implementation(platform("org.junit:junit-bom:5.14.3"))
 	            |            implementation("org.junit.jupiter:junit-jupiter")
