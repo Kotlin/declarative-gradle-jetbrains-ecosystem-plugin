@@ -1,0 +1,96 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "jvm-application",
+    "version": "0.115.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-milestone-2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.115.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "jvm-application-0.115.0.jar",
+          "url": "jvm-application-0.115.0.jar",
+          "size": 67454,
+          "sha512": "1842273041fcf7d181d1232ff4c575cb9d17a41fd12eac0487f29640824c2e8c04d9ba4dd1551876f45ee474c2f7a1827bae9c1dc82310e7f7efbf18c6997f98",
+          "sha256": "a370ba082f25cc9fbd8a5dd7ce7dd6235367c7cb51a2267da74150e8698da700",
+          "sha1": "5942423f3a7d47688e03bd6b9f9028100eeae53d",
+          "md5": "f7b1ae6d56d739786f8e0204b19bc5fd"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.115.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "jvm-application-0.115.0.jar",
+          "url": "jvm-application-0.115.0.jar",
+          "size": 67454,
+          "sha512": "1842273041fcf7d181d1232ff4c575cb9d17a41fd12eac0487f29640824c2e8c04d9ba4dd1551876f45ee474c2f7a1827bae9c1dc82310e7f7efbf18c6997f98",
+          "sha256": "a370ba082f25cc9fbd8a5dd7ce7dd6235367c7cb51a2267da74150e8698da700",
+          "sha1": "5942423f3a7d47688e03bd6b9f9028100eeae53d",
+          "md5": "f7b1ae6d56d739786f8e0204b19bc5fd"
+        }
+      ]
+    }
+  ]
+}

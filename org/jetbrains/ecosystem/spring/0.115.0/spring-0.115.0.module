@@ -1,0 +1,110 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "spring",
+    "version": "0.115.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-milestone-2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.115.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "spring-0.115.0.jar",
+          "url": "spring-0.115.0.jar",
+          "size": 17304,
+          "sha512": "f59d3e27e45449feeb33b80c830756a3b55c9a9b9700ec4d35291ca17f6e5b096e9b794fc555d7824826eedb84b6a63ea5b248b2bfa408ae004daa69b8fc5606",
+          "sha256": "d188e2f286d658f0c056f5956ac325ae467d33c5d13ada7cfeaaa028b32f143e",
+          "sha1": "73439b2fb655124f0f3db66c090d5892504d887f",
+          "md5": "7713a5f200c03cbf6fcf949ea60f43ce"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-gradle-plugin",
+          "version": {
+            "requires": "4.0.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-allopen",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.115.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "spring-0.115.0.jar",
+          "url": "spring-0.115.0.jar",
+          "size": 17304,
+          "sha512": "f59d3e27e45449feeb33b80c830756a3b55c9a9b9700ec4d35291ca17f6e5b096e9b794fc555d7824826eedb84b6a63ea5b248b2bfa408ae004daa69b8fc5606",
+          "sha256": "d188e2f286d658f0c056f5956ac325ae467d33c5d13ada7cfeaaa028b32f143e",
+          "sha1": "73439b2fb655124f0f3db66c090d5892504d887f",
+          "md5": "7713a5f200c03cbf6fcf949ea60f43ce"
+        }
+      ]
+    }
+  ]
+}
