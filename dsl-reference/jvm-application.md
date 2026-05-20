@@ -54,7 +54,7 @@ jvmApplication {
     }
 
     testing { // Application testing configuration
-        useJunitPlatform = true // Enable JUnit5 platform for tests
+        useJUnitPlatform = true // Enable JUnit5 platform for tests
 
         dependencies { // testing dependencies
             implementation("org.junit.jupiter:junit-jupiter:5.12.2")

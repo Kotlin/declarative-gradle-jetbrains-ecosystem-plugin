@@ -39,7 +39,7 @@ defaults {
         }
 
         testing {
-            useJunitPlatform = true
+            useJUnitPlatform = true
         }
     }
 

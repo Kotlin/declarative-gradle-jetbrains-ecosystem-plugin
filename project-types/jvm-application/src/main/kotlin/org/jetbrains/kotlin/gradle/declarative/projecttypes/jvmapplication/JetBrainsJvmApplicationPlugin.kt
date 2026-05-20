@@ -230,7 +230,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             project.plugins.apply("jvm-test-suite")
             val jvmTestSuiteExtension = project.extensions.getByType(TestingExtension::class.java)
             jvmTestSuiteExtension.suites.named("test", JvmTestSuite::class.java) { jvmTestSuite ->
-                if (definition.testing.useJunitPlatform.getOrElse(false)) {
+                if (definition.testing.useJUnitPlatform.getOrElse(false)) {
                     jvmTestSuite.useJUnitJupiter()
                 } else {
                     jvmTestSuite.useJUnit()
