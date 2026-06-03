@@ -1,2 +1,3 @@
 gradlew.bat eol=crlf
-examples/spring-petklinik/gradlew.bat eol=lf
+examples/spring-petklinik/gradlew.bat eol=crlf
+examples/idea-wizard/gradlew.bat eol=crlf
