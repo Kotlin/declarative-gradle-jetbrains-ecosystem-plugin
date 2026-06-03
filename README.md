@@ -21,20 +21,20 @@ While developing this plugin, we've significantly changed the mental model behin
 ### Switch to Gradle version `9.6.0`
 
 > [!IMPORTANT]
-> Declarative Gradle currently needs Gradle version `9.6.0-milestone-2`.
+> Declarative Gradle currently needs Gradle version `9.6.0-rc-1`.
 
 You can change the Gradle version in the Gradle Wrapper from the command line or by updating the `distributionUrl` property.
 
 For the command line, use the following:
 
 ```
-./gradlew wrapper --gradle-version 9.6.0-milestone-2
+./gradlew wrapper --gradle-version 9.6.0-rc-1
 ```
 
 For the property, in the `gradle/wrapper/gradle-wrapper.properties` file, update the `distributionUrl` property as follows:
 
 ```
-distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.0-milestone-2-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.0-rc-1-bin.zip
 ```
 
 ### Update your settings file
