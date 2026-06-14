@@ -30,6 +30,22 @@ gradlePlugin {
     }
 }
 
+configurations.configureEach {
+    if (isCanBeConsumed) {
+        attributes {
+            attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.6.0"))
+        }
+    }
+}
+
+// Workaround for attribute clash between `signature` and the deprecated `archives` configuration
+// remove when bumping to Gradle 10
+configurations.archives {
+    attributes {
+        attribute(Attribute.of("deprecated", String::class.java), "true")
+    }
+}
+
 testing {
     suites {
         @Suppress("UnstableApiUsage")
