@@ -1,0 +1,96 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "web-application",
+    "version": "0.118.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.0-rc-2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.118.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "web-application-0.118.0.jar",
+          "url": "web-application-0.118.0.jar",
+          "size": 13974,
+          "sha512": "ad4fb2c287f3df96a78007ebb2e7be761395d3a211aa7272a972d71f5ff4f193a3fc74d5ee29f56d2a2ff6bbc17226ee84f1b61d5f2a584ffc7bdefdbc2a4419",
+          "sha256": "507f921b620ae9d0e5e54d01b331170dd921f627c8ff1a2798a55530cb44a48e",
+          "sha1": "701b6b119baccc8ed108feec0333e7615ff7623b",
+          "md5": "fd39afa4aa48e5a67027dd0c2b7017fe"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.118.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "web-application-0.118.0.jar",
+          "url": "web-application-0.118.0.jar",
+          "size": 13974,
+          "sha512": "ad4fb2c287f3df96a78007ebb2e7be761395d3a211aa7272a972d71f5ff4f193a3fc74d5ee29f56d2a2ff6bbc17226ee84f1b61d5f2a584ffc7bdefdbc2a4419",
+          "sha256": "507f921b620ae9d0e5e54d01b331170dd921f627c8ff1a2798a55530cb44a48e",
+          "sha1": "701b6b119baccc8ed108feec0333e7615ff7623b",
+          "md5": "fd39afa4aa48e5a67027dd0c2b7017fe"
+        }
+      ]
+    }
+  ]
+}
