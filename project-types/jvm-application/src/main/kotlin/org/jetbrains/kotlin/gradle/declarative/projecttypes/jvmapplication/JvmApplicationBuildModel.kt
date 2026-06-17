@@ -18,6 +18,7 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.features.binding.BuildModel
 import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainSpec
@@ -49,6 +50,7 @@ public interface JvmApplication : Named {
     public val runtimeClasspath: FileCollection
 
     public val runTask: TaskProvider<JavaExec>
+    public val jarTask: TaskProvider<Jar>
     public val executionDirectory: DirectoryProperty
 }
 
@@ -62,6 +64,7 @@ internal abstract class DefaultJvmApplication @Inject constructor(
         get() = (jvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit).kotlinCompilation
 
     override val runTask: TaskProvider<JavaExec> = kotlinCompilation.project.tasks.registerJvmApplicationRunTask()
+    override val jarTask: TaskProvider<Jar> = kotlinCompilation.project.tasks.named(taskName("jar"), Jar::class.java)
 
     override val runtimeOnlyConfiguration: Configuration
         get() = kotlinCompilation.project.configurations
@@ -71,7 +74,7 @@ internal abstract class DefaultJvmApplication @Inject constructor(
         get() = kotlinCompilation.runtimeDependencyFiles!!
 
     private fun TaskContainer.registerJvmApplicationRunTask(): TaskProvider<JavaExec> =
-        register(runTaskName, JavaExec::class.java) { javaExecTask ->
+        register(taskName("run"), JavaExec::class.java) { javaExecTask ->
             javaExecTask.description = "Runs this project as a JVM application"
             javaExecTask.group = ApplicationPlugin.APPLICATION_GROUP
 
@@ -93,8 +96,7 @@ internal abstract class DefaultJvmApplication @Inject constructor(
             )
         }
 
-    private val JvmApplication.runTaskName
-        get() = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) "run" else "run${
+    private fun JvmApplication.taskName(name: String) = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) name else "$name${
             name.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(
                     getDefault()
@@ -197,4 +199,3 @@ internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
         }
     }
 }
-
