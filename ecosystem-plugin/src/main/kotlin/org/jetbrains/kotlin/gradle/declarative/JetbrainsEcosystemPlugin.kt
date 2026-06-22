@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSof
 )
 public class JetbrainsEcosystemPlugin : Plugin<Settings> {
     private val logger = Logging.getLogger(JetbrainsEcosystemPlugin::class.java)
-    private val MIN_SUPPORTED_GRADLE_VERSION = "9.6.0-milestone-1"
+    private val MIN_SUPPORTED_GRADLE_VERSION = "9.6.0"
 
     override fun apply(target: Settings) {
         logger.info("JetbrainsEcosystemPlugin applied to settings")
