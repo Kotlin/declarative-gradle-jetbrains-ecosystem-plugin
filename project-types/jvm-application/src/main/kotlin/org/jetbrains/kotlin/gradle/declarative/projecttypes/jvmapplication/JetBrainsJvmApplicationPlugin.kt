@@ -39,7 +39,7 @@ import javax.inject.Inject
 @Suppress("UnstableApiUsage")
 @BindsProjectType(JetBrainsJvmApplicationPlugin.Binding::class)
 public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
-    override fun apply(target: Project) = Unit
+    override fun apply(target: Project) { }
 
     public class Binding : ProjectTypeBinding {
         override fun bind(builder: ProjectTypeBindingBuilder) {
