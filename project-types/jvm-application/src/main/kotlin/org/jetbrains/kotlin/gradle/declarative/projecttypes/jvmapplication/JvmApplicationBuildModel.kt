@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmEcosystem
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import java.util.Locale.getDefault
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -96,11 +95,9 @@ internal abstract class DefaultJvmApplication @Inject constructor(
             )
         }
 
-    private fun JvmApplication.taskName(name: String) = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) name else "$name${
-            name.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(
-                    getDefault()
-                ) else it.toString()
+    private fun JvmApplication.taskName(taskName: String) = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) taskName else "$name${
+        taskName.replaceFirstChar {
+                if (it.isLowerCase()) it.uppercaseChar() else it
             }
         }"
 }
