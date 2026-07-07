@@ -77,7 +77,7 @@ data class BuildOptions(
         val configurationCacheFlag = configurationCache.toBooleanFlag(gradleVersion)
         if (configurationCacheFlag != null) {
             arguments.add("-Dorg.gradle.unsafe.configuration-cache=$configurationCacheFlag")
-            arguments.add("-Dorg.gradle.unsafe.configuration-cache-problems=${configurationCacheProblems.name.lowercase(Locale.getDefault())}")
+            arguments.add("-Dorg.gradle.unsafe.configuration-cache-problems=${configurationCacheProblems.name.lowercase()}")
             arguments.add("-Dorg.gradle.configuration-cache.parallel=true")
         }
 
