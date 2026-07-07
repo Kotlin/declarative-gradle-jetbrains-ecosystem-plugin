@@ -3,12 +3,10 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.api.plugins.jvm.JvmTestSuite
-import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
@@ -16,6 +14,7 @@ import org.gradle.features.binding.ProjectTypeApplyAction
 import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
+import org.gradle.features.file.ProjectFeatureLayout
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.JavaToolchainSpec
@@ -39,9 +38,7 @@ import javax.inject.Inject
 @Suppress("UnstableApiUsage")
 @BindsProjectType(JetBrainsJvmApplicationPlugin.Binding::class)
 public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        println("Applying JetBrains JVM Application plugin to ${target.path}")
-    }
+    override fun apply(target: Project) {}
 
     public class Binding : ProjectTypeBinding {
         override fun bind(builder: ProjectTypeBindingBuilder) {
@@ -50,6 +47,13 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 .withUnsafeApplyAction()
                 .withUnsafeDefinition()
                 .withBuildModelImplementationType(DefaultJvmApplicationBuildModel::class.java)
+                .withNestedBuildModelImplementationType(
+                    KotlinTestSuiteBuildModel::class.java,
+                    DefaultKotlinTestSuiteBuildModel::class.java
+                )
+                .withNestedBuildModelImplementationType(KotlinTestSuiteTargetBuildModel::class.java
+                    , DefaultKotlinTestSuiteTargetBuildModel::class.java
+                )
         }
     }
 
@@ -64,10 +68,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         abstract val project: Project
 
         @get:Inject
-        abstract val projectLayout: ProjectLayout
-
-        @get:Inject
-        abstract val tasksContainer: TaskContainer
+        abstract val projectFeatureLayout: ProjectFeatureLayout
 
         @get:Inject
         abstract val javaToolchainService: JavaToolchainService
@@ -217,7 +218,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 application.runtimeOnlyConfiguration.dependencies
                     .addAllLater(definition.dependencies.runtimeOnly.dependencies)
                 application.executionDirectory.convention(
-                    projectLayout.buildDirectory.dir("application/${application.name}")
+                    projectFeatureLayout.contextBuildDirectory.map { it.dir("application/${application.name}") }
                 )
             }
         }
@@ -230,7 +231,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             project.plugins.apply("jvm-test-suite")
             val jvmTestSuiteExtension = project.extensions.getByType(TestingExtension::class.java)
             jvmTestSuiteExtension.suites.named("test", JvmTestSuite::class.java) { jvmTestSuite ->
-                if (definition.testing.useJUnitPlatform.getOrElse(false)) {
+                if (definition.testing.suites.getByName("test").useJUnitPlatform.getOrElse(false)) {
                     jvmTestSuite.useJUnitJupiter()
                 } else {
                     jvmTestSuite.useJUnit()
@@ -247,10 +248,10 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
 
                     kotlinJvmCompilationUnit.jvmEcosystem.jdkToolchain.bindToolchainDefinition(definition.toolchain)
                     kotlinJvmCompilationUnit.jvmEcosystem.implementationConfiguration.dependencies.addAllLater(
-                        definition.testing.dependencies.implementation.dependencies
+                        definition.testing.suites.getByName("test").dependencies.implementation.dependencies
                     )
                     kotlinJvmCompilationUnit.jvmEcosystem.compileOnlyConfiguration.dependencies.addAllLater(
-                        definition.testing.dependencies.compileOnly.dependencies
+                        definition.testing.suites.getByName("test").dependencies.compileOnly.dependencies
                     )
 
                     kotlinJvmCompilationUnit.jvmCompilations.create(

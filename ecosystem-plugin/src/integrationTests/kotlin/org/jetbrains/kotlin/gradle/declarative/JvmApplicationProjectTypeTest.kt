@@ -309,13 +309,22 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 |    mainClass = "org.example.SerializationKt"
                 |    
                 |    testing {
-                |        useJUnitPlatform = true
-                |        dependencies {
-                |            implementation(platform("org.junit:junit-bom:5.14.3"))
-	            |            implementation("org.junit.jupiter:junit-jupiter")
-	            |            runtimeOnly("org.junit.platform:junit-platform-launcher")
+                |        suites {
+                |            kotlinTestSuite("test") {
+                |                useJUnitPlatform {
+                |                    jUnitVersion = "6.0.0"
+                |                }
+                |                // useKotlinTest {
+                |                //   kotlinVersion = "2.3.20"
+                |                // }
+                |                dependencies {
+                |                    implementation(platform("org.junit:junit-bom:5.14.3"))
+	            |                    implementation("org.junit.jupiter:junit-jupiter")
+	            |                    runtimeOnly("org.junit.platform:junit-platform-launcher")
+                |                }
+                |            }
                 |        }
-                |    } 
+                |    }
                 |}
                 """.trimMargin()
             )
