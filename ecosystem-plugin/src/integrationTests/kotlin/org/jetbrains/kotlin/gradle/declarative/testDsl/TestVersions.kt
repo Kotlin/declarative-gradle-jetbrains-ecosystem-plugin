@@ -9,7 +9,7 @@ interface TestVersions {
     }
 
     object Kotlin {
-        const val CURRENT = "2.4.10"
+        const val CURRENT = "2.4.20"
     }
 
     object Dependencies {
