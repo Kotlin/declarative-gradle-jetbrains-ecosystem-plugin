@@ -2,10 +2,10 @@ package org.jetbrains.kotlin.gradle.declarative.testDsl
 
 interface TestVersions {
     object Gradle {
-        const val G_9_6 = "9.6.1"
+        const val G_9_7 = "9.7.1"
 
-        const val MIN_SUPPORTED = G_9_6
-        const val MAX_SUPPORTED = G_9_6
+        const val MIN_SUPPORTED = G_9_7
+        const val MAX_SUPPORTED = G_9_7
     }
 
     object Kotlin {
