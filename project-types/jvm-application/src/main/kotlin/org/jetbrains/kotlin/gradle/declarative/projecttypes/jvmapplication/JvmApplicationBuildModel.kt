@@ -18,6 +18,7 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.features.binding.BuildModel
 import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainSpec
@@ -28,7 +29,6 @@ import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmEcosystem
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import java.util.Locale.getDefault
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -49,6 +49,7 @@ public interface JvmApplication : Named {
     public val runtimeClasspath: FileCollection
 
     public val runTask: TaskProvider<JavaExec>
+    public val jarTask: TaskProvider<Jar>
     public val executionDirectory: DirectoryProperty
 }
 
@@ -62,6 +63,7 @@ internal abstract class DefaultJvmApplication @Inject constructor(
         get() = (jvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit).kotlinCompilation
 
     override val runTask: TaskProvider<JavaExec> = kotlinCompilation.project.tasks.registerJvmApplicationRunTask()
+    override val jarTask: TaskProvider<Jar> = kotlinCompilation.project.tasks.named(taskName("jar"), Jar::class.java)
 
     override val runtimeOnlyConfiguration: Configuration
         get() = kotlinCompilation.project.configurations
@@ -71,7 +73,7 @@ internal abstract class DefaultJvmApplication @Inject constructor(
         get() = kotlinCompilation.runtimeDependencyFiles!!
 
     private fun TaskContainer.registerJvmApplicationRunTask(): TaskProvider<JavaExec> =
-        register(runTaskName, JavaExec::class.java) { javaExecTask ->
+        register(taskName("run"), JavaExec::class.java) { javaExecTask ->
             javaExecTask.description = "Runs this project as a JVM application"
             javaExecTask.group = ApplicationPlugin.APPLICATION_GROUP
 
@@ -93,12 +95,9 @@ internal abstract class DefaultJvmApplication @Inject constructor(
             )
         }
 
-    private val JvmApplication.runTaskName
-        get() = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) "run" else "run${
-            name.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(
-                    getDefault()
-                ) else it.toString()
+    private fun JvmApplication.taskName(taskName: String) = if (name == KotlinCompilation.MAIN_COMPILATION_NAME) taskName else "$name${
+        taskName.replaceFirstChar {
+                if (it.isLowerCase()) it.uppercaseChar() else it
             }
         }"
 }
@@ -197,4 +196,3 @@ internal abstract class DefaultJvmApplicationBuildModel @Inject constructor(
         }
     }
 }
-
