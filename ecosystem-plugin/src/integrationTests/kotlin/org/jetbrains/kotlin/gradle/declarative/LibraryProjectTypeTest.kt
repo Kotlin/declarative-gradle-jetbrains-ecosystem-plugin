@@ -680,4 +680,51 @@ class LibraryProjectTypeTest : BaseTest() {
             build("help")
         }
     }
+
+    @DisplayName("iOS framework publishing")
+    @GradleTest
+    fun testIosFramework(gradleVersion: GradleVersion) {
+        project("base-ecosystem-project", gradleVersion) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("ios")
+                |    
+                |    iosPlatform {
+                |        subplatforms = listOf("iosArm64")
+                |        kotlin {
+                |            compilerOptions {
+                |                moduleName = "shared"
+                |            }
+                |        }
+                |    }
+                |    
+                |    publishing {
+                |        iosFramework {
+                |            baseName = "shared"
+                |            static = true
+                |        }
+                |    }
+                |}    
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("iosMain").source("main.kt") {
+                //language=kotlin
+                """
+                |package org.example
+                |
+                |data class Project(val name: String, val language: String)
+                |
+                |fun main(): Unit = println(Project("test", "Kotlin"))
+                """.trimMargin()
+            }
+
+            build("build") {
+                assertTasksExecuted(":build")
+                assertOutputContains("shared.framework")
+            }
+        }
+    }
 }
