@@ -12,13 +12,16 @@ import org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication.WebAp
 import org.jetbrains.kotlin.gradle.declarative.softwarefeature.resource.ResourceSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.MavenPublishSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSoftwareFeaturePlugin
+import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.testfixtures.JvmTestFixturesFeature
 
 @Suppress("UnstableApiUsage")
 @RegistersProjectFeatures(
     JetBrainsJvmApplicationPlugin::class,
     WebApplicationPlugin::class,
     JetBrainsLibraryPlugin::class,
+
     DistributionSoftwareFeaturePlugin::class,
+    JvmTestFixturesFeature::class,
     KotlinSerializationSoftwareFeaturePlugin::class,
     SpringSoftwareFeaturePlugin::class,
     ResourceSoftwareFeaturePlugin::class,
