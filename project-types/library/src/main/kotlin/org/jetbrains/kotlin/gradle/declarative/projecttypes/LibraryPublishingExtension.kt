@@ -1,6 +1,7 @@
 package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
@@ -8,4 +9,7 @@ import org.gradle.features.binding.Definition
 public interface LibraryPublishingExtension : Definition<BuildModel.None> {
     public val group: Property<String>
     public val version: Property<String>
+
+    @get:Nested
+    public val iosFramework: LibraryIosFrameworkPublishingExtension
  }
