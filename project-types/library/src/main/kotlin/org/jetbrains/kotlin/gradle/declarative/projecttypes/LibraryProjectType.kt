@@ -23,6 +23,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
     public val iosPlatform: LibraryIosEcosystemDefinition
 
     @get:Nested
+    public val androidPlatform: LibraryAndroidEcosystemDefinition
+
+    @get:Nested
     public val java: JavaJvmCompilationExtension
 
     @get:Nested
@@ -39,5 +42,5 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 }
 
 public enum class LibraryPlatform {
-    jvm, common, web, ios,
+    jvm, common, web, ios, android
 }
