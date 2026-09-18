@@ -5,6 +5,7 @@
 pluginManagement {
     includeBuild("../../")
     repositories {
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -19,6 +20,7 @@ plugins {
 dependencyResolutionManagement {
     // Use Maven Central as the default repository (where Gradle will download dependencies) in all subprojects.
     repositories {
+        google()
         mavenCentral()
     }
 }
