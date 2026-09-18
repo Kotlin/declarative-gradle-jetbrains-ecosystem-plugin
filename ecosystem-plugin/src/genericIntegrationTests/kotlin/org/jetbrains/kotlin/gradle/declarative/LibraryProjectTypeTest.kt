@@ -679,4 +679,31 @@ class LibraryProjectTypeTest : BaseTest() {
             build("help")
         }
     }
+
+    @DisplayName("Android platform")
+    @GradleTest
+    fun testAndroidPlatform(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("android")
+                |    
+                |    androidPlatform {
+                |        compileSdk = 36
+                |        namespace = "base-ecosystem-project"
+                |    }
+                |}    
+                """.trimMargin()
+            )
+
+            build("build") {
+                assertTasksExecuted(":build")
+            }
+        }
+    }
 }
