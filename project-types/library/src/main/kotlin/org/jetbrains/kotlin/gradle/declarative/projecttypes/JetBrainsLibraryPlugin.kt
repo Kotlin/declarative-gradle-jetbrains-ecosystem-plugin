@@ -1,6 +1,7 @@
 @file:Suppress("INVISIBLE_REFERENCE")
 package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -135,6 +136,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 definition.configureJvmPlatform()
             }
 
+            if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
+                definition.androidPlatform.configureAndroidPlatform()
+            }
+
             definition.testing.configureTesting(
                 enabledPlatforms,
                 enabledWebSubplatforms
@@ -182,6 +187,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                                     if (enabledIosSubplatforms.contains(IosSubplatforms.iosArm64)) iosArm64()
                                     if (enabledIosSubplatforms.contains(IosSubplatforms.iosSimulatorArm64)) iosSimulatorArm64()
                                     if (enabledIosSubplatforms.contains(IosSubplatforms.iosX64)) iosX64()
+                                }
+                                LibraryPlatforms.android -> {
+                                    pluginManager.apply("com.android.kotlin.multiplatform.library")
+                                    android()
                                 }
                             }
                         }
@@ -451,6 +460,30 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         )
                     }
                 }
+                if (enabledPlatforms.contains(LibraryPlatforms.android)) {
+                    val defaultAndroidJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
+                    val target = targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                    syncKotlinCommonCompilerOptionsAsConvention(
+                        compilerOptions,
+                        defaultAndroidJvmOptions,
+                        defaultCommonOptions
+                    )
+                    syncKotlinJvmCompilerOptionsAsConvention(
+                        this@wireKotlinCompilerOptions.androidPlatform.compilerOptions,
+                        target.compilerOptions,
+                        defaultAndroidJvmOptions
+                    )
+                }
+            }
+        }
+
+        private fun LibraryAndroidEcosystemDefinition.configureAndroidPlatform() {
+            withKmpPlugin {
+                val androidTarget = targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                minSdk.orNull?.let { androidTarget.minSdk = it }
+                compileSdk.orNull?.let { androidTarget.compileSdk = it }
+                compileSdkExtension.orNull?.let { androidTarget.compileSdkExtension = it }
+                namespace.orNull?.let { androidTarget.namespace = it }
             }
         }
 
@@ -507,6 +540,13 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
                 val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
                 action(kmpExtension)
+            }
+        }
+
+        private inline fun KotlinMultiplatformExtension.android(crossinline action: KotlinMultiplatformAndroidLibraryTarget.() -> Unit = {}) {
+            pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+                val androidKmpTarget = extensions.getByType(KotlinMultiplatformAndroidLibraryTarget::class.java)
+                action(androidKmpTarget)
             }
         }
 
