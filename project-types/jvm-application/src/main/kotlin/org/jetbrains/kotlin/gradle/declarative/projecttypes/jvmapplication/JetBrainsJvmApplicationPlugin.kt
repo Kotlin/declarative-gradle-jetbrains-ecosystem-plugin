@@ -48,6 +48,10 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 .withUnsafeApplyAction()
                 .withUnsafeDefinition()
                 .withBuildModelImplementationType(DefaultJvmApplicationBuildModel::class.java)
+                .withNestedBuildModelImplementationType(
+                    JvmTestingBuildModel::class.java,
+                    DefaultJvmTestingBuildModel::class.java,
+                )
         }
     }
 
@@ -97,6 +101,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
             kotlinJvmExtension.bindTestCompilation(
                 definition,
                 buildModel,
+                context,
             )
         }
 
@@ -223,6 +228,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
         private fun KotlinJvmExtension.bindTestCompilation(
             definition: JvmApplicationProjectType,
             buildModel: DefaultJvmApplicationBuildModel,
+            context: ProjectFeatureApplicationContext,
         ) {
             val testCompilation = target.compilations.getByName(KotlinCompilation.TEST_COMPILATION_NAME)
             project.plugins.apply("jvm-test-suite")
@@ -238,7 +244,7 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                 }
             }
 
-            buildModel.compilationUnits
+            val testCompilationUnit = buildModel.compilationUnits
                 .create(KotlinCompilation.TEST_COMPILATION_NAME) { kotlinJvmCompilationUnit ->
                     kotlinJvmCompilationUnit as DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit
                     kotlinJvmCompilationUnit.kotlinCompilation = testCompilation
@@ -292,6 +298,10 @@ public abstract class JetBrainsJvmApplicationPlugin : Plugin<Project> {
                             }
                     }
                 }
+
+            val testingBuildModel = context.getBuildModel(definition.testing)
+            testingBuildModel as DefaultJvmTestingBuildModel
+            testingBuildModel.compilationUnit = testCompilationUnit
         }
     }
 }

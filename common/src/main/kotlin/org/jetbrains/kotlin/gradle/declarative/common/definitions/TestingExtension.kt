@@ -4,4 +4,6 @@ import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface TestingExtension : Definition<BuildModel.None>
+public interface TestingExtension<BuildModel : TestingBuildModel> : Definition<BuildModel>
+
+public interface TestingBuildModel : BuildModel
