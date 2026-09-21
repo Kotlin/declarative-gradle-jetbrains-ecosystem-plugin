@@ -140,7 +140,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledWebSubplatforms
             )
 
-            definition.publishing.configurePublishing()
+            definition.publishing.configurePublishing(
+                enabledIosSubplatforms = when {
+                    buildModel.enabledPlatforms.get().contains(LibraryPlatforms.ios) -> enabledIosSubplatforms
+                    else -> emptyList()
+                }
+            )
         }
 
         private fun applyKotlinPlugin(
@@ -491,9 +496,23 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryPublishingExtension.configurePublishing() {
+        private fun LibraryPublishingExtension.configurePublishing(enabledIosSubplatforms: List<IosSubplatforms>) {
             project.group = group.getOrElse(project.path.replace(":", "."))
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
+            if (enabledIosSubplatforms.isEmpty()) return
+            println("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
+            withKmpPlugin {
+                enabledIosSubplatforms.forEach { subplatform ->
+                    val target = targets.getByName(subplatform.name) as KotlinNativeTarget
+                    target.binaries.framework {
+                        iosFramework.baseName.orNull?.let { baseName = it }
+                        iosFramework.static.orNull?.let { isStatic = it }
+                        iosFramework.linkerOpts.orNull?.let { linkerOpts = it }
+                        iosFramework.freeCompilerArgs.orNull?.let { freeCompilerArgs = it }
+                        iosFramework.outputDirectory.orNull?.asFile?.let { outputDirectory = it }
+                    }
+                }
+            }
         }
 
         private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {
