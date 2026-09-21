@@ -140,7 +140,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledWebSubplatforms
             )
 
-            definition.publishing.configurePublishing(enabledIosSubplatforms)
+            definition.publishing.configurePublishing(
+                enabledIosSubplatforms = when {
+                    buildModel.enabledPlatforms.get().contains(LibraryPlatforms.ios) -> enabledIosSubplatforms
+                    else -> emptyList()
+                }
+            )
         }
 
         private fun applyKotlinPlugin(
@@ -498,8 +503,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             println("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
             withKmpPlugin {
                 enabledIosSubplatforms.forEach { subplatform ->
-                    val target = runCatching { targets.getByName(subplatform.name) as KotlinNativeTarget }.getOrNull()
-                        ?: return@forEach
+                    val target = targets.getByName(subplatform.name) as KotlinNativeTarget
                     target.binaries.framework {
                         iosFramework.baseName.orNull?.let { baseName = it }
                         iosFramework.static.orNull?.let { isStatic = it }
