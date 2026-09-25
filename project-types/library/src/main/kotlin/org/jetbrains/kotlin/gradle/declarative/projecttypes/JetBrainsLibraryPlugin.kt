@@ -6,6 +6,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyCollector
+import org.gradle.api.internal.GradleInternal
+import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.api.logging.Logging
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
@@ -67,6 +69,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         abstract val pluginManager: PluginManager
 
         @get:Inject
+        abstract val pluginRegistry: PluginRegistry
+
+        @get:Inject
         abstract val project: Project
 
         @get:Inject
@@ -76,6 +81,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         abstract val objectFactory: ObjectFactory
 
         private val logger = Logging.getLogger(this::class.simpleName)
+
+        private val hasAndroidEcosystemPlugin = (project.gradle as GradleInternal).settings.plugins.hasPlugin("com.android.ecosystem")
 
         override fun apply(
             context: ProjectFeatureApplicationContext,
@@ -136,7 +143,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 definition.configureJvmPlatform()
             }
 
-            if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
+            if (hasAndroidEcosystemPlugin && buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
                 definition.androidPlatform.configureAndroidPlatform()
             }
 
@@ -189,6 +196,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                                     if (enabledIosSubplatforms.contains(IosSubplatforms.iosX64)) iosX64()
                                 }
                                 LibraryPlatforms.android -> {
+                                    if (!hasAndroidEcosystemPlugin) {
+                                        // Might be better to turn the warning into a GradleException instead
+                                        logger.warn("The 'android' platform can only used when 'com.android.ecosystem' is applied to `settings.gradle.dcl`!")
+                                        return@forEach
+                                    }
                                     pluginManager.apply("com.android.kotlin.multiplatform.library")
                                     android()
                                 }
@@ -460,7 +472,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         )
                     }
                 }
-                if (enabledPlatforms.contains(LibraryPlatforms.android)) {
+                if (hasAndroidEcosystemPlugin && enabledPlatforms.contains(LibraryPlatforms.android)) {
                     val defaultAndroidJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
                     val target = targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
                     syncKotlinCommonCompilerOptionsAsConvention(
