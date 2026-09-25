@@ -7,19 +7,29 @@ pluginManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
+//        google()
+//        maven {
+//            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+//        }
     }
+
 }
 
 plugins {
     // Use the Foojay Toolchains plugin to automatically download JDKs required by subprojects.
     id("org.gradle.toolchains.foojay-resolver-convention").version("1.0.0")
     id("org.jetbrains.ecosystem")
+//    id("com.android.ecosystem").version("9.5.0-dev")
 }
 
 dependencyResolutionManagement {
     // Use Maven Central as the default repository (where Gradle will download dependencies) in all subprojects.
     repositories {
         mavenCentral()
+//        google()
+//        maven {
+//            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+//        }
     }
 }
 
