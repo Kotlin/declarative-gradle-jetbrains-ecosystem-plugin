@@ -65,6 +65,19 @@ fun BuildResult.assertAnyTaskHasBeenExecuted(taskPaths: Set<String>) {
     }
 }
 
+fun BuildResult.assertNoToBeExecutedTaskFailed() {
+    val toBeExecuted = "(?:^Tasks to be executed: \\[|\\G(?!^), )task '(?<path>:\\w+)'(?:]$)?"
+        .toRegex(RegexOption.MULTILINE)
+        .findAll(output)
+        .mapNotNull { it.groups["path"]?.value }
+    val taskOutcomes = toBeExecuted.associateWith { task(it)?.outcome ?: TaskOutcome.FAILED }
+
+    assert(taskOutcomes.values.all { it != TaskOutcome.FAILED }) {
+        printBuildOutput()
+        "Expected no tasks in the task graph to have outcome 'FAILED', but some did. Actual outcomes: $taskOutcomes"
+    }
+}
+
 /**
  * Asserts given [taskPaths] have [TaskOutcome.SUCCESS] execution state.
  */

@@ -7,14 +7,18 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.BuildOptions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.TestVersions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertNoToBeExecutedTaskFailed
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksAreNotInTaskGraph
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksInBuildOutput
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.makeSnapshotTo
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.assertThrows
 import kotlin.io.path.writeText
 
 @DisplayName("Library project type")
@@ -688,6 +692,45 @@ class LibraryProjectTypeTest : BaseTest() {
             "base-ecosystem-project",
             gradleVersion,
         ) {
+            gradleProperties.writeText(
+                """
+                |android.experimental.declarative=true
+                |android.useAndroidX=true
+                """.trimMargin()
+            )
+
+            settingsGradleDcl.writeText(
+                //language=declarative
+                """
+                |pluginManagement {
+                |    repositories {
+                |        mavenCentral()
+                |        google()
+                |        gradlePluginPortal()
+                |        maven { url = uri("${System.getProperty("maven.repo.url")}") }
+                |        maven {
+                |            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+                |        }
+                |    }
+                |}
+                |
+                |plugins {
+                |    id("org.jetbrains.ecosystem").version("0.0.1-SNAPSHOT")
+                |    id("com.android.ecosystem").version("9.5.0-dev")
+                |}
+                |
+                |dependencyResolutionManagement {
+                |    repositories {
+                |        mavenCentral()
+                |        google()
+                |        maven {
+                |            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
             buildGradleDcl.writeText(
                 //language=declarative
                 """
@@ -702,8 +745,85 @@ class LibraryProjectTypeTest : BaseTest() {
                 """.trimMargin()
             )
 
+            kotlinSourcesDir("commonMain").source("Platform.kt") {
+                //language=kotlin
+                """
+                |interface Platform {
+                |    val name: String
+                |}
+                |
+                |expect fun getPlatform(): Platform
+                """.trimMargin()
+            }
+
+            kotlinSourcesDir("androidMain").source("Platform.android.kt") {
+                //language=kotlin
+                """
+                |import android.os.Build
+                |
+                |class AndroidPlatform : Platform {
+                |    override val name: String = "Android ${'$'}{Build.VERSION.SDK_INT}"
+                |}
+                |
+                |actual fun getPlatform(): Platform = AndroidPlatform()
+                """.trimMargin()
+            }
+
+            build("build") {
+                assertTasksExecuted(":assembleAndroidMain", ":build")
+                assertNoToBeExecutedTaskFailed()
+            }
+        }
+    }
+
+    @DisplayName("Android platform: missing `com.android.ecosystem` dependency")
+    @GradleTest
+    fun testMissingAndroidEcosystemDependency(gradleVersion: GradleVersion) {
+        project(
+            "base-ecosystem-project",
+            gradleVersion,
+        ) {
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |library {
+                |    platforms = listOf("android")
+                |    
+                |    androidPlatform {
+                |        compileSdk = 36
+                |        namespace = "base-ecosystem-project"
+                |    }
+                |}    
+                """.trimMargin()
+            )
+
+            kotlinSourcesDir("commonMain").source("Platform.kt") {
+                //language=kotlin
+                """
+                |interface Platform {
+                |    val name: String
+                |}
+                |
+                |expect fun getPlatform(): Platform
+                """.trimMargin()
+            }
+
+            kotlinSourcesDir("androidMain").source("Platform.android.kt") {
+                //language=kotlin
+                """
+                |import android.os.Build
+                |
+                |class AndroidPlatform : Platform {
+                |    override val name: String = "Android ${'$'}{Build.VERSION.SDK_INT}"
+                |}
+                |
+                |actual fun getPlatform(): Platform = AndroidPlatform()
+                """.trimMargin()
+            }
+
             build("build") {
                 assertTasksExecuted(":build")
+                assertTasksAreNotInTaskGraph(":assembleAndroidMain")
             }
         }
     }
