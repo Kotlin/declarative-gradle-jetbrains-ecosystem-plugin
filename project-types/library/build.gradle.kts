@@ -11,7 +11,7 @@ kotlin {
 
 dependencies {
     api(gradleApi())
-    api(libs.android.kotlin.multiplatform)
+    compileOnly(libs.android.kotlin.multiplatform)
     api(project(":common"))
 }
 
