@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.JavaJvmCompilationExtension
@@ -15,6 +16,9 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
      * See available platforms at [LibraryPlatform].
      */
     public val platforms: ListProperty<LibraryPlatform>
+
+    //TODO: temporary solution until we have the compose software feature
+    public val enableCompose: Property<Boolean>
 
     @get:Nested
     public val jvmPlatform: LibraryJvmEcosystemDefinition
