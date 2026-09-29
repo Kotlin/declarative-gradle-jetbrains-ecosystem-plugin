@@ -12,6 +12,7 @@ kotlin {
 dependencies {
     api(gradleApi())
     compileOnly(libs.android.kotlin.multiplatform)
+    implementation(libs.compose.compiler)
     api(project(":common"))
 }
 
