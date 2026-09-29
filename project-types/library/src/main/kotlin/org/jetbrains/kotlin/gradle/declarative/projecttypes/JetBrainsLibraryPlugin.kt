@@ -508,7 +508,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         iosFramework.baseName.orNull?.let { baseName = it }
                         iosFramework.static.orNull?.let { isStatic = it }
                         iosFramework.linkerOpts.orNull?.let { linkerOpts = it }
+                        iosFramework.binaryOptions.orNull?.let { binaryOptions = it }
                         iosFramework.freeCompilerArgs.orNull?.let { freeCompilerArgs = it }
+                        project.configurations.getByName(exportConfigurationName).fromDependencyCollector(iosFramework.export)
+                        iosFramework.transitiveExport.orNull?.let { transitiveExport = it }
                         iosFramework.outputDirectory.orNull?.asFile?.let { outputDirectory = it }
                     }
                 }

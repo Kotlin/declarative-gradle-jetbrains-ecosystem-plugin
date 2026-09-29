@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
+import kotlin.io.path.appendText
 import kotlin.io.path.writeText
 
 @DisplayName("Library project type")
@@ -683,7 +684,43 @@ class LibraryProjectTypeTest : BaseTest() {
     @DisplayName("iOS framework publishing")
     @GradleTest
     fun testIosFramework(gradleVersion: GradleVersion) {
-        project("base-ecosystem-project", gradleVersion) {
+        project("ios-framework-project", gradleVersion) {
+            subProject("exported").run {
+                buildGradleDcl.writeText(
+                    //language=declarative
+                    """
+                    |library {
+                    |    platforms = listOf("ios")
+                    |    
+                    |    iosPlatform {
+                    |        subplatforms = listOf("iosArm64")
+                    |        kotlin {
+                    |            compilerOptions {
+                    |                moduleName = "exported"
+                    |            }
+                    |        }
+                    |    }
+                    |    
+                    |    publishing {
+                    |        iosFramework {
+                    |            baseName = "exported"
+                    |            static = true
+                    |        }
+                    |    }
+                    |}
+                    """.trimMargin()
+                )
+
+                kotlinSourcesDir("iosMain").source("main.kt") {
+                    //language=kotlin
+                    """
+                    |package org.example
+                    |
+                    |fun foo(): Unit = println("Exported!")
+                    """.trimMargin()
+                }
+            }
+
             buildGradleDcl.writeText(
                 //language=declarative
                 """
@@ -699,14 +736,30 @@ class LibraryProjectTypeTest : BaseTest() {
                 |        }
                 |    }
                 |    
+                |    dependencies {
+                |        api(project(":exported"))
+                |    }
+                |    
                 |    publishing {
                 |        iosFramework {
                 |            baseName = "shared"
                 |            static = true
+                |            binaryOptions = mapOf("smallBinary" to "true")
+                |            export(project(":exported"))
+                |            transitiveExport = true
                 |            outputDirectory = layout.projectDirectory.dir("build/ios-frameworks")
                 |        }
                 |    }
-                |}    
+                |}
+                """.trimMargin()
+            )
+
+            settingsGradleDcl.appendText(
+                //language=declarative
+                """
+                |
+                |rootProject.name = "ios-framework-project"
+                |include("exported")
                 """.trimMargin()
             )
 
@@ -717,12 +770,17 @@ class LibraryProjectTypeTest : BaseTest() {
                 |
                 |data class Project(val name: String, val language: String)
                 |
-                |fun main(): Unit = println(Project("test", "Kotlin"))
+                |fun main() {
+                |    println(foo())
+                |    println(Project("test", "Kotlin"))
+                |}
                 """.trimMargin()
             }
 
             build("build") {
                 assertTasksExecuted(":build")
+                assertOutputContains("-Xbinary=smallBinary=true")
+                assertOutputContains("-Xexport-library=.*/ios-framework-project/exported/build/classes/kotlin/iosArm64/main/klib/exported".toRegex())
                 assertOutputContains("build/ios-frameworks/shared.framework")
             }
         }
