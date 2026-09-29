@@ -1,15 +1,15 @@
 package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.artifacts.dsl.Dependencies
+import org.gradle.api.artifacts.dsl.DependencyCollector
+import org.gradle.api.plugins.jvm.PlatformDependencyModifiers
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface LibraryIosFrameworkPublishingExtension : Definition<BuildModel.None> {
-
-    public val baseName: Property<String>
+public interface LibraryIosFrameworkPublishingExtension : Definition<BuildModel.None>, Dependencies, PlatformDependencyModifiers {
 
     // NOTE: Cannot be named `isStatic` due to Kotlin naming conventions causing class generations issues in Gradle
     // More at https://github.com/gradle/gradle/issues/18543
@@ -17,7 +17,7 @@ public interface LibraryIosFrameworkPublishingExtension : Definition<BuildModel.
 
     public val linkerOpts: ListProperty<String>
 
-    public val freeCompilerArgs: ListProperty<String>
+    public val export: DependencyCollector
 
-    public val outputDirectory: DirectoryProperty
+    public val transitiveExport: Property<Boolean>
 }

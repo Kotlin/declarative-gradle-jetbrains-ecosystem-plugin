@@ -140,12 +140,14 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledWebSubplatforms
             )
 
-            definition.publishing.configurePublishing(
-                enabledIosSubplatforms = when {
-                    buildModel.enabledPlatforms.get().contains(LibraryPlatforms.ios) -> enabledIosSubplatforms
-                    else -> emptyList()
-                }
-            )
+            context(context) {
+                definition.publishing.configurePublishing(
+                    enabledIosSubplatforms = when {
+                        buildModel.enabledPlatforms.get().contains(LibraryPlatforms.ios) -> enabledIosSubplatforms
+                        else -> emptyList()
+                    }
+                )
+            }
         }
 
         private fun applyKotlinPlugin(
@@ -505,11 +507,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledIosSubplatforms.forEach { subplatform ->
                     val target = targets.getByName(subplatform.name) as KotlinNativeTarget
                     target.binaries.framework {
-                        iosFramework.baseName.orNull?.let { baseName = it }
                         iosFramework.static.orNull?.let { isStatic = it }
                         iosFramework.linkerOpts.orNull?.let { linkerOpts = it }
-                        iosFramework.freeCompilerArgs.orNull?.let { freeCompilerArgs = it }
-                        iosFramework.outputDirectory.orNull?.asFile?.let { outputDirectory = it }
+                        freeCompilerArgs = target.compilerOptions.freeCompilerArgs.getOrElse(emptyList())
+                        project.configurations.getByName(exportConfigurationName).fromDependencyCollector(iosFramework.export)
+                        iosFramework.transitiveExport.orNull?.let { transitiveExport = it }
                     }
                 }
             }
