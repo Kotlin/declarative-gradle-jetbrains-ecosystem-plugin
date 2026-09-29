@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
-import org.jetbrains.kotlin.gradle.declarative.testDsl.makeSnapshotTo
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
@@ -704,6 +703,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 |        iosFramework {
                 |            baseName = "shared"
                 |            static = true
+                |            outputDirectory = layout.projectDirectory.dir("build/ios-frameworks")
                 |        }
                 |    }
                 |}    
@@ -723,7 +723,7 @@ class LibraryProjectTypeTest : BaseTest() {
 
             build("build") {
                 assertTasksExecuted(":build")
-                assertOutputContains("shared.framework")
+                assertOutputContains("build/ios-frameworks/shared.framework")
             }
         }
     }

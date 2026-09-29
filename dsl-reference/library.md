@@ -127,11 +127,19 @@ library {
         group = "com.example" // Publication group
         version = "1.0.0" // Publication name
         
-        maven { // Enables Gradle 'maven-publish' plugina and configures publication to Maven
+        maven { // Enables Gradle 'maven-publish' plugin and configures publication to Maven
            name = "library" // Publication name
            repositoryUrl = "file:///tmp" // Publication repository url
            withDocs = true // Enable documentation publication
            withSources = true // Enable sources publication
+        }
+    
+        iosFramework { // Enables publication of the library as an iOS framework
+            baseName = "library" // A base name for the output binary file, e.g. for baseName `foo`, a binary `foo.klib` is produced
+            static = true // Specifies if the framework is linked as a static (binary) library (false by default)
+            linkerOpts += listOf("-lld") // Additional options passed to the linker by the Kotlin/Native compiler, see more at: https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+            freeCompilerArgs += listOf("-Xobjc-generics", "-opt") // Additional arguments passed to the Kotlin/Native compiler, see more at: https://kotlinlang.org/docs/compiler-reference.html#kotlin-native-compiler-options
+            outputDirectory = layout.projectDirectory.dir("build/ios-frameworks") // Specifies which directory the output binary file will appear in
         }
     }
 }

@@ -500,7 +500,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             project.group = group.getOrElse(project.path.replace(":", "."))
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
             if (enabledIosSubplatforms.isEmpty()) return
-            println("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
+            logger.info("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
             withKmpPlugin {
                 enabledIosSubplatforms.forEach { subplatform ->
                     val target = targets.getByName(subplatform.name) as KotlinNativeTarget
