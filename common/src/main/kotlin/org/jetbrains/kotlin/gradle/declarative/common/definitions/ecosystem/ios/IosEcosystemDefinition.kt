@@ -1,7 +1,10 @@
-package org.jetbrains.kotlin.gradle.declarative.common.definitions
+package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.ios
 
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.EcosystemWithSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.Subplatform
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinNativeCompilationExtension
 
 public interface IosEcosystemDefinition : EcosystemWithSubplatforms<IosSubplatform> {
     @get:Nested

@@ -2,7 +2,7 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.AndroidEcosystemDefinition
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.android.AndroidEcosystemDefinition
 
 @Suppress("UnstableApiUsage")
 public interface LibraryAndroidEcosystemDefinition : Definition<BuildModel.None>, AndroidEcosystemDefinition
