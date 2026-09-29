@@ -25,5 +25,6 @@ internal fun syncKotlinNativeCompilerOptionsAsConvention(
     into.progressiveMode.convention(from.progressiveMode.orElse(fallback.progressiveMode))
 
     // KotlinNativeCompilerOptions
-    into.moduleName.convention(from.moduleName.orElse(fallback.moduleName))
+    // NOTE: For moduleName, only provide non-null values as convention, as the convention cannot be null
+    from.moduleName.orElse(fallback.moduleName).orNull?.let(into.moduleName::convention)
 }
