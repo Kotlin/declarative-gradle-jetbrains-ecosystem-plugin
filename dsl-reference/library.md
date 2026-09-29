@@ -77,10 +77,18 @@ library {
     }
 
     androidPlatform { // Android platform specific configurations
-        minSdk = 21 // Minimum API level
+        minSdk = 21 // Minimum API level, can be overridden with `minSdkPreview`
         compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`
         namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
         
+        androidResources { // Configuration of AAPT Android resources and assets
+            // LibraryAndroidResources members are available here, see more at:
+            // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/LibraryAndroidResources
+            enable = true // Enables Android resource processing in this library, by default it is `false` for KMP projects
+            resourcePrefix = "lib_" // This library's resource prefix in Android Studio (only useful when working with Android Studio)
+            ignoreAssetsPatterns = listOf("dont-ignore-anything") // A list of patterns of ignored assets
+        }
+    
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions { // Compiler arguments to apply for all library's Android (JVM) compilations
                 // KotlinJvmCompilerOptions members are available here, see more at:
@@ -91,9 +99,9 @@ library {
         }
     }
 
-    dependencies { // library dependencies
-        api(project(":shared")) // common dependency for all platforms
-        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // common dependency fro all platforms
+    dependencies { // Library dependencies
+        api(project(":shared")) // Common dependency for all platforms
+        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // Common dependency for all platforms
 
         jvmPlatform { // JVM specific dependencies
             api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
@@ -109,6 +117,10 @@ library {
         iosPlatform { // iOS specific dependencies
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         }
+    
+        androidPlatform { // Android specific dependencies
+            implementation("androidx.compose.ui:ui:1.12.1")
+        }
     }
 
     testing { // Library testing configuration
@@ -118,6 +130,22 @@ library {
 
         webPlatform { // Testing configuration for Web platform
             skip = true // Skip web tests
+        }
+
+        androidPlatform { // Testing configuration for Android platform
+            hostTest { // Creates and configures a compilation for tests that run on the JVM
+                // KotlinMultiplatformAndroidHostTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
+                includeAndroidResources = true // Allows host (unit) tests to use Android resources, assets, and manifests
+            }
+
+            deviceTest { // Creates and configures a compilation for tests that run on a device
+                // KotlinMultiplatformAndroidDeviceTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" // Test instrumentation runner class name
+            }
         }
 
         dependencies { // Testing dependencies
@@ -138,6 +166,16 @@ library {
 
             iosPlatform { // iOS platform testing dependencies
                 implementation("org.jetbrains.kotlin:kotlin-test")
+            }
+
+            androidPlatform { // Android platform testing dependencies
+                hostTest { // Host (JVM) testing dependencies
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+                }
+
+                deviceTest { // Device testing dependencies
+                    implementation(""androidx.test:runner:1.7.0")
+                }
             }
         }
     }
