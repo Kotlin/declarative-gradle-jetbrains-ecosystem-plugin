@@ -3,7 +3,7 @@ package org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebEcosystemDefinition
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.web.WebEcosystemDefinition
 
 @Suppress("UnstableApiUsage")
 public interface WebApplicationProjectType : Definition<WebApplicationBuildModel>, WebEcosystemDefinition {

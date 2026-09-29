@@ -11,13 +11,11 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertNoToBeExecutedTaskF
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksAreNotInTaskGraph
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
-import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksInBuildOutput
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.assertThrows
 import kotlin.io.path.writeText
 
 @DisplayName("Library project type")
@@ -117,6 +115,7 @@ class LibraryProjectTypeTest : BaseTest() {
 
             build("compileKotlin") {
                 assertTasksExecuted(":compileKotlin")
+                println(output)
             }
         }
     }
@@ -737,8 +736,15 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    platforms = listOf("android")
                 |    
                 |    androidPlatform {
-                |        compileSdk = 36
+                |        compileSdk = 37
                 |        namespace = "base-ecosystem-project"
+                |    }
+                |    
+                |    testing {
+                |        androidPlatform {
+                |            hostTest { }
+                |            deviceTest { }
+                |        }
                 |    }
                 |}    
                 """.trimMargin()
@@ -771,6 +777,7 @@ class LibraryProjectTypeTest : BaseTest() {
             build("build") {
                 assertTasksExecuted(":assembleAndroidMain", ":build")
                 assertNoToBeExecutedTaskFailed()
+                println(output)
             }
         }
     }

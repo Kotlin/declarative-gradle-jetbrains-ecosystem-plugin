@@ -7,7 +7,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyCollector
 import org.gradle.api.internal.GradleInternal
-import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.api.logging.Logging
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
@@ -23,12 +22,13 @@ import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.IosSubplatforms
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.ios.IosSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.web.WebSubplatforms
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinNativeCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.declarative.util.configureAndroidTesting
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
@@ -67,9 +67,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
         @get:Inject
         abstract val pluginManager: PluginManager
-
-        @get:Inject
-        abstract val pluginRegistry: PluginRegistry
 
         @get:Inject
         abstract val project: Project
@@ -130,6 +127,16 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
             applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
 
+            //TODO: implement actual compose software feature
+            if (definition.enableCompose.getOrElse(false)) {
+                pluginManager.apply("org.jetbrains.compose")
+                pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+            }
+
+            if (hasAndroidEcosystemPlugin && buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
+                definition.androidPlatform.configureAndroidPlatform()
+            }
+
             definition.dependencies.wireDependencies(enabledPlatforms)
             definition.testing.dependencies.wireTestingDependencies(enabledPlatforms)
 
@@ -141,10 +148,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
             if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
                 definition.configureJvmPlatform()
-            }
-
-            if (hasAndroidEcosystemPlugin && buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
-                definition.androidPlatform.configureAndroidPlatform()
             }
 
             definition.testing.configureTesting(
@@ -258,8 +261,17 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
                     val iosMainSourceSet = sourceSets.getByName("iosMain")
 
-                    addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
-                    addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
+                    addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatform.api)
+                    addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatform.implementation)
+                }
+
+                if (hasAndroidEcosystemPlugin && enabledPlatforms.contains(LibraryPlatforms.android)) {
+                    val androidMainSourceSet = sourceSets.getByName("androidMain")
+                    addDependencies(androidMainSourceSet.apiConfigurationName, androidPlatform.api)
+                    addDependencies(androidMainSourceSet.implementationConfigurationName, androidPlatform.implementation)
+                    addDependencies(androidMainSourceSet.compileOnlyConfigurationName, androidPlatform.compileOnly)
+                    addDependencies(androidMainSourceSet.runtimeOnlyConfigurationName, androidPlatform.runtimeOnly)
+                    addDependencies("androidRuntimeClasspath", androidPlatform.runtimeClasspath)
                 }
             }
         }
@@ -305,7 +317,21 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
                     val iosTestSourceSet = sourceSets.getByName("iosTest")
 
-                    addDependencies(iosTestSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
+                    addDependencies(iosTestSourceSet.implementationConfigurationName, iosPlatform.implementation)
+                }
+
+                if (hasAndroidEcosystemPlugin && enabledPlatforms.contains(LibraryPlatforms.android)) {
+                    // Test source sets are configured given the `androidPlatform` containing either the `hostTest` and/or `deviceTest` extensions
+                    sourceSets.findByName("androidHostTest")?.let { androidHostTestSourceSet ->
+                        addDependencies(androidHostTestSourceSet.implementationConfigurationName, androidPlatform.hostTest.implementation)
+                        addDependencies(androidHostTestSourceSet.compileOnlyConfigurationName, androidPlatform.hostTest.compileOnly)
+                        addDependencies(androidHostTestSourceSet.runtimeOnlyConfigurationName, androidPlatform.hostTest.runtimeOnly)
+                    }
+                    sourceSets.findByName("androidDeviceTest")?.let { androidDeviceTestSourceSet ->
+                        addDependencies(androidDeviceTestSourceSet.implementationConfigurationName, androidPlatform.deviceTest.implementation)
+                        addDependencies(androidDeviceTestSourceSet.compileOnlyConfigurationName, androidPlatform.deviceTest.compileOnly)
+                        addDependencies(androidDeviceTestSourceSet.runtimeOnlyConfigurationName, androidPlatform.deviceTest.runtimeOnly)
+                    }
                 }
             }
         }
@@ -492,10 +518,18 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         private fun LibraryAndroidEcosystemDefinition.configureAndroidPlatform() {
             withKmpPlugin {
                 val androidTarget = targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
-                minSdk.orNull?.let { androidTarget.minSdk = it }
-                compileSdk.orNull?.let { androidTarget.compileSdk = it }
-                compileSdkExtension.orNull?.let { androidTarget.compileSdkExtension = it }
+                minSdk.orNull?.let { androidTarget.minSdk = it } ?: minSdkPreview.orNull?.let { androidTarget.minSdkPreview = it }
+                compileSdk.orNull?.let {
+                    androidTarget.compileSdk = it
+                    compileSdkExtension.orNull?.let { androidTarget.compileSdkExtension = it }
+                } ?: compileSdkPreview.orNull?.let { androidTarget.compileSdkPreview = it }
                 namespace.orNull?.let { androidTarget.namespace = it }
+                androidResources.enable.orNull?.let { androidTarget.androidResources.enable = it }
+                androidResources.resourcePrefix.orNull?.let { androidTarget.androidResources.resourcePrefix = it }
+                androidResources.ignoreAssetsPatterns.orNull?.let { androidTarget.androidResources.ignoreAssetsPatterns += it }
+                androidResources.noCompress.orNull?.let { androidTarget.androidResources.noCompress += it }
+                androidResources.failOnMissingConfigEntry.orNull?.let { androidTarget.androidResources.failOnMissingConfigEntry = it }
+                androidResources.additionalParameters.orNull?.let { androidTarget.androidResources.additionalParameters += it }
             }
         }
 
@@ -534,10 +568,17 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     }
                 }
             }
+
+            if (hasAndroidEcosystemPlugin && enabledPlatforms.contains(LibraryPlatforms.android)) {
+                withKmpPlugin {
+                    val androidTarget = targets.getByName("android") as KotlinMultiplatformAndroidLibraryTarget
+                    context(androidTarget) { androidPlatform.configureAndroidTesting() }
+                }
+            }
         }
 
         private fun LibraryPublishingExtension.configurePublishing() {
-            project.group = group.getOrElse(project.path.replace(":", "."))
+            project.group = group.getOrElse(project.group.toString())
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
         }
 
