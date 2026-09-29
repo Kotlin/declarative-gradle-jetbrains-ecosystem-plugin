@@ -127,6 +127,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
             applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
 
+            //TODO: implement actual compose software feature
+            if (definition.enableCompose.getOrElse(false)) {
+                pluginManager.apply("org.jetbrains.compose")
+                pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+            }
+
             if (hasAndroidEcosystemPlugin && buildModel.enabledPlatforms.get().contains(LibraryPlatforms.android)) {
                 definition.androidPlatform.configureAndroidPlatform()
             }
