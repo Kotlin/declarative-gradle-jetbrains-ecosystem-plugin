@@ -1,4 +1,4 @@
-package org.jetbrains.kotlin.gradle.declarative.common.definitions
+package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.jvm
 
 import org.gradle.jvm.toolchain.JvmVendorSpec
 

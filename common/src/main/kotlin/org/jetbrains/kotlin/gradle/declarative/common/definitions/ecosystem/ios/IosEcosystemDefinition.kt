@@ -1,7 +1,8 @@
-package org.jetbrains.kotlin.gradle.declarative.common.definitions
+package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.ios
 
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinNativeCompilationExtension
 
 public interface IosEcosystemDefinition {
     @get:Nested

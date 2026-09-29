@@ -6,7 +6,7 @@ The JetBrains ecosystem plugin is an experimental plugin for [Declarative Gradle
 
 You can mix Declarative Gradle subprojects with non-declarative ones. In its current state, the JetBrains ecosystem plugin 
 lets you create [jvmApplication](./dsl-reference/jvm-application.md), [webApplication](./dsl-reference/web-application.md),
-and [library](./dsl-reference/library.md) (supporting `jvm`, `web`, and `ios` platforms) subprojects.
+and [library](./dsl-reference/library.md) (supporting `jvm`, `web`, `ios`, and `android` platforms) subprojects.
 
 While developing this plugin, we've significantly changed the mental model behind how Kotlin application build scripts can be built. We would appreciate your feedback on the design choices we've made.
 
@@ -120,7 +120,7 @@ a. In `build.gradle(.kts)` files:
 b. In the `libs.versions.toml` file:
 
 ❌ **Don't do this:**
-`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.4.30" }`
+`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.3.20" }`
 
 ✅ **Do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }`

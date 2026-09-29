@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompiler
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JavaJvmCompilationType
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.JvmCompilationUnit
 import org.jetbrains.kotlin.gradle.declarative.common.buildtypes.KotlinJvmCompilationType
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmToolchain
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.jvm.JvmToolchain
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.jvmapplication.DefaultJvmApplicationBuildModel.DefaultJvmCompilationUnit.DefaultKotlinJvmCompilationType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
