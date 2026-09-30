@@ -158,7 +158,7 @@ fun BuildResult.assertCompilerArgument(
 /**
  * Extracts compiler arguments used in compilation for a given Kotlin task under [taskPath] path.
  *
- * @param logLevel [LogLevel] with which build was running, default to [LogLevel.INFO].
+ * @param logLevel [org.gradle.api.logging.LogLevel] with which build was running, default to [org.gradle.api.logging.LogLevel.INFO].
  */
 fun BuildResult.extractTaskCompilerArguments(
     taskPath: String,

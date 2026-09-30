@@ -1,3 +1,6 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import org.gradle.nativeplatform.platform.internal.DefaultOperatingSystem
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     `java-gradle-plugin`
@@ -41,15 +44,46 @@ configurations.runtimeElements {
     }
 }
 
+sourceSets {
+    register("testData") {
+        dependencies {
+            "testDataCompileOnly"(gradleTestKit())
+            "testDataCompileOnly"(libs.kotlin.gradle.plugin.api)
+            "testDataCompileOnly"(libs.kotlin.test)
+            "testDataCompileOnly"(libs.junit.jupiter)
+        }
+    }
+}
+
+@Suppress("UnstableApiUsage")
+inline fun JvmTestSuite.enableIfOperatingSystem(crossinline predicate: (DefaultOperatingSystem) -> Boolean) {
+    targets {
+        all {
+            testTask.configure {
+                onlyIf { predicate(DefaultNativePlatform.getCurrentOperatingSystem()) }
+            }
+        }
+    }
+}
+
+@Suppress("UnstableApiUsage")
 testing {
     suites {
-        @Suppress("UnstableApiUsage")
-        register<JvmTestSuite>("integrationTests") {
+        register<JvmTestSuite>("genericIntegrationTests")
+
+        register<JvmTestSuite>("macOsXIntegrationTests") {
+            enableIfOperatingSystem(DefaultOperatingSystem::isMacOsX)
+        }
+
+        withType<JvmTestSuite>().configureEach {
             dependencies {
                 implementation(gradleTestKit())
                 implementation(libs.kotlin.gradle.plugin.api)
                 implementation(libs.kotlin.test)
+                implementation(sourceSets["testData"].output)
             }
+
+            sources.resources.srcDirs += sourceSets["testData"].resources
 
             targets {
                 all {

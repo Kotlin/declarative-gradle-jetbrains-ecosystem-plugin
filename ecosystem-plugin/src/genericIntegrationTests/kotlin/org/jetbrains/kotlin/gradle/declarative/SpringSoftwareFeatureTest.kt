@@ -5,9 +5,7 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
-import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksFailed
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
-import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
 import kotlin.io.path.writeText

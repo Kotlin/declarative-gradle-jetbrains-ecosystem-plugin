@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.gradle.declarative.testDsl
 
 import org.gradle.util.GradleVersion
 import java.io.PrintWriter
+import java.io.StringWriter
 import java.nio.file.attribute.PosixFilePermission
 import kotlin.io.path.*
 
@@ -186,7 +187,7 @@ fun GradleProject.addPropertyToGradleProperties(
 }
 
 val Throwable.fullMessage
-    get(): String = java.io.StringWriter().use {
+    get(): String = StringWriter().use {
         PrintWriter(it).use {
             this.printStackTrace(it)
         }

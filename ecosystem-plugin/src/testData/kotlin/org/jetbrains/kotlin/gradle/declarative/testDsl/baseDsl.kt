@@ -495,8 +495,7 @@ private fun setupProjectFromTestResources(
     tempDir: Path,
     optionalSubDir: String,
 ): Path {
-    val testProjectPath = projectName.testProjectPath
-    assertTrue("Test project doesn't exists") { Files.exists(testProjectPath) }
+    val testProjectPath = projectName.testProjectPath ?: fail("Test project doesn't exists")
     assertTrue("Test project path isn't a directory") { Files.isDirectory(testProjectPath) }
 
     return tempDir
@@ -509,7 +508,7 @@ private fun setupProjectFromTestResources(
         }
 }
 
-private val String.testProjectPath: Path get() = Paths.get("src", "integrationTests", "resources", "testProjects", this)
+private val String.testProjectPath: Path? get() = object {}.javaClass.getResource("/testProjects/$this")?.toURI()?.toPath()
 
 internal fun Path.addDefaultSettingsToSettingsGradle(
     localRepo: Path? = null,

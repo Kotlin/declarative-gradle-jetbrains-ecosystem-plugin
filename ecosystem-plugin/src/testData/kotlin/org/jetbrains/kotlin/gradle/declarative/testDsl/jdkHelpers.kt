@@ -22,7 +22,7 @@ internal fun getUserJdk(): JavaInfo = Jvm.forHome(File(System.getProperty("java.
 internal val jdk8Info: JavaInfo = Jvm.forHome(File(System.getProperty(JDK_8_PROP_NAME)))
 internal val jdk11Info: JavaInfo = Jvm.forHome(File(System.getProperty(JDK_11_PROP_NAME)))
 internal val jdk17Info: JavaInfo = Jvm.forHome(File(System.getProperty(JDK_17_PROP_NAME)))
-internal val jdk21Info: JavaInfo = Jvm.forHome(File(System.getProperty(JDK_21_PROP_NAME)))
+val jdk21Info: JavaInfo = Jvm.forHome(File(System.getProperty(JDK_21_PROP_NAME)))
 
 // replace required for windows paths so Groovy will not complain about unexpected char '\'
 internal val JavaInfo.jdkPath get() = javaHome.absolutePath.replace("\\", "\\\\")

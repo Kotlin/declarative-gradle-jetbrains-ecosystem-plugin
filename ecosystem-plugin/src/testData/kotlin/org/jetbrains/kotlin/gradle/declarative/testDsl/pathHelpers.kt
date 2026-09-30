@@ -4,7 +4,6 @@ import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.*
 import kotlin.streams.asSequence
-import kotlin.streams.toList
 import kotlin.test.fail
 
 /**
