@@ -22,8 +22,8 @@ jobs:
       - name: Build
         run: ./gradlew assemble
 
-      - name: Integration Tests
-        run: ./gradlew :ecosystem-plugin:integrationTests
+      - name: Generic Integration Tests
+        run: ./gradlew :ecosystem-plugin:genericIntegrationTests
 
   check-examples:
     needs: build
