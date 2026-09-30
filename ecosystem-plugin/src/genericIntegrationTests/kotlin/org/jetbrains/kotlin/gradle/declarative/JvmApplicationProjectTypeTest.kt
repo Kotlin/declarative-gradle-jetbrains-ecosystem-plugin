@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
-import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source

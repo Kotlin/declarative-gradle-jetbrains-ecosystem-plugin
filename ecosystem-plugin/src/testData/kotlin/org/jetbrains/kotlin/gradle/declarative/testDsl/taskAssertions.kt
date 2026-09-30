@@ -7,7 +7,7 @@ import org.gradle.testkit.runner.TaskOutcome
  * Asserts given tasks are not present in the build task graph.
  *
  * (Note: 'not in task graph' has a different meaning to 'not executed'.
- * Tasks with outcomes [TaskOutcome.SKIPPED] and [TaskOutcome.UP_TO_DATE] will be in the task graph, but
+ * Tasks with outcomes [org.gradle.testkit.runner.TaskOutcome.SKIPPED] and [org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE] will be in the task graph, but
  * are not considered 'executed').
  */
 fun BuildResult.assertTasksAreNotInTaskGraph(vararg taskPaths: String) {
@@ -18,7 +18,7 @@ fun BuildResult.assertTasksAreNotInTaskGraph(vararg taskPaths: String) {
  * Asserts given tasks are not present in the build task graph.
  *
  * (Note: 'not in task graph' has a different meaning to 'not executed'.
- * Tasks with outcomes [TaskOutcome.SKIPPED] and [TaskOutcome.UP_TO_DATE] will be in the task graph, but
+ * Tasks with outcomes [org.gradle.testkit.runner.TaskOutcome.SKIPPED] and [org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE] will be in the task graph, but
  * are not considered 'executed').
  */
 fun BuildResult.assertTasksAreNotInTaskGraph(taskPaths: Collection<String>) {
@@ -45,14 +45,14 @@ fun BuildResult.findTasksByPattern(pattern: Regex): Set<String> {
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.SUCCESS] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state.
  */
 fun BuildResult.assertTasksExecuted(vararg taskPaths: String) {
     assertTasksHaveOutcome(TaskOutcome.SUCCESS, taskPaths.asList())
 }
 
 /**
- * Asserts any of [taskPaths] has [TaskOutcome.SUCCESS] execution state.
+ * Asserts any of [taskPaths] has [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state.
  */
 fun BuildResult.assertAnyTaskHasBeenExecuted(taskPaths: Set<String>) {
     val taskOutcomes = taskPaths.associateWith { taskPath -> task(taskPath)?.outcome }
@@ -66,14 +66,14 @@ fun BuildResult.assertAnyTaskHasBeenExecuted(taskPaths: Set<String>) {
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.SUCCESS] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state.
  */
 fun BuildResult.assertTasksExecuted(taskPaths: Collection<String>) {
     assertTasksExecuted(*taskPaths.toTypedArray())
 }
 
 /**
- * Asserts exactly the given [taskPaths] have [TaskOutcome.SUCCESS] execution state
+ * Asserts exactly the given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state
  * and no other tasks were executed.
  */
 fun BuildResult.assertExactTasksInGraph(vararg taskPaths: String) {
@@ -96,7 +96,7 @@ fun BuildResult.assertExactTasksInGraph(vararg taskPaths: String) {
 }
 
 /**
- * Asserts exactly the given [taskPaths] have [TaskOutcome.SUCCESS] execution state
+ * Asserts exactly the given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state
  * and no other tasks were executed.
  */
 fun BuildResult.assertExactTasksInGraph(taskPaths: Collection<String>) {
@@ -104,56 +104,56 @@ fun BuildResult.assertExactTasksInGraph(taskPaths: Collection<String>) {
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.FAILED] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.FAILED] execution state.
  */
 fun BuildResult.assertTasksFailed(taskPaths: Collection<String>) {
     assertTasksHaveOutcome(TaskOutcome.FAILED, taskPaths)
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.FAILED] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.FAILED] execution state.
  */
 fun BuildResult.assertTasksFailed(vararg taskPaths: String) {
     assertTasksFailed(taskPaths.asList())
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.UP_TO_DATE] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE] execution state.
  */
 fun BuildResult.assertTasksUpToDate(vararg taskPaths: String) {
     assertTasksHaveOutcome(TaskOutcome.UP_TO_DATE, taskPaths.asList())
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.UP_TO_DATE] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE] execution state.
  */
 fun BuildResult.assertTasksUpToDate(taskPaths: Collection<String>) {
     assertTasksUpToDate(*taskPaths.toTypedArray())
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.SKIPPED] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SKIPPED] execution state.
  */
 fun BuildResult.assertTasksSkipped(vararg taskPaths: String) {
     assertTasksSkipped(taskPaths.asList())
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.SUCCESS] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.SUCCESS] execution state.
  */
 fun BuildResult.assertTasksSkipped(taskPaths: Collection<String>) {
     assertTasksHaveOutcome(TaskOutcome.SKIPPED, taskPaths)
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.FROM_CACHE] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.FROM_CACHE] execution state.
  */
 fun BuildResult.assertTasksFromCache(vararg taskPaths: String) {
     assertTasksHaveOutcome(TaskOutcome.FROM_CACHE, taskPaths.asList())
 }
 
 /**
- * Asserts given [taskPaths] have [TaskOutcome.NO_SOURCE] execution state.
+ * Asserts given [taskPaths] have [org.gradle.testkit.runner.TaskOutcome.NO_SOURCE] execution state.
  */
 fun BuildResult.assertTasksNoSource(vararg taskPaths: String) {
     assertTasksHaveOutcome(TaskOutcome.NO_SOURCE, taskPaths.asList())
