@@ -115,7 +115,6 @@ class LibraryProjectTypeTest : BaseTest() {
 
             build("compileKotlin") {
                 assertTasksExecuted(":compileKotlin")
-                println(output)
             }
         }
     }
@@ -777,7 +776,6 @@ class LibraryProjectTypeTest : BaseTest() {
             build("build") {
                 assertTasksExecuted(":assembleAndroidMain", ":build")
                 assertNoToBeExecutedTaskFailed()
-                println(output)
             }
         }
     }
