@@ -3,9 +3,9 @@
 ```dcl
 library {
     // Enables platforms library supports
-    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios".
+    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios", "android".
     // These are the all platforms supported for now.
-    platforms = listOf("common", "jvm", "web", "ios")
+    platforms = listOf("common", "jvm", "web", "ios", "android")
     
     kotlin { // Kotlin compilation configuration common for all platforms
          compilerOptions { // Compiler arguments to apply for all Kotlin compilations
@@ -72,6 +72,22 @@ library {
         }
     }
 
+    androidPlatform { // Android platform specific configurations
+        minSdk = 21 // Minimum API level, can be overridden with `minSdkPreview`
+        compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`, or overridden with `compileSdkPreview`
+        namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
+        
+        androidResources { // Configuration of android resources and assets for KMP
+            // LibraryAndroidResources members are available here, see more at:
+            // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/LibraryAndroidResources
+        }
+    
+        compilerOptions { // Compiler arguments to apply for all Kotlin Android (JVM) compilations
+            // KotlinJvmCompilerOptions members are available here, see more at:
+            // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-jvm-compiler-options/
+        }
+    }
+
     dependencies { // library dependencies
         api(project(":shared")) // common dependency for all platforms
         implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // common dependency fro all platforms
@@ -87,8 +103,12 @@ library {
             implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
         }
 
-        iosPlatformDependencies { // IOS specific dependencies
+        iosPlatform { // IOS specific dependencies
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        }
+    
+        androidPlatform { // Android specific dependencies
+            implementation("androidx.compose.ui:ui:1.12.1")
         }
     }
 
@@ -99,6 +119,20 @@ library {
 
         webPlatform { // Testing configuration for Web platform
             skip = true // Skip web tests
+        }
+    
+        androidPlatform { // Testing configuration for Android platform
+            hostTest { // Creates and configures a compilation for tests that run on the JVM
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                // KotlinMultiplatformAndroidHostTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
+            }
+        
+            deviceTest { // Creates and configures a compilation for tests that run on a device
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                // KotlinMultiplatformAndroidDeviceTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest
+            }
         }
 
         dependencies { // Testing dependencies
@@ -117,8 +151,18 @@ library {
                 implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
             }
 
-            iosPlatformDependencies { // IOS platform testing dependencies
+            iosPlatform { // IOS platform testing dependencies
                 implementation("org.jetbrains.kotlin:kotlin-test")
+            }
+        
+            androidPlatform { // Android platform testing dependencies
+                hostTest { // Host (JVM) testing dependencies
+                    ...
+                }
+            
+                deviceTest { // Device testing dependencies
+                    ...
+                }
             }
         }
     }
