@@ -184,4 +184,5 @@ library {
 ## Examples
 
 - [examples/idea-wizard/utils/build.gradle.dcl](../examples/idea-wizard/utils/build.gradle.dcl)
+- [examples/kmp-wizard/shared/build.gradle.dcl](../examples/kmp-wizard/shared/build.gradle.dcl)
 - [examples/spring-petklinik/shared/build.gradle.dcl](../examples/spring-petklinik/shared/build.gradle.dcl)
