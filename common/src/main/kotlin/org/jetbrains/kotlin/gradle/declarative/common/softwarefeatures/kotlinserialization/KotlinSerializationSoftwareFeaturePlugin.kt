@@ -10,9 +10,9 @@ import org.gradle.features.binding.ProjectFeatureApplyAction
 import org.gradle.features.binding.ProjectFeatureBinding
 import org.gradle.features.binding.ProjectFeatureBindingBuilder
 import org.gradle.features.dsl.bindProjectFeature
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilationExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinJvmCompilationExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinWebCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinJvmCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinWebCompilationExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
