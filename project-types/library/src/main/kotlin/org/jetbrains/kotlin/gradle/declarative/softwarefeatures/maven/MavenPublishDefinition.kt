@@ -1,9 +1,8 @@
-package org.jetbrains.kotlin.gradle.declarative.softwarefeatures
+package org.jetbrains.kotlin.gradle.declarative.softwarefeatures.maven
 
 import org.gradle.api.provider.Property
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
-import java.net.URI
 
 @Suppress("UnstableApiUsage")
 public interface MavenPublishDefinition : Definition<BuildModel.None> {
