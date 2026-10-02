@@ -1,4 +1,4 @@
-package org.jetbrains.kotlin.gradle.declarative.softwarefeatures
+package org.jetbrains.kotlin.gradle.declarative.softwarefeatures.maven
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
