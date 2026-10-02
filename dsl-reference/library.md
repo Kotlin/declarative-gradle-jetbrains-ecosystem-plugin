@@ -123,7 +123,7 @@ library {
     
         androidPlatform { // Testing configuration for Android platform
             hostTest { // Creates and configures a compilation for tests that run on the JVM
-                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
                 // KotlinMultiplatformAndroidHostTest members are available here, see more at:
                 // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
             }
