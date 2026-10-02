@@ -56,11 +56,11 @@ sourceSets {
 }
 
 @Suppress("UnstableApiUsage")
-inline fun JvmTestSuite.enableIfOperatingSystem(crossinline predicate: (DefaultOperatingSystem) -> Boolean) {
+inline fun JvmTestSuite.enableIfOperatingSystem(reason: String, crossinline predicate: (DefaultOperatingSystem) -> Boolean) {
     targets {
         all {
             testTask.configure {
-                onlyIf { predicate(DefaultNativePlatform.getCurrentOperatingSystem()) }
+                onlyIf(reason) { predicate(DefaultNativePlatform.getCurrentOperatingSystem()) }
             }
         }
     }
@@ -72,7 +72,7 @@ testing {
         register<JvmTestSuite>("genericIntegrationTests")
 
         register<JvmTestSuite>("macOsXIntegrationTests") {
-            enableIfOperatingSystem(DefaultOperatingSystem::isMacOsX)
+            enableIfOperatingSystem("macOSX runner required", DefaultOperatingSystem::isMacOsX)
         }
 
         withType<JvmTestSuite>().configureEach {
