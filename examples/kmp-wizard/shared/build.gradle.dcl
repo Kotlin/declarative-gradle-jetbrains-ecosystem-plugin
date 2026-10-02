@@ -55,7 +55,7 @@ library {
         androidPlatform {
             implementation("org.jetbrains.compose.ui:ui-tooling-preview:1.12.1")
             implementation("org.jetbrains.compose.ui:ui-tooling:1.12.1")
-            runtimeClasspath("org.jetbrains.compose.ui:ui-tooling:1.12.0")
+            runtimeClasspath("org.jetbrains.compose.ui:ui-tooling:1.12.1")
         }
     }
 
