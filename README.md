@@ -18,23 +18,23 @@ While developing this plugin, we've significantly changed the mental model behin
 
 ## Setup
 
-### Switch to Gradle version `9.6.0`
+### Switch to Gradle version `9.8.0`
 
 > [!IMPORTANT]
-> Declarative Gradle currently needs Gradle version `9.6.0`.
+> Declarative Gradle currently needs Gradle version `9.8.0`.
 
 You can change the Gradle version in the Gradle Wrapper from the command line or by updating the `distributionUrl` property.
 
 For the command line, use the following:
 
 ```
-./gradlew wrapper --gradle-version 9.6.0
+./gradlew wrapper --gradle-version 9.8.0
 ```
 
 For the property, in the `gradle/wrapper/gradle-wrapper.properties` file, update the `distributionUrl` property as follows:
 
 ```
-distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.0-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.8.0-bin.zip
 ```
 
 ### Update your settings file
@@ -64,7 +64,7 @@ plugins {
 
 ```
 plugins {
-    id("org.jetbrains.ecosystem").version("0.103.0")
+    id("org.jetbrains.ecosystem").version("0.130.0")
 }
 ```
 
@@ -110,8 +110,8 @@ To avoid conflicts, remove any version references from Kotlin plugins:
 a. In `build.gradle(.kts)` files:
 
 ❌ **Don't do this:**
-`kotlin("jvm").version("2.3.20")`
-`id("org.jetbrains.kotlin.multiplatform").version("2.3.20")`
+`kotlin("jvm").version("2.4.20")`
+`id("org.jetbrains.kotlin.multiplatform").version("2.4.20")`
 
 ✅ **Do this:**
 `kotlin("jvm")`
@@ -120,10 +120,10 @@ a. In `build.gradle(.kts)` files:
 b. In the `libs.versions.toml` file:
 
 ❌ **Don't do this:**
-`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.3.30" }`
+`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.4.30" }`
 
 ✅ **Do this:**
-`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization"}`
+`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }`
 
 #### Known problems
 
