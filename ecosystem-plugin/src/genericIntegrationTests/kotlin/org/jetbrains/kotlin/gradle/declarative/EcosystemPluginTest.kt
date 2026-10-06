@@ -26,7 +26,7 @@ class EcosystemPluginTest : BaseTest() {
             )
 
             buildAndFail("help") {
-                assertOutputContains("Plugin org.jetbrains.ecosystem:ecosystem-plugin:.* requires at least Gradle 9.8.0.".toRegex())
+                assertOutputContains("Plugin org.jetbrains.ecosystem:ecosystem-plugin:.* requires at least Gradle ${gradleVersion.version}.".toRegex())
             }
         }
     }
