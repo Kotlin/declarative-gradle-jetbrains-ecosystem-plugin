@@ -4,9 +4,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.TestingBuildModel
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.TestingExtension
 
-public interface LibraryTestingExtension : TestingExtension {
+public interface LibraryTestingExtension : TestingExtension<LibraryTestingBuildModel> {
 
     @get:Nested
     public val dependencies: LibraryTestingDependenciesExtension
@@ -20,6 +21,8 @@ public interface LibraryTestingExtension : TestingExtension {
     @get:Nested
     public val iosPlatform: LibraryTestingIosEcosystemDefinition
 }
+
+public interface LibraryTestingBuildModel : TestingBuildModel
 
 @Suppress("UnstableApiUsage")
 public interface LibraryTestingJvmEcosystemDefinition : Definition<BuildModel.None> {
