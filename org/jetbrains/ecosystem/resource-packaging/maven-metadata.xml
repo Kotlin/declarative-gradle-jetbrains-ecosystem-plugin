@@ -3,11 +3,11 @@
   <groupId>org.jetbrains.ecosystem</groupId>
   <artifactId>resource-packaging</artifactId>
   <versioning>
-    <latest>0.131.0</latest>
-    <release>0.131.0</release>
+    <latest>0.134.0</latest>
+    <release>0.134.0</release>
     <versions>
-      <version>0.131.0</version>
+      <version>0.134.0</version>
     </versions>
-    <lastUpdated>20261006161829</lastUpdated>
+    <lastUpdated>20261008163621</lastUpdated>
   </versioning>
 </metadata>
