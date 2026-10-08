@@ -2,7 +2,7 @@ package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.and
 
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinJvmCompilationExtension
 
 public interface AndroidEcosystemDefinition {
 
@@ -23,5 +23,5 @@ public interface AndroidEcosystemDefinition {
     public val androidResources: AndroidResources
 
     @get:Nested
-    public val compilerOptions: KotlinJvmCompilerOptions
+    public val kotlin: KotlinJvmCompilationExtension
 }

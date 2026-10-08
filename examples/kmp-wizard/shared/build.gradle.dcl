@@ -16,8 +16,10 @@ library {
         compileSdk = 37
         minSdk = 24
 
-        compilerOptions {
-            jvmTarget = JVM_11
+        kotlin {
+            compilerOptions {
+                jvmTarget = JVM_11
+            }
         }
 
         androidResources {

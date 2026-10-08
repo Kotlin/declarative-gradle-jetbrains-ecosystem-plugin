@@ -507,7 +507,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         defaultCommonOptions
                     )
                     syncKotlinJvmCompilerOptionsAsConvention(
-                        this@wireKotlinCompilerOptions.androidPlatform.compilerOptions,
+                        this@wireKotlinCompilerOptions.androidPlatform.kotlin.compilerOptions,
                         target.compilerOptions,
                         defaultAndroidJvmOptions
                     )

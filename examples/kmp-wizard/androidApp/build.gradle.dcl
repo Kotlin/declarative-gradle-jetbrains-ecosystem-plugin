@@ -1,3 +1,9 @@
+/*
+ * `androidApp` is an official Android Gradle Plugin project type, see more here: https://cs.android.com/android-studio/platform/tools/base/+/mirror-goog-studio-main:build-system/gradle-api/src/main/java/com/android/build/api/dsl/ApplicationDeclarativeDefinition.kt
+ * To enable Declarative Gradle features in AGP, users must:
+ * - Apply the Android ecosystem plugin (`id("com.android.ecosystem").version(...)`) in the project's `settings.gradle.dcl`
+ * - Enable `android.experimental.declarative=true` in `gradle.properties`
+ */
 androidApp {
     compileSdk = 37
     namespace = "org.jetbrains.kmpwizard"
@@ -22,7 +28,7 @@ androidApp {
             isMinifyEnabled = false
 //            proguardFiles(
 //                getDefaultProguardFile("proguard-android-optimize.txt"),
-//                "proguard-rules.pro"
+//                layout.projectDirectory.file("proguard-rules.pro"),
 //            )
         }
     }
