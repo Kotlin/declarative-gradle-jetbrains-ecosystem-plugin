@@ -3,9 +3,9 @@
 ```dcl
 library {
     // Enables platforms library supports
-    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios".
+    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios", "android".
     // These are the all platforms supported for now.
-    platforms = listOf("common", "jvm", "web", "ios")
+    platforms = listOf("common", "jvm", "web", "ios", "android")
     
     kotlin { // Kotlin compilation configuration common for all platforms
          compilerOptions { // Compiler arguments to apply for all Kotlin compilations
@@ -72,9 +72,32 @@ library {
         }
     }
 
-    dependencies { // library dependencies
-        api(project(":shared")) // common dependency for all platforms
-        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // common dependency fro all platforms
+    androidPlatform { // Android platform specific configurations
+        minSdk = 21 // Minimum API level, can be overridden with `minSdkPreview`
+        compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`, or overridden with `compileSdkPreview`
+        namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
+        
+        androidResources { // Configuration of AAPT Android resources and assets
+            enable = true // Enables Android resource processing in this library; by default it is `false` for KMP projects
+            resourcePrefix = "lib_" // This library's resource prefix in Android Studio (only useful when working with Android Studio)
+            ignoreAssetsPatterns = listOf("dont-ignore-anything") // A list of patterns of ignored assets
+            // LibraryAndroidResources members are available here, see more at:
+            // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/LibraryAndroidResources
+        }
+    
+        kotlin { // Kotlin compilation configuration, overrides common configuration
+            compilerOptions { // Compiler arguments to apply for all library's Android (JVM) compilations
+                jvmTarget = JvmTarget.JVM_21 // Generated JVM bytecode target version
+                freeCompilerArgs += listOf("-Xexport-kdoc", "-Xno-receiver-assertions") // Additional compiler arguments
+                // KotlinJvmCompilerOptions members are available here, see more at:
+                // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-jvm-compiler-options/
+            }
+        }
+    }
+
+    dependencies { // Library dependencies
+        api(project(":shared")) // Common dependency for all platforms
+        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // Common dependency for all platforms
 
         jvmPlatform { // JVM specific dependencies
             api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
@@ -87,8 +110,12 @@ library {
             implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
         }
 
-        iosPlatformDependencies { // IOS specific dependencies
+        iosPlatform { // iOS specific dependencies
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        }
+    
+        androidPlatform { // Android specific dependencies
+            implementation("androidx.compose.ui:ui:1.12.1")
         }
     }
 
@@ -99,6 +126,22 @@ library {
 
         webPlatform { // Testing configuration for Web platform
             skip = true // Skip web tests
+        }
+    
+        androidPlatform { // Testing configuration for Android platform
+            hostTest { // Creates and configures a compilation for tests that run on the JVM
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
+                includeAndroidResources = true // Allows host (unit) tests to use Android resources, assets, and manifests
+                // KotlinMultiplatformAndroidHostTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
+            }
+        
+            deviceTest { // Creates and configures a compilation for tests that run on a device
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" // Test instrumentation runner class name
+                // KotlinMultiplatformAndroidDeviceTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest
+            }
         }
 
         dependencies { // Testing dependencies
@@ -117,8 +160,18 @@ library {
                 implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
             }
 
-            iosPlatformDependencies { // IOS platform testing dependencies
+            iosPlatform { // iOS platform testing dependencies
                 implementation("org.jetbrains.kotlin:kotlin-test")
+            }
+        
+            androidPlatform { // Android platform testing dependencies
+                hostTest { // Host (JVM) testing dependencies
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+                }
+            
+                deviceTest { // Device testing dependencies
+                    implementation(""androidx.test:runner:1.7.0")
+                }
             }
         }
     }
@@ -127,7 +180,7 @@ library {
         group = "com.example" // Publication group
         version = "1.0.0" // Publication name
         
-        maven { // Enables Gradle 'maven-publish' plugina and configures publication to Maven
+        maven { // Enables Gradle 'maven-publish' plugin and configures publication to Maven
            name = "library" // Publication name
            repositoryUrl = "file:///tmp" // Publication repository url
            withDocs = true // Enable documentation publication
@@ -140,4 +193,5 @@ library {
 ## Examples
 
 - [examples/idea-wizard/utils/build.gradle.dcl](../examples/idea-wizard/utils/build.gradle.dcl)
+- [examples/kmp-wizard/shared/build.gradle.dcl](../examples/kmp-wizard/shared/build.gradle.dcl)
 - [examples/spring-petklinik/shared/build.gradle.dcl](../examples/spring-petklinik/shared/build.gradle.dcl)

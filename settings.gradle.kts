@@ -1,8 +1,15 @@
+@Suppress("UnstableApiUsage")
 pluginManagement {
     includeBuild("gradle/build-logic")
     repositories {
         mavenCentral()
         gradlePluginPortal()
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+            }
+        }
     }
 }
 
@@ -17,6 +24,12 @@ dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
         mavenCentral()
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+            }
+        }
     }
 }
 
