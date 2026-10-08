@@ -31,6 +31,11 @@ androidApp {
 //                layout.projectDirectory.file("proguard-rules.pro"),
 //            )
         }
+        buildType("debug") {
+            dependencies {
+                implementation("org.jetbrains.compose.ui:ui-tooling:1.12.1")
+            }
+        }
     }
 
     compileOptions {
@@ -42,10 +47,15 @@ androidApp {
         compose = true
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     dependencies {
         implementation(project(":shared"))
         implementation("androidx.activity:activity-compose:1.13.0")
         implementation("org.jetbrains.compose.ui:ui-tooling-preview:1.12.1")
-//        debugImplementation(libs.compose.uiTooling)
     }
 }
