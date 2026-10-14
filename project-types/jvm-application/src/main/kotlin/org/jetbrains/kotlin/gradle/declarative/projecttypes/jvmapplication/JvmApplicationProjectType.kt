@@ -4,7 +4,6 @@ import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JavaJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.JvmEcosystemDefinition
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.PackagingExtension
 
 @Suppress("UnstableApiUsage")
