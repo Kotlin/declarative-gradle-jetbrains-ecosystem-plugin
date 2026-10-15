@@ -246,8 +246,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 if (LibraryPlatform.ios in enabledPlatforms) {
                     val iosMainSourceSet = sourceSets.getByName("iosMain")
 
-                    addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
-                    addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
+                    addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatform.api)
+                    addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatform.implementation)
                 }
             }
         }

@@ -6,7 +6,7 @@ The JetBrains ecosystem plugin is an experimental plugin for [Declarative Gradle
 
 You can mix Declarative Gradle subprojects with non-declarative ones. In its current state, the JetBrains ecosystem plugin 
 lets you create [jvmApplication](./dsl-reference/jvm-application.md), [webApplication](./dsl-reference/web-application.md),
-and [library](./dsl-reference/library.md) (supporting `jvm`, `web`, and `ios` platforms) subprojects.
+and [library](./dsl-reference/library.md) (supporting `jvm`, `web`, `ios`, and `android` platforms) subprojects.
 
 While developing this plugin, we've significantly changed the mental model behind how Kotlin application build scripts can be built. We would appreciate your feedback on the design choices we've made.
 
@@ -15,6 +15,9 @@ While developing this plugin, we've significantly changed the mental model behin
 
 > [!WARNING]
 > Both Declarative Gradle and this plugin are pre-stable. Expect rough edges, breaking changes between releases, and no compatibility guarantees.
+
+> [!IMPORTANT]
+> In order to create a library project with the `android` platform, you must apply the `com.android.ecosystem` plugin in your build. More information about the Android ecosystem plugin for Declarative Gradle to your project can be found [here](https://blog.gradle.org/declarative-gradle-november-2024-update#official-android-software-type-preview).
 
 ## Setup
 
@@ -120,7 +123,7 @@ a. In `build.gradle(.kts)` files:
 b. In the `libs.versions.toml` file:
 
 ❌ **Don't do this:**
-`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.4.30" }`
+`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.3.20" }`
 
 ✅ **Do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }`
@@ -179,7 +182,6 @@ Start with these resources:
 
 1. Version catalogs aren't supported yet. When declaring a dependency, you must provide the dependency coordinates instead of a version catalog reference.
 2. The `kotlin()` alias for dependencies isn't supported. You must provide the full dependency coordinates.
-3. Combining the JetBrains ecosystem plugin with the Android ecosystem plugin may not work in all cases. An explicit `android` type in the `library` project type is not supported yet, but the `jvm` platform should support most of the general use cases.
 
 ## Examples of migrated applications
 

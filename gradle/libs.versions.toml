@@ -2,7 +2,7 @@
 kotlin = "2.4.20"
 spring = "4.0.6"
 junit = "6.1.3"
-android-gradle-plugin = "9.4.0"
+android-gradle-plugin = "9.4.1"
 
 [libraries]
 kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }

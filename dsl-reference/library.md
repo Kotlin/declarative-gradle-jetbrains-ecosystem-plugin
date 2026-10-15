@@ -3,15 +3,16 @@
 ```dcl
 library {
     // Enables platforms library supports
-    // Accepted values are LibraryPlatform values: jvm, common, web, ios.
+    // Accepted values are LibraryPlatform values: jvm, common, web, ios, android.
     // These are the all platforms supported for now.
-    platforms = listOf(common, jvm, web, ios)
+    platforms = listOf(common, jvm, web, ios, android)
     
     kotlin { // Kotlin compilation configuration common for all platforms
          compilerOptions { // Compiler arguments to apply for all Kotlin compilations
              // KotlinCommonCompilerOptions members are available here, see more at:
              // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-common-compiler-options/
              // (for example: languageVersion, apiVersion, freeCompilerArgs, etc.)
+             freeCompilerArgs = listOf("-Xcollection-literals")
          }
 
         serialization { // Enables Kotlin serialization compiler plugins
@@ -23,7 +24,7 @@ library {
     }
     
     java { // Java compilation configuration common for all platforms
-        compilerOptions { // compiler arguments to apply for all Java compilations
+        compilerOptions { // Compiler arguments to apply for all Java compilations
             compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
         }
     }
@@ -31,7 +32,7 @@ library {
     jvmPlatform { // JVM platform specific configurations
         toolchain { // JDK toolchain which is used both for compilation and test tasks
             releaseVersion = 21 // JDK release version
-            vendor = JvmVendor.ADOPTIUM // JDK vendor
+            vendor = ADOPTIUM // JDK vendor
             nativeImageCapable = false // Indicates if the JDK should be native-image capable
         }
         
@@ -39,6 +40,7 @@ library {
             compilerOptions { // Compiler arguments to apply for all Kotlin JVM compilations
                 // KotlinJvmCompilerOptions members are available here, see more at:
                 // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-jvm-compiler-options/
+                jvmTarget = JVM_21 // Generated JVM bytecode target version
             }
         }
     }
@@ -54,6 +56,7 @@ library {
                 // KotlinJsCompilerOptions members are available here, see more at:
                 // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-js-compiler-options/
                 // (for example: sourceMap, target, etc.)
+                sourceMap = true // Generate JS source map
             }
         }
     }
@@ -68,6 +71,22 @@ library {
             compilerOptions {
                 // KotlinNativeCompilerOptions members are available here, see more at:
                 // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-native-compiler-options/
+                moduleName = "library" // Specifies ObjectiveC module name
+            }
+        }
+    }
+
+    androidPlatform { // Android platform specific configurations
+        minSdk = 21 // Minimum API level
+        compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`
+        namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
+        
+        kotlin { // Kotlin compilation configuration, overrides common configuration
+            compilerOptions { // Compiler arguments to apply for all library's Android (JVM) compilations
+                // KotlinJvmCompilerOptions members are available here, see more at:
+                // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-jvm-compiler-options/
+                jvmTarget = JVM_21 // Generated JVM bytecode target version
+                freeCompilerArgs = listOf("-Xexport-kdoc", "-Xno-receiver-assertions") // Additional compiler arguments
             }
         }
     }
@@ -87,7 +106,7 @@ library {
             implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
         }
 
-        iosPlatformDependencies { // IOS specific dependencies
+        iosPlatform { // iOS specific dependencies
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         }
     }
@@ -117,7 +136,7 @@ library {
                 implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
             }
 
-            iosPlatformDependencies { // IOS platform testing dependencies
+            iosPlatform { // iOS platform testing dependencies
                 implementation("org.jetbrains.kotlin:kotlin-test")
             }
         }
