@@ -5,6 +5,8 @@ import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.TestingExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.android.AndroidDeviceTest
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.android.AndroidHostTest
 
 public interface LibraryTestingExtension : TestingExtension {
 
@@ -19,6 +21,9 @@ public interface LibraryTestingExtension : TestingExtension {
 
     @get:Nested
     public val iosPlatform: LibraryTestingIosEcosystemDefinition
+
+    @get:Nested
+    public val androidPlatform: LibraryTestingAndroidEcosystemDefinition
 }
 
 @Suppress("UnstableApiUsage")
@@ -33,3 +38,13 @@ public interface LibraryTestingWebEcosystemDefinition : Definition<BuildModel.No
 
 @Suppress("UnstableApiUsage")
 public interface LibraryTestingIosEcosystemDefinition : Definition<BuildModel.None>
+
+@Suppress("UnstableApiUsage")
+public interface LibraryTestingAndroidEcosystemDefinition : Definition<BuildModel.None> {
+
+    @get:Nested
+    public val hostTest: AndroidHostTest
+
+    @get:Nested
+    public val deviceTest: AndroidDeviceTest
+}

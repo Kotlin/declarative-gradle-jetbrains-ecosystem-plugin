@@ -123,7 +123,7 @@ a. In `build.gradle(.kts)` files:
 b. In the `libs.versions.toml` file:
 
 ❌ **Don't do this:**
-`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.4.30" }`
+`kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "2.3.20" }`
 
 ✅ **Do this:**
 `kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization" }`
