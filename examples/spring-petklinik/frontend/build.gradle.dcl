@@ -5,7 +5,7 @@ webApplication {
         }
     }
 
-    subplatforms = listOf("wasmJs")
+    subplatforms = listOf(wasmJs)
 
     packaging {
         resource { }

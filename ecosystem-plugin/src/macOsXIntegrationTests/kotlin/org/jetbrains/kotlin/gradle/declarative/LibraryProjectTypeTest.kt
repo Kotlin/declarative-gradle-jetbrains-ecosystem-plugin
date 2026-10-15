@@ -24,10 +24,10 @@ class LibraryProjectTypeTest : BaseTest() {
                     //language=declarative
                     """
                     |library {
-                    |    platforms = listOf("ios")
+                    |    platforms = listOf(ios)
                     |    
                     |    iosPlatform {
-                    |        subplatforms = listOf("iosArm64")
+                    |        subplatforms = listOf(iosArm64)
                     |    }
                     |    
                     |    publishing {
@@ -53,10 +53,10 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("ios")
+                |    platforms = listOf(ios)
                 |    
                 |    iosPlatform {
-                |        subplatforms = listOf("iosArm64")
+                |        subplatforms = listOf(iosArm64)
                 |    }
                 |    
                 |    dependencies {

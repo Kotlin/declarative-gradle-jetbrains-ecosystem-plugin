@@ -3,9 +3,9 @@
 ```dcl
 library {
     // Enables platforms library supports
-    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios".
+    // Accepted values are LibraryPlatform values: jvm, common, web, ios.
     // These are the all platforms supported for now.
-    platforms = listOf("common", "jvm", "web", "ios")
+    platforms = listOf(common, jvm, web, ios)
     
     kotlin { // Kotlin compilation configuration common for all platforms
          compilerOptions { // Compiler arguments to apply for all Kotlin compilations
@@ -45,9 +45,9 @@ library {
 
     webPlatform { // Web platform specific configurations
         // Limits "web" platform to given sub-platforms
-        // Accepted values are WebSubplatforms names as strings: "js", "wasmJs".
+        // Accepted values are WebSubplatform values: js, wasmJs.
         // If omitted (or empty), all subplatforms are enabled by default.
-        subplatforms = listOf("js", "wasmJs")
+        subplatforms = listOf(js, wasmJs)
 
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions {
@@ -60,9 +60,9 @@ library {
 
     iosPlatform { // iOS platform specific configurations
         // Limits "ios" platform to given sub-platforms
-        // Accepted values are IosSubplatforms names as strings: "iosArm64", "iosSimulatorArm64", "iosX64".
+        // Accepted values are IosSubplatform values: iosArm64, iosSimulatorArm64, iosX64.
         // If omitted (or empty), all iOS subplatforms are enabled by default.
-        subplatforms = listOf("iosArm64", "iosSimulatorArm64", "iosX64")
+        subplatforms = listOf(iosArm64, iosSimulatorArm64, iosX64)
 
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions {

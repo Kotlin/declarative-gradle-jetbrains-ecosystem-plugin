@@ -8,11 +8,10 @@ import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilat
 
 @Suppress("UnstableApiUsage")
 public interface LibraryProjectType : Definition<LibraryBuildModel> {
-    // Change to LibraryPlatforms type once https://github.com/gradle/gradle/issues/34114 is fixed
     /**
-     * See available platforms at [LibraryPlatforms].
+     * See available platforms at [LibraryPlatform].
      */
-    public val platforms: ListProperty<String>
+    public val platforms: ListProperty<LibraryPlatform>
 
     @get:Nested
     public val jvmPlatform: LibraryJvmEcosystemDefinition
@@ -39,6 +38,6 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
     public val testing: LibraryTestingExtension
 }
 
-public enum class LibraryPlatforms {
+public enum class LibraryPlatform {
     jvm, common, web, ios,
 }
