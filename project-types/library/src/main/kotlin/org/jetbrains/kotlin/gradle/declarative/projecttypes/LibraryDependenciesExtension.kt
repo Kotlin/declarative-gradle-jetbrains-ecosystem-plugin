@@ -22,7 +22,7 @@ public interface LibraryDependenciesExtension : Definition<BuildModel.None>,
     public val webPlatform: LibraryWebPlatformDependencies
 
     @get:Nested
-    public val iosPlatformDependencies: LibraryIosPlatformDependencies
+    public val iosPlatform: LibraryIosPlatformDependencies
 }
 
 @Suppress("UnstableApiUsage")
