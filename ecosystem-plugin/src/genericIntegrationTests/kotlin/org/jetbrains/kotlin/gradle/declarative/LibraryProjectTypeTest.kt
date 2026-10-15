@@ -9,15 +9,13 @@ import org.jetbrains.kotlin.gradle.declarative.testDsl.TestVersions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertCompilerArgument
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertNoToBeExecutedTaskFailed
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
-import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksAreNotInTaskGraph
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
-import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksInBuildOutput
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
+import org.jetbrains.kotlin.gradle.declarative.testDsl.buildAndFail
 import org.jetbrains.kotlin.gradle.declarative.testDsl.jdk21Info
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.jetbrains.kotlin.gradle.declarative.testDsl.source
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.assertThrows
 import kotlin.io.path.writeText
 
 @DisplayName("Library project type")
@@ -734,7 +732,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("android")
+                |    platforms = listOf(android)
                 |    
                 |    androidPlatform {
                 |        compileSdk = 36
@@ -775,7 +773,7 @@ class LibraryProjectTypeTest : BaseTest() {
         }
     }
 
-    @DisplayName("Android platform: missing `com.android.ecosystem` dependency")
+    @DisplayName("Android platform: missing `com.android.ecosystem` plugin")
     @GradleTest
     fun testMissingAndroidEcosystemDependency(gradleVersion: GradleVersion) {
         project(
@@ -786,7 +784,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("android")
+                |    platforms = listOf(android)
                 |    
                 |    androidPlatform {
                 |        compileSdk = 36
@@ -820,9 +818,8 @@ class LibraryProjectTypeTest : BaseTest() {
                 """.trimMargin()
             }
 
-            build("build") {
-                assertTasksExecuted(":build")
-                assertTasksAreNotInTaskGraph(":assembleAndroidMain")
+            buildAndFail("build") {
+                assertOutputContains("Android ecosystem plugin was not applied")
             }
         }
     }

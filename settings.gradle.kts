@@ -1,15 +1,8 @@
-@Suppress("UnstableApiUsage")
 pluginManagement {
     includeBuild("gradle/build-logic")
     repositories {
         mavenCentral()
         gradlePluginPortal()
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-            }
-        }
     }
 }
 
