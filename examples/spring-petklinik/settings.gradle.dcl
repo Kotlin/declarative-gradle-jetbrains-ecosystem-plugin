@@ -44,7 +44,7 @@ defaults {
     }
 
     library {
-        platforms = listOf("jvm", "web")
+        platforms = listOf(jvm, web)
 
         jvmPlatform {
             toolchain {
@@ -53,7 +53,7 @@ defaults {
         }
 
         webPlatform {
-            subplatforms = listOf("wasmJs")
+            subplatforms = listOf(wasmJs)
         }
 
         kotlin {

@@ -22,11 +22,46 @@ jobs:
       - name: Build
         run: ./gradlew assemble
 
-      - name: Generic Integration Tests
-        run: ./gradlew :ecosystem-plugin:genericIntegrationTests
+  generic-integration-tests:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v6
+
+        - uses: actions/setup-java@v5
+          with:
+            distribution: temurin
+            java-version: 17
+
+        - name: Setup Gradle
+          uses: gradle/actions/setup-gradle@v6
+          with:
+            cache-read-only: true
+
+        - name: Run Generic Integration Tests
+          run: ./gradlew :ecosystem-plugin:genericIntegrationTests
+
+  macosx-integration-tests:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
+
+      - name: Run macOSX Integration Tests
+        run: ./gradlew :ecosystem-plugin:macOsXIntegrationTests
 
   check-examples:
-    needs: build
+    needs: [generic-integration-tests, macosx-integration-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

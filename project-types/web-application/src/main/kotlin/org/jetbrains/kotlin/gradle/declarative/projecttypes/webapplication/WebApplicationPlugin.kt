@@ -2,7 +2,6 @@
 
 package org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication
 
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
@@ -15,7 +14,7 @@ import org.gradle.features.binding.ProjectTypeBinding
 import org.gradle.features.binding.ProjectTypeBindingBuilder
 import org.gradle.features.dsl.bindProjectType
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatform
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import javax.inject.Inject
@@ -60,19 +59,11 @@ public class WebApplicationPlugin : Plugin<Project> {
 
             val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
             val enabledSubplatforms = definition.subplatforms
-                .map {
-                    it.map { name ->
-                        WebSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
-                            ?: throw GradleException(
-                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
-                            )
-                    }
-                }
-                .getOrElse(WebSubplatforms.entries.toList())
+                .getOrElse(WebSubplatform.entries.toList())
                 // ListProperty default value is empty list
-                .ifEmpty { WebSubplatforms.entries.toList() }
+                .ifEmpty { WebSubplatform.entries.toList() }
 
-            val jsTarget = if (enabledSubplatforms.contains(WebSubplatforms.js)) {
+            val jsTarget = if (WebSubplatform.js in enabledSubplatforms) {
                 kmpExtension.js {
                     browser()
                     binaries.executable()
@@ -80,7 +71,7 @@ public class WebApplicationPlugin : Plugin<Project> {
             } else null
 
             @OptIn(ExperimentalWasmDsl::class)
-            val wasmTarget = if (enabledSubplatforms.contains(WebSubplatforms.wasmJs)) {
+            val wasmTarget = if (WebSubplatform.wasmJs in enabledSubplatforms) {
                 kmpExtension.wasmJs {
                     browser()
                     binaries.executable()

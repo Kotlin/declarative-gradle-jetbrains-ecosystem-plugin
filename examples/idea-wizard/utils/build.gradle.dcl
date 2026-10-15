@@ -1,5 +1,5 @@
 library {
-    platforms = listOf("jvm")
+    platforms = listOf(jvm)
 
     kotlin {
         serialization {

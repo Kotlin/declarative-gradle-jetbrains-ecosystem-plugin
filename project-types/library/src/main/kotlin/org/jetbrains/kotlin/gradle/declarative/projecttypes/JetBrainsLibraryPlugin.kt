@@ -20,8 +20,10 @@ import org.gradle.features.dsl.bindProjectType
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.IosSubplatforms
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.EcosystemWithSubplatforms
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.IosSubplatform
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.Subplatform
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.WebSubplatform
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
@@ -41,6 +43,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.DefaultKotlinJavaToolchain
 import javax.inject.Inject
+import kotlin.enums.EnumEntries
 
 @Suppress("UnstableApiUsage")
 @BindsProjectType(JetBrainsLibraryPlugin.Binding::class)
@@ -82,43 +85,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             buildModel: LibraryBuildModel
         ) {
             logger.info("Applying 'library' project type")
-            buildModel.enabledPlatforms.value(
-                definition.platforms.map {
-                    it.map { definitionValue ->
-                        LibraryPlatforms.entries.find { it.name.equals(definitionValue, ignoreCase = true)  }
-                            ?: throw GradleException(
-                                "Platform '$definitionValue' is not available, available platforms:\n" +
-                                        LibraryPlatforms.entries.joinToString { it.name }
-                            )
-                    }
-                }
-            )
+            buildModel.enabledPlatforms.value(definition.platforms)
 
-            val enabledPlatforms = buildModel.enabledPlatforms.get().toSet()
-            val enabledWebSubplatforms = definition.webPlatform.subplatforms
-                .map {
-                    it.map { name ->
-                        WebSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
-                            ?: throw GradleException(
-                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
-                            )
-                    }
-                }
-                .getOrElse(WebSubplatforms.entries.toList())
-                // ListProperty default value is empty list
-                .ifEmpty { WebSubplatforms.entries.toList() }
-            val enabledIosSubplatforms = definition.iosPlatform.subplatforms
-                .map {
-                    it.map { name ->
-                        IosSubplatforms.entries.find { it.name.equals(name, ignoreCase = true) }
-                            ?: throw GradleException(
-                                "Unknown subplatform $name, accepted subplatforms: ${WebSubplatforms.entries.joinToString { it.name }}"
-                            )
-                    }
-                }
-                .getOrElse(IosSubplatforms.entries.toList())
-                // ListProperty default value is empty list
-                .ifEmpty { IosSubplatforms.entries.toList() }
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = buildModel.collectSubplatforms(LibraryPlatform.web, WebSubplatform.entries, definition.webPlatform)
+            val enabledIosSubplatforms = buildModel.collectSubplatforms(LibraryPlatform.ios, IosSubplatform.entries, definition.iosPlatform)
 
             applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
 
@@ -131,7 +102,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledIosSubplatforms,
             )
 
-            if (buildModel.enabledPlatforms.get().contains(LibraryPlatforms.jvm)) {
+            if (LibraryPlatform.jvm in enabledPlatforms) {
                 definition.configureJvmPlatform()
             }
 
@@ -140,23 +111,36 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 enabledWebSubplatforms
             )
 
-            definition.publishing.configurePublishing()
+            definition.publishing.configurePublishing(enabledIosSubplatforms)
+        }
+
+        private fun <S> LibraryBuildModel.collectSubplatforms(
+            platform: LibraryPlatform,
+            allSubplatforms: EnumEntries<S>,
+            definition: EcosystemWithSubplatforms<S>
+        ): List<S> where S : Subplatform, S : Enum<S> = when {
+            platform in enabledPlatforms.get() ->
+                definition.subplatforms
+                    .getOrElse(allSubplatforms.toList())
+                    // ListProperty default value is empty list
+                    .ifEmpty { allSubplatforms.toList() }
+            else -> emptyList()
         }
 
         private fun applyKotlinPlugin(
-            enabledPlatforms: Set<LibraryPlatforms>,
-            enabledWebSubplatforms: List<WebSubplatforms>,
-            enabledIosSubplatforms: List<IosSubplatforms>,
+            enabledPlatforms: Set<LibraryPlatform>,
+            enabledWebSubplatforms: List<WebSubplatform>,
+            enabledIosSubplatforms: List<IosSubplatform>,
         ) {
             when {
                 enabledPlatforms.isEmpty() -> throw GradleException(
-                    "No library platform was specified. Please specify at least one of ${LibraryPlatforms.entries.joinToString { it.name }}"
+                    "No library platform was specified. Please specify at least one of ${LibraryPlatform.entries.joinToString { it.name }}"
                 )
-                enabledPlatforms.size == 1 && enabledPlatforms == setOf(LibraryPlatforms.jvm) -> {
+                enabledPlatforms.size == 1 && enabledPlatforms == setOf(LibraryPlatform.jvm) -> {
                     logger.info("Enabling Kotlin/JVM plugin")
                     pluginManager.apply("org.jetbrains.kotlin.jvm")
                 }
-                enabledPlatforms.size == 2 && enabledPlatforms == setOf(LibraryPlatforms.jvm, LibraryPlatforms.common) -> {
+                enabledPlatforms.size == 2 && enabledPlatforms == setOf(LibraryPlatform.jvm, LibraryPlatform.common) -> {
                     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
                     withKmpPlugin {
                         applyDefaultHierarchyTemplate()
@@ -171,17 +155,17 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         applyDefaultHierarchyTemplate()
                         enabledPlatforms.forEach { platform ->
                             when (platform) {
-                                LibraryPlatforms.jvm -> jvm()
-                                LibraryPlatforms.common -> logger.warn("'common' platform is only used in conjunction with 'jvm' platform. Please remove it.")
-                                LibraryPlatforms.web -> {
-                                    if (enabledWebSubplatforms.contains(WebSubplatforms.js)) js { browser() }
-                                    if (enabledWebSubplatforms.contains(WebSubplatforms.wasmJs)) wasmJs { browser() }
+                                LibraryPlatform.jvm -> jvm()
+                                LibraryPlatform.common -> logger.warn("'common' platform is only used in conjunction with 'jvm' platform. Please remove it.")
+                                LibraryPlatform.web -> {
+                                    if (WebSubplatform.js in enabledWebSubplatforms) js { browser() }
+                                    if (WebSubplatform.wasmJs in enabledWebSubplatforms) wasmJs { browser() }
                                 }
 
-                                LibraryPlatforms.ios -> {
-                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosArm64)) iosArm64()
-                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosSimulatorArm64)) iosSimulatorArm64()
-                                    if (enabledIosSubplatforms.contains(IosSubplatforms.iosX64)) iosX64()
+                                LibraryPlatform.ios -> {
+                                    if (IosSubplatform.iosArm64 in enabledIosSubplatforms) iosArm64()
+                                    if (IosSubplatform.iosSimulatorArm64 in enabledIosSubplatforms) iosSimulatorArm64()
+                                    if (IosSubplatform.iosX64 in enabledIosSubplatforms) iosX64()
                                 }
                             }
                         }
@@ -191,7 +175,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun LibraryDependenciesExtension.wireDependencies(
-            enabledPlatforms: Set<LibraryPlatforms>
+            enabledPlatforms: Set<LibraryPlatform>
         ) {
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
@@ -219,7 +203,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 addDependencies(commonSourceSet.apiConfigurationName, api)
                 addDependencies(commonSourceSet.implementationConfigurationName, implementation)
 
-                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                if (LibraryPlatform.jvm in enabledPlatforms) {
                     val jvmMainSourceSet = sourceSets.getByName("jvmMain")
                     addDependencies(jvmMainSourceSet.apiConfigurationName, jvmPlatform.api)
                     addDependencies(jvmMainSourceSet.implementationConfigurationName, jvmPlatform.implementation)
@@ -227,14 +211,14 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     addDependencies(jvmMainSourceSet.runtimeOnlyConfigurationName, jvmPlatform.runtimeOnly)
                 }
 
-                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                if (LibraryPlatform.web in enabledPlatforms) {
                     val webMainSourceSet = sourceSets.getByName("webMain")
 
                     addDependencies(webMainSourceSet.apiConfigurationName, webPlatform.api)
                     addDependencies(webMainSourceSet.implementationConfigurationName, webPlatform.implementation)
                 }
 
-                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                if (LibraryPlatform.ios in enabledPlatforms) {
                     val iosMainSourceSet = sourceSets.getByName("iosMain")
 
                     addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatformDependencies.api)
@@ -244,7 +228,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun LibraryTestingDependenciesExtension.wireTestingDependencies(
-            enabledPlatforms: Set<LibraryPlatforms>
+            enabledPlatforms: Set<LibraryPlatform>
         ) {
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
@@ -268,20 +252,20 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
                 addDependencies(commonSourceSet.implementationConfigurationName, implementation)
 
-                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                if (LibraryPlatform.jvm in enabledPlatforms) {
                     val jvmTestSourceSet = sourceSets.getByName("jvmTest")
                     addDependencies(jvmTestSourceSet.implementationConfigurationName, jvmPlatform.implementation)
                     addDependencies(jvmTestSourceSet.compileOnlyConfigurationName, jvmPlatform.compileOnly)
                     addDependencies(jvmTestSourceSet.runtimeOnlyConfigurationName, jvmPlatform.runtimeOnly)
                 }
 
-                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                if (LibraryPlatform.web in enabledPlatforms) {
                     val webTestSourceSet = sourceSets.getByName("webTest")
 
                     addDependencies(webTestSourceSet.implementationConfigurationName, webPlatform.implementation)
                 }
 
-                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                if (LibraryPlatform.ios in enabledPlatforms) {
                     val iosTestSourceSet = sourceSets.getByName("iosTest")
 
                     addDependencies(iosTestSourceSet.implementationConfigurationName, iosPlatformDependencies.implementation)
@@ -358,9 +342,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun LibraryProjectType.wireKotlinCompilerOptions(
-            enabledPlatforms: Set<LibraryPlatforms>,
-            enabledWebSubplatforms: List<WebSubplatforms>,
-            enabledIosSubplatforms: List<IosSubplatforms>,
+            enabledPlatforms: Set<LibraryPlatform>,
+            enabledWebSubplatforms: List<WebSubplatform>,
+            enabledIosSubplatforms: List<IosSubplatform>,
         ) {
             withJvmPlugin {
                 val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
@@ -392,7 +376,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     defaultCommonOptions,
                 )
 
-                if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+                if (LibraryPlatform.jvm in enabledPlatforms) {
                     val jvmTarget = targets.getByName("jvm") as KotlinJvmTarget
                     val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
                     syncKotlinCommonCompilerOptionsAsConvention(
@@ -413,7 +397,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         project
                     )
                 }
-                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                if (LibraryPlatform.web in enabledPlatforms) {
                     val defaultJsOptions = objectFactory.newInstance(KotlinJsCompilerOptionsDefault::class.java)
                     syncKotlinCommonCompilerOptionsAsConvention(
                         compilerOptions,
@@ -423,8 +407,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
                     enabledWebSubplatforms.forEach { subplatform ->
                         val target = when (subplatform) {
-                            WebSubplatforms.js -> targets.getByName(subplatform.name) as KotlinJsTargetDsl
-                            WebSubplatforms.wasmJs -> targets.getByName(subplatform.name) as KotlinWasmJsTargetDsl
+                            WebSubplatform.js -> targets.getByName(subplatform.name) as KotlinJsTargetDsl
+                            WebSubplatform.wasmJs -> targets.getByName(subplatform.name) as KotlinWasmJsTargetDsl
                         }
 
                         syncKotlinJsCompilerOptionsAsConvention(
@@ -434,7 +418,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         )
                     }
                 }
-                if (enabledPlatforms.contains(LibraryPlatforms.ios)) {
+                if (LibraryPlatform.ios in enabledPlatforms) {
                     val defaultNativeOptions = objectFactory.newInstance(KotlinNativeCompilerOptionsDefault::class.java)
                     syncKotlinCommonCompilerOptionsAsConvention(
                         compilerOptions,
@@ -455,10 +439,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
 
         private fun LibraryTestingExtension.configureTesting(
-            enabledPlatforms: Set<LibraryPlatforms>,
-            enabledWebSubplatforms: List<WebSubplatforms>,
+            enabledPlatforms: Set<LibraryPlatform>,
+            enabledWebSubplatforms: List<WebSubplatform>,
         ) {
-            if (enabledPlatforms.contains(LibraryPlatforms.jvm)) {
+            if (LibraryPlatform.jvm in enabledPlatforms) {
                 project.tasks.withType(Test::class.java).configureEach {
                     if (jvmPlatform.useJUnitPlatform.getOrElse(false)) {
                         it.useJUnitPlatform()
@@ -467,18 +451,18 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
 
             withKmpPlugin {
-                if (enabledPlatforms.contains(LibraryPlatforms.web)) {
+                if (LibraryPlatform.web in enabledPlatforms) {
                     enabledWebSubplatforms.forEach {
                         val target = targets.getByName(it.name)
                         when (it) {
-                            WebSubplatforms.wasmJs -> {
+                            WebSubplatform.wasmJs -> {
                                 (target as KotlinWasmJsTargetDsl).browser {
                                     testTask {
                                         it.enabled = !webPlatform.skip.getOrElse(false)
                                     }
                                 }
                             }
-                            WebSubplatforms.js -> {
+                            WebSubplatform.js -> {
                                 (target as KotlinJsTargetDsl).browser {
                                     testTask {
                                         it.enabled = !webPlatform.skip.getOrElse(false)
@@ -491,9 +475,23 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryPublishingExtension.configurePublishing() {
+        private fun LibraryPublishingExtension.configurePublishing(enabledIosSubplatforms: List<IosSubplatform>) {
             project.group = group.getOrElse(project.path.replace(":", "."))
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
+            if (enabledIosSubplatforms.isEmpty()) return
+            logger.info("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
+            withKmpPlugin {
+                enabledIosSubplatforms.forEach { subplatform ->
+                    val target = targets.getByName(subplatform.name) as KotlinNativeTarget
+                    target.binaries.framework {
+                        iosFramework.static.orNull?.let { isStatic = it }
+                        iosFramework.linkerOpts.orNull?.let { linkerOpts = it }
+                        freeCompilerArgs = target.compilerOptions.freeCompilerArgs.getOrElse(emptyList())
+                        project.configurations.getByName(exportConfigurationName).fromDependencyCollector(iosFramework.export)
+                        iosFramework.transitiveExport.orNull?.let { transitiveExport = it }
+                    }
+                }
+            }
         }
 
         private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {

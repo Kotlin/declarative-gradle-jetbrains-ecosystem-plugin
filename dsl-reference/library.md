@@ -3,9 +3,9 @@
 ```dcl
 library {
     // Enables platforms library supports
-    // Accepted values are LibraryPlatforms names as strings: "jvm", "common", "web", "ios".
+    // Accepted values are LibraryPlatform values: jvm, common, web, ios.
     // These are the all platforms supported for now.
-    platforms = listOf("common", "jvm", "web", "ios")
+    platforms = listOf(common, jvm, web, ios)
     
     kotlin { // Kotlin compilation configuration common for all platforms
          compilerOptions { // Compiler arguments to apply for all Kotlin compilations
@@ -45,9 +45,9 @@ library {
 
     webPlatform { // Web platform specific configurations
         // Limits "web" platform to given sub-platforms
-        // Accepted values are WebSubplatforms names as strings: "js", "wasmJs".
+        // Accepted values are WebSubplatform values: js, wasmJs.
         // If omitted (or empty), all subplatforms are enabled by default.
-        subplatforms = listOf("js", "wasmJs")
+        subplatforms = listOf(js, wasmJs)
 
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions {
@@ -60,9 +60,9 @@ library {
 
     iosPlatform { // iOS platform specific configurations
         // Limits "ios" platform to given sub-platforms
-        // Accepted values are IosSubplatforms names as strings: "iosArm64", "iosSimulatorArm64", "iosX64".
+        // Accepted values are IosSubplatform values: iosArm64, iosSimulatorArm64, iosX64.
         // If omitted (or empty), all iOS subplatforms are enabled by default.
-        subplatforms = listOf("iosArm64", "iosSimulatorArm64", "iosX64")
+        subplatforms = listOf(iosArm64, iosSimulatorArm64, iosX64)
 
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions {
@@ -126,12 +126,19 @@ library {
     publishing { // Publishing configuration
         group = "com.example" // Publication group
         version = "1.0.0" // Publication name
-        
-        maven { // Enables Gradle 'maven-publish' plugina and configures publication to Maven
+
+        maven { // Enables Gradle 'maven-publish' plugin and configures publication to Maven
            name = "library" // Publication name
            repositoryUrl = "file:///tmp" // Publication repository url
            withDocs = true // Enable documentation publication
            withSources = true // Enable sources publication
+        }
+
+        iosFramework { // Enables publication of the library as an iOS framework
+            static = true // Specifies if the framework is linked as a static (binary) library (false by default)
+            linkerOpts = listOf("-lld") // Additional options passed to the linker by the Kotlin/Native compiler, see more at: https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
+            export(libs.some.library) // Add a dependency to be exported in the framework
+            transitiveExport = true // If dependencies added by the export method are resolved transitively or not
         }
     }
 }
