@@ -12,6 +12,9 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
+import org.gradle.api.problems.ProblemGroup
+import org.gradle.api.problems.ProblemId
+import org.gradle.api.problems.Problems
 import org.gradle.api.tasks.testing.Test
 import org.gradle.features.annotations.BindsProjectType
 import org.gradle.features.binding.ProjectFeatureApplicationContext
@@ -64,6 +67,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         }
     }
 
+    internal object LibraryProblems {
+        private val GROUP: ProblemGroup = ProblemGroup.create("org.jetbrains.kotlin.gradle.declarative.JetBrainsLibraryPlugin", "JetBrains Library Project Problems")
+
+        val MISSING_ANDROID_ECOSYSTEM_PLUGIN = ProblemId.create("missing-android-ecosystem-plugin", "Missing Android ecosystem plugin in KMP library with 'android' platform", GROUP)
+    }
+
     @Suppress("OPT_IN_USAGE")
     internal abstract class LibraryApplyAction : ProjectTypeApplyAction<LibraryProjectType, LibraryBuildModel> {
 
@@ -78,6 +87,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
         @get:Inject
         abstract val objectFactory: ObjectFactory
+
+        @get:Inject
+        abstract val problems: Problems
 
         private val logger = Logging.getLogger(this::class.simpleName)
 
@@ -174,7 +186,13 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                                     if (IosSubplatform.iosX64 in enabledIosSubplatforms) iosX64()
                                 }
                                 LibraryPlatform.android if hasAndroidEcosystemPlugin -> pluginManager.apply("com.android.kotlin.multiplatform.library")
-                                LibraryPlatform.android -> logger.warn("The 'android' platform can only used when 'com.android.ecosystem' is applied to `settings.gradle.dcl`!")
+                                LibraryPlatform.android -> throw problems.reporter.throwing(
+                                    GradleException("Android ecosystem plugin was not applied"),
+                                    LibraryProblems.MISSING_ANDROID_ECOSYSTEM_PLUGIN
+                                ) {
+                                    it.details("The 'android' library platform can only used when Android ecosystem plugin is applied to 'settings.gradle.dcl'")
+                                        .solution("Apply the plugin with 'id(\"com.android.ecosystem\").version(...)' in 'settings.gradle.dcl'")
+                                }
                             }
                         }
                     }
