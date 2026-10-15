@@ -27,7 +27,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "common", "web", "ios")
+                |    platforms = listOf(jvm, common, web, ios)
                 |}
                 """.trimMargin()
             )
@@ -46,7 +46,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |}
                 """.trimMargin()
             )
@@ -65,7 +65,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "common")
+                |    platforms = listOf(jvm, common)
                 |}
                 """.trimMargin()
             )
@@ -84,7 +84,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    dependencies {
                 |        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${TestVersions.Dependencies.COROUTINES}")
@@ -125,7 +125,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    dependencies {
                 |        jvmPlatform {
@@ -172,7 +172,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    dependencies {
                 |        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${TestVersions.Dependencies.COROUTINES}")
@@ -226,7 +226,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    dependencies {
                 |        jvmPlatform {
@@ -285,7 +285,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    jvmPlatform {
                 |        toolchain {
@@ -322,7 +322,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    kotlin {
                 |        compilerOptions {
@@ -379,7 +379,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    kotlin {
                 |        compilerOptions {
@@ -463,7 +463,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    kotlin {
                 |        serialization {
@@ -516,7 +516,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    testing {
                 |        dependencies {
@@ -566,7 +566,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    testing {
                 |        dependencies {
@@ -621,7 +621,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    testing {
                 |        dependencies {
@@ -666,7 +666,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    publishing {
                 |        group = "org.example"

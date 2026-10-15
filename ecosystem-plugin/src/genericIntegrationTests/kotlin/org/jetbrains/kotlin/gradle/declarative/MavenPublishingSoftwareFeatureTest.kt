@@ -30,7 +30,7 @@ class MavenPublishingSoftwareFeatureTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    publishing {
                 |        maven {
@@ -63,7 +63,7 @@ class MavenPublishingSoftwareFeatureTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm")
+                |    platforms = listOf(jvm)
                 |    
                 |    publishing {
                 |        group = "org.example"
@@ -106,7 +106,7 @@ class MavenPublishingSoftwareFeatureTest : BaseTest() {
                 //language=declarative
                 """
                 |library {
-                |    platforms = listOf("jvm", "web")
+                |    platforms = listOf(jvm, web)
                 |    
                 |    publishing {
                 |        group = "org.example"

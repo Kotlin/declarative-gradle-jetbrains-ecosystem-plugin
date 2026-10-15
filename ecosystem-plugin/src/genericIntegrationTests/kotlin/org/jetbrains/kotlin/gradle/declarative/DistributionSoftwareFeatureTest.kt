@@ -16,6 +16,7 @@ class DistributionSoftwareFeatureTest : BaseTest() {
     ) {
         project("base-ecosystem-project", gradleVersion) {
             buildGradleDcl.writeText(
+                //language=declarative
                 """
                 |jvmApplication {
                 |    packaging {
