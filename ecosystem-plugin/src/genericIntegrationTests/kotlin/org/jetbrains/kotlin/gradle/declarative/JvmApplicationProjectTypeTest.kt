@@ -209,8 +209,8 @@ class JvmApplicationProjectTypeTest : BaseTest() {
                 |    
                 |    kotlin {
                 |        compilerOptions {
-                |            languageVersion = KOTLIN_2_2
-                |            apiVersion = KOTLIN_2_2
+                |            languageVersion = KOTLIN_2_3
+                |            apiVersion = KOTLIN_2_3
                 |            allWarningsAsErrors = true
                 |            jvmDefault = ENABLE
                 |        }
@@ -225,12 +225,12 @@ class JvmApplicationProjectTypeTest : BaseTest() {
 
                 assertCompilerArgument(
                     ":compileKotlin",
-                    "-api-version 2.2",
+                    "-api-version 2.3",
                     logLevel = LogLevel.INFO,
                 )
                 assertCompilerArgument(
                     ":compileKotlin",
-                    "-language-version 2.2",
+                    "-language-version 2.3",
                     logLevel = LogLevel.INFO,
                 )
                 assertCompilerArgument(

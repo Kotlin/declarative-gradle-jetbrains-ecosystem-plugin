@@ -11,6 +11,8 @@ kotlin {
 
 dependencies {
     api(gradleApi())
+    implementation(libs.jetbrains.compose)
+    implementation(libs.compose.compiler)
     api(project(":common"))
 }
 
