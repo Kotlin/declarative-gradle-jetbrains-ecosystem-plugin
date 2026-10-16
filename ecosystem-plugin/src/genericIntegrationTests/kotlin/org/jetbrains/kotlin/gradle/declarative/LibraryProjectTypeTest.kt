@@ -383,7 +383,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    
                 |    kotlin {
                 |        compilerOptions {
-                |            languageVersion = KOTLIN_2_2
+                |            languageVersion = KOTLIN_2_3
                 |            allWarningsAsErrors = true
                 |        }
                 |    }
