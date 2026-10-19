@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.declarative.projecttypes.JetBrainsLibraryPlug
 import org.jetbrains.kotlin.gradle.declarative.projecttypes.webapplication.WebApplicationPlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeature.resource.ResourceSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.MavenPublishSoftwareFeaturePlugin
+import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.iosframework.IosFrameworkPublishingProjectFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSoftwareFeaturePlugin
 
 @Suppress("UnstableApiUsage")
@@ -23,6 +24,7 @@ import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSof
     SpringSoftwareFeaturePlugin::class,
     ResourceSoftwareFeaturePlugin::class,
     MavenPublishSoftwareFeaturePlugin::class,
+    IosFrameworkPublishingProjectFeaturePlugin::class,
 )
 public class JetbrainsEcosystemPlugin : Plugin<Settings> {
     private val logger = Logging.getLogger(JetbrainsEcosystemPlugin::class.java)

@@ -85,33 +85,32 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             buildModel: LibraryBuildModel
         ) {
             logger.info("Applying 'library' project type")
-            buildModel.enabledPlatforms.value(definition.platforms)
 
-            val enabledPlatforms = buildModel.enabledPlatforms.get()
+            val enabledPlatforms = definition.platforms
+            buildModel.enabledPlatforms.value(enabledPlatforms)
+
             val enabledWebSubplatforms = buildModel.collectSubplatforms(LibraryPlatform.web, WebSubplatform.entries, definition.webPlatform)
+            buildModel.enabledWebSubplatforms.value(enabledWebSubplatforms)
+
             val enabledIosSubplatforms = buildModel.collectSubplatforms(LibraryPlatform.ios, IosSubplatform.entries, definition.iosPlatform)
+            buildModel.enabledIosSubplatforms.value(enabledIosSubplatforms)
 
-            applyKotlinPlugin(enabledPlatforms, enabledWebSubplatforms, enabledIosSubplatforms)
+            applyKotlinPlugin(buildModel)
 
-            definition.dependencies.wireDependencies(enabledPlatforms)
-            definition.testing.dependencies.wireTestingDependencies(enabledPlatforms)
+            definition.dependencies.wireDependencies(buildModel)
+            definition.testing.dependencies.wireTestingDependencies(buildModel)
 
-            definition.wireKotlinCompilerOptions(
-                enabledPlatforms,
-                enabledWebSubplatforms,
-                enabledIosSubplatforms,
-            )
+            definition.wireKotlinCompilerOptions(buildModel)
 
-            if (LibraryPlatform.jvm in enabledPlatforms) {
+            if (LibraryPlatform.jvm in buildModel.enabledPlatforms.get()) {
                 definition.configureJvmPlatform()
             }
 
-            definition.testing.configureTesting(
-                enabledPlatforms,
-                enabledWebSubplatforms
-            )
+            definition.testing.configureTesting(buildModel)
 
-            definition.publishing.configurePublishing(enabledIosSubplatforms)
+            context(context) {
+                definition.publishing.configurePublishing(buildModel)
+            }
         }
 
         private fun <S> LibraryBuildModel.collectSubplatforms(
@@ -127,11 +126,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             else -> emptyList()
         }
 
-        private fun applyKotlinPlugin(
-            enabledPlatforms: Set<LibraryPlatform>,
-            enabledWebSubplatforms: List<WebSubplatform>,
-            enabledIosSubplatforms: List<IosSubplatform>,
-        ) {
+        private fun applyKotlinPlugin(buildModel: LibraryBuildModel) {
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
+            val enabledIosSubplatforms = buildModel.enabledIosSubplatforms.get()
             when {
                 enabledPlatforms.isEmpty() -> throw GradleException(
                     "No library platform was specified. Please specify at least one of ${LibraryPlatform.entries.joinToString { it.name }}"
@@ -174,9 +172,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryDependenciesExtension.wireDependencies(
-            enabledPlatforms: Set<LibraryPlatform>
-        ) {
+        private fun LibraryDependenciesExtension.wireDependencies(buildModel: LibraryBuildModel) {
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
                 @Suppress("UNCHECKED_CAST")
@@ -227,9 +224,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryTestingDependenciesExtension.wireTestingDependencies(
-            enabledPlatforms: Set<LibraryPlatform>
-        ) {
+        private fun LibraryTestingDependenciesExtension.wireTestingDependencies(buildModel: LibraryBuildModel) {
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
                 @Suppress("UNCHECKED_CAST")
@@ -341,11 +337,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryProjectType.wireKotlinCompilerOptions(
-            enabledPlatforms: Set<LibraryPlatform>,
-            enabledWebSubplatforms: List<WebSubplatform>,
-            enabledIosSubplatforms: List<IosSubplatform>,
-        ) {
+        private fun LibraryProjectType.wireKotlinCompilerOptions(buildModel: LibraryBuildModel) {
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
+            val enabledIosSubplatforms = buildModel.enabledIosSubplatforms.get()
             withJvmPlugin {
                 val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
                 val intermediateJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
@@ -438,10 +433,10 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryTestingExtension.configureTesting(
-            enabledPlatforms: Set<LibraryPlatform>,
-            enabledWebSubplatforms: List<WebSubplatform>,
-        ) {
+        private fun LibraryTestingExtension.configureTesting(buildModel: LibraryBuildModel) {
+            val enabledPlatforms = buildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
+
             if (LibraryPlatform.jvm in enabledPlatforms) {
                 project.tasks.withType(Test::class.java).configureEach {
                     if (jvmPlatform.useJUnitPlatform.getOrElse(false)) {
@@ -475,23 +470,16 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryPublishingExtension.configurePublishing(enabledIosSubplatforms: List<IosSubplatform>) {
+        context(context: ProjectFeatureApplicationContext)
+        private fun LibraryPublishingExtension.configurePublishing(buildModel: LibraryBuildModel) {
+            val publishingBuildModel = context.getBuildModel(this)
+            // Sync the build models as they are different instances under different definitions
+            publishingBuildModel.enabledPlatforms.value(buildModel.enabledPlatforms)
+            publishingBuildModel.enabledWebSubplatforms.value(buildModel.enabledWebSubplatforms)
+            publishingBuildModel.enabledIosSubplatforms.value(buildModel.enabledIosSubplatforms)
+
             project.group = group.getOrElse(project.path.replace(":", "."))
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
-            if (enabledIosSubplatforms.isEmpty()) return
-            logger.info("Configuring publishing for iOS subplatforms: $enabledIosSubplatforms")
-            withKmpPlugin {
-                enabledIosSubplatforms.forEach { subplatform ->
-                    val target = targets.getByName(subplatform.name) as KotlinNativeTarget
-                    target.binaries.framework {
-                        iosFramework.static.orNull?.let { isStatic = it }
-                        iosFramework.linkerOpts.orNull?.let { linkerOpts = it }
-                        freeCompilerArgs = target.compilerOptions.freeCompilerArgs.getOrElse(emptyList())
-                        project.configurations.getByName(exportConfigurationName).fromDependencyCollector(iosFramework.export)
-                        iosFramework.transitiveExport.orNull?.let { transitiveExport = it }
-                    }
-                }
-            }
         }
 
         private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {

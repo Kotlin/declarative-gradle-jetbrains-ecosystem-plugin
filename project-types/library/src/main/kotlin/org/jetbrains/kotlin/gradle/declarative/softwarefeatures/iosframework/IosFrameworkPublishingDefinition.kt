@@ -1,15 +1,14 @@
-package org.jetbrains.kotlin.gradle.declarative.projecttypes
+package org.jetbrains.kotlin.gradle.declarative.softwarefeatures
 
 import org.gradle.api.artifacts.dsl.Dependencies
 import org.gradle.api.artifacts.dsl.DependencyCollector
-import org.gradle.api.plugins.jvm.PlatformDependencyModifiers
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface LibraryIosFrameworkPublishingExtension : Definition<BuildModel.None>, Dependencies, PlatformDependencyModifiers {
+public interface IosFrameworkPublishingDefinition : Definition<BuildModel.None>, Dependencies {
 
     public val static: Property<Boolean>
 
