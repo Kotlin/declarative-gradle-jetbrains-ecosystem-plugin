@@ -472,6 +472,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                             compilerOptions,
                             defaultAndroidJvmOptions
                         )
+                        DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(compilerOptions, project)
                     }
                 }
             }

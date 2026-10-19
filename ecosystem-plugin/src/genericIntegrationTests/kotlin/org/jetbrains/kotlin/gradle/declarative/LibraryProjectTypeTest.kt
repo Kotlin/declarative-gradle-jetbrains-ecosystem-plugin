@@ -706,14 +706,14 @@ class LibraryProjectTypeTest : BaseTest() {
                 |        gradlePluginPortal()
                 |        maven { url = uri("${System.getProperty("maven.repo.url")}") }
                 |        maven {
-                |            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+                |            url = uri("https://androidx.dev/studio/builds/${TestVersions.Android.NIGHTLY_BUILD}/artifacts/artifacts/repository")
                 |        }
                 |    }
                 |}
                 |
                 |plugins {
                 |    id("org.jetbrains.ecosystem").version("0.0.1-SNAPSHOT")
-                |    id("com.android.ecosystem").version("9.5.0-dev")
+                |    id("com.android.ecosystem").version("${TestVersions.Android.ECOSYSTEM_PLUGIN}")
                 |}
                 |
                 |dependencyResolutionManagement {
@@ -721,7 +721,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 |        mavenCentral()
                 |        google()
                 |        maven {
-                |            url = uri("https://androidx.dev/studio/builds/16397002/artifacts/artifacts/repository")
+                |            url = uri("https://androidx.dev/studio/builds/${TestVersions.Android.NIGHTLY_BUILD}/artifacts/artifacts/repository")
                 |        }
                 |    }
                 |}

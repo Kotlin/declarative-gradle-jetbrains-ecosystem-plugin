@@ -16,4 +16,9 @@ interface TestVersions {
         const val COROUTINES = "1.10.2"
         const val DATETIME = "0.7.1"
     }
+
+    object Android {
+        const val NIGHTLY_BUILD = "16651964"
+        const val ECOSYSTEM_PLUGIN = "9.6.0-dev"
+    }
 }
