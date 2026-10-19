@@ -1,0 +1,96 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "library",
+    "version": "0.139.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.139.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "library-0.139.0.jar",
+          "url": "library-0.139.0.jar",
+          "size": 75596,
+          "sha512": "c97f8d2ed82b064213ea77ad7414b94eb5e6a907f81e2f99789dbcce4e9a913d31ecc946e6f5f08c79c5dea271b7fa2debcb96ae1e7fa934ee5a23db680f0615",
+          "sha256": "a9739f80570acb0e2d1bb1406e78f05554e9dd98c1424b2b130a50fc401fe8f6",
+          "sha1": "92491ee59219db752d7ab3e37edf0d1df359d828",
+          "md5": "ca23f52ffcbc6ae95b8383aeaea787c9"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.139.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "library-0.139.0.jar",
+          "url": "library-0.139.0.jar",
+          "size": 75596,
+          "sha512": "c97f8d2ed82b064213ea77ad7414b94eb5e6a907f81e2f99789dbcce4e9a913d31ecc946e6f5f08c79c5dea271b7fa2debcb96ae1e7fa934ee5a23db680f0615",
+          "sha256": "a9739f80570acb0e2d1bb1406e78f05554e9dd98c1424b2b130a50fc401fe8f6",
+          "sha1": "92491ee59219db752d7ab3e37edf0d1df359d828",
+          "md5": "ca23f52ffcbc6ae95b8383aeaea787c9"
+        }
+      ]
+    }
+  ]
+}
