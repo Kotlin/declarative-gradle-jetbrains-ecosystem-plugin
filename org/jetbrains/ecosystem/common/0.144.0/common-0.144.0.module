@@ -1,0 +1,103 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "common",
+    "version": "0.144.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.4.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-0.144.0.jar",
+          "url": "common-0.144.0.jar",
+          "size": 69418,
+          "sha512": "4f86d57f0ebb10e61961364e623a2d780954a18dbed7df853a5911b4f36684633d854efae37804464ee80ac94e2283efed80dc1b3aff03c6c0c0ee74643246ee",
+          "sha256": "54378e31c1a903cec3719b5c448ff062d94f8e09b4afcd0f5be2c03003259108",
+          "sha1": "c5f60f748638281efff9e8efcff01506917c1042",
+          "md5": "b24fa3375c47114159d0127cd9a72957"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-serialization",
+          "version": {
+            "requires": "2.4.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-gradle-plugin",
+          "version": {
+            "requires": "2.4.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-0.144.0.jar",
+          "url": "common-0.144.0.jar",
+          "size": 69418,
+          "sha512": "4f86d57f0ebb10e61961364e623a2d780954a18dbed7df853a5911b4f36684633d854efae37804464ee80ac94e2283efed80dc1b3aff03c6c0c0ee74643246ee",
+          "sha256": "54378e31c1a903cec3719b5c448ff062d94f8e09b4afcd0f5be2c03003259108",
+          "sha1": "c5f60f748638281efff9e8efcff01506917c1042",
+          "md5": "b24fa3375c47114159d0127cd9a72957"
+        }
+      ]
+    }
+  ]
+}
