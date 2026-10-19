@@ -12,8 +12,8 @@ import org.junit.jupiter.api.DisplayName
 import kotlin.io.path.appendText
 import kotlin.io.path.writeText
 
-@DisplayName("Library project type")
-class LibraryProjectTypeTest : BaseTest() {
+@DisplayName("iOS framework publishing project feature")
+class IosFrameworkPublishingProjectFeatureTest : BaseTest() {
 
     @DisplayName("iOS framework publishing")
     @GradleTest

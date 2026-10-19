@@ -25,6 +25,9 @@ internal fun syncKotlinNativeCompilerOptionsAsConvention(
     into.progressiveMode.convention(from.progressiveMode.orElse(fallback.progressiveMode))
 
     // KotlinNativeCompilerOptions
-    // NOTE: For moduleName, only provide non-null values as convention, as the convention cannot be null
-    from.moduleName.orElse(fallback.moduleName).orNull?.let(into.moduleName::convention)
+    // NOTE: For `moduleName`, KotlinNativeTarget's convention (`into`) gets overridden by the provider constructed
+    // using `from` and `fallback` which potentially realizes to `null`. In order to not force users to manually declare
+    // the `moduleName` every time they declare a native platform in a library project, we use the already-set convention
+    // in KotlinNativeTarget as the fallback value for the constructed provider.
+    into.moduleName.convention(from.moduleName.orElse(fallback.moduleName).orElse(into.moduleName.get()))
 }
