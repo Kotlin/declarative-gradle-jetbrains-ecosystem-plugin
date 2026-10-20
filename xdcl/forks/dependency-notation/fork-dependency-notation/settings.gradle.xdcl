@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "fork-dependency-notation"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+}

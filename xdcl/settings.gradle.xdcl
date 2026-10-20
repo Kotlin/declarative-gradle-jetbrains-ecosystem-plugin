@@ -26,6 +26,8 @@ settings {
       "forks/android-by-agp/fork-android-by-agp",
       "forks/android-by-agp/fork-android-by-agp-android",
       "forks/android-by-agp/android-by-agp-example",
+      "forks/dependency-notation/fork-dependency-notation",
+      "forks/dependency-notation/dependency-notation-example",
     ]
   }
 }

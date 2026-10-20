@@ -1,0 +1,14 @@
+// The same two dependencies in every notation the fork accepts. They validate side by side, so they're alternatives
+// for the docs to recommend, not exclusive schema choices.
+jvmApplication {
+  dependencies {
+    // Mainline: type-safe accessor symbols, like `projects.shared` / `libs.kotlinx.datetime` in Kotlin DSL.
+    implementation [:projects.shared, :libs.kotlinx.datetime]
+
+    // Strings: a path is a coordinate starting with ':'; a catalog entry has no string form.
+    compileOnly [":shared", "org.jetbrains.kotlinx:kotlinx-datetime:0.7.1"]
+
+    // Records: explicit, and the path is checked against a pattern.
+    runtimeOnly [{ project ":shared" }, { catalog "kotlinx.datetime" }]
+  }
+}

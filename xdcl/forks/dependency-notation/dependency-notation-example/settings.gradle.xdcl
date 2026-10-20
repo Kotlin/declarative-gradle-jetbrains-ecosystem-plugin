@@ -1,0 +1,12 @@
+settings {
+  rootProject {
+    name "fork-dependency-notation-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-dependency-notation"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.dependencynotation" }
+  ]
+  include ["app", "shared"]
+}

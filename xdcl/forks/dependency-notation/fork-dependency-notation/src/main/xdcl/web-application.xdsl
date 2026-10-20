@@ -1,0 +1,53 @@
+// The webApplication project type.
+package org.jetbrains.ecosystem.forks.dependencynotation
+
+/// A web application written in Kotlin, compiled to JavaScript and/or WebAssembly.
+///
+/// ```
+/// webApplication {
+///   subplatforms [:wasmJs]
+///   dependencies {
+///     implementation [:projects.shared]
+///   }
+/// }
+/// ```
+template WebApplication with ComposeHost {
+  webApplication {
+    /// Limits the application to the given sub-platforms. All of them are enabled when omitted.
+    subplatforms: [WebSubplatform]?
+
+    /// Kotlin compilation.
+    kotlin: KotlinWebCompilation?
+
+    /// Application dependencies.
+    dependencies: WebApplicationDependencies?
+    /// How the application is packaged and distributed.
+    packaging: WebApplicationPackaging?
+  }
+}
+
+/// Dependencies of a `webApplication`.
+record WebApplicationDependencies {
+  implementation: [WebDependency]?
+}
+
+/// A dependency of web code; adds npm packages to [Dependency].
+type WebDependency =
+  String |
+  Symbol |
+  ModuleDependency |
+  PlatformDependency |
+  NpmDependency
+
+/// An npm package, Kotlin's `npm(name, version)`.
+record NpmDependency {
+  /// Package name, e.g. `"@js-joda/timezone"`.
+  npm: String
+  version: String
+}
+
+/// Packaging of a `webApplication`: where features such as `webpack { }` plug in.
+trait WebApplicationPackagingFeatures
+
+/// Packaging of a `webApplication`.
+record WebApplicationPackaging with ApplicationPackaging & WebApplicationPackagingFeatures {}

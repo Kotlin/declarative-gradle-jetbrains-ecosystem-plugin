@@ -1,0 +1,4 @@
+plugin {
+  displayName "JetBrains ecosystem, fork dependency-notation"
+  description "Schema-only fork of the JetBrains ecosystem plugin, see forks/dependency-notation/README.md."
+}
