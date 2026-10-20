@@ -3,7 +3,9 @@ package org.jetbrains.kotlin.gradle.declarative
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
+import org.jetbrains.kotlin.gradle.declarative.testDsl.TestVersions
 import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
@@ -22,9 +24,7 @@ class ComposeMultiplatformSoftwareFeatureTest : BaseTest() {
                 |library {
                 |    platforms = listOf(jvm, common)
                 |    
-                |    compose {
-                |
-                |    }           
+                |    compose { }           
                 |}
                 |
                 """.trimMargin()
@@ -50,6 +50,72 @@ class ComposeMultiplatformSoftwareFeatureTest : BaseTest() {
                     |Configure dev resources for 'jvm' target
                     """.trimMargin().toRegex(RegexOption.MULTILINE)
                 )
+            }
+        }
+    }
+
+    @DisplayName("Support for Android application project type")
+    @GradleTest
+    fun testComposeMultiplatformPluginsWithAndroid(gradleVersion: GradleVersion) {
+        project("android-app-project", gradleVersion) {
+            settingsGradleDcl.writeText(
+                //language=declarative
+                """
+                |pluginManagement {
+                |    repositories {
+                |        mavenCentral()
+                |        google()
+                |        gradlePluginPortal()
+                |        maven { url = uri("${System.getProperty("maven.repo.url")}") }
+                |        maven {
+                |            url = uri("https://androidx.dev/studio/builds/${TestVersions.Android.NIGHTLY_BUILD}/artifacts/artifacts/repository")
+                |        }
+                |    }
+                |}
+                |
+                |plugins {
+                |    id("org.jetbrains.ecosystem").version("0.0.1-SNAPSHOT")
+                |    id("com.android.ecosystem").version("${TestVersions.Android.ECOSYSTEM_PLUGIN}")
+                |}
+                |
+                |dependencyResolutionManagement {
+                |    repositories {
+                |        mavenCentral()
+                |        google()
+                |        maven {
+                |            url = uri("https://androidx.dev/studio/builds/${TestVersions.Android.NIGHTLY_BUILD}/artifacts/artifacts/repository")
+                |        }
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            buildGradleDcl.writeText(
+                //language=declarative
+                """
+                |androidApp {
+                |    namespace = "org.example.app"
+                |    compileSdk = 34
+                |    
+                |    compose { }       
+                |
+                |    compileOptions {
+                |        sourceCompatibility = VERSION_17
+                |        targetCompatibility = VERSION_17
+                |    }
+                |
+                |    defaultConfig {
+                |        minSdk = 30
+                |        versionCode = 1
+                |        versionName = "0.1"
+                |        applicationId = "org.jetbrains.declarative.gradle.android.app"
+                |    }
+                |}
+                """.trimMargin()
+            )
+
+            build("build") {
+                assertTasksExecuted(":build")
             }
         }
     }
