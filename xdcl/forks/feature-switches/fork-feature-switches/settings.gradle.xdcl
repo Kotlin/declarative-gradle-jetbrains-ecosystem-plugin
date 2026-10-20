@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "fork-feature-switches"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+}

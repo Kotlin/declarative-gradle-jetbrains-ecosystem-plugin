@@ -1,0 +1,105 @@
+// examples/kotlinconf/shared, with per-platform dependencies in the platform blocks (aboutLibraries left out: that
+// mock plugin extends the mainline schema, not this fork).
+library {
+  kotlin {
+    serialization { }
+    parcelize { }
+    compilerOptions {
+      freeCompilerArgs ["-Xexpect-actual-classes"]
+    }
+  }
+
+  compose { }
+
+  publishing {
+    iosFramework {
+      baseName "shared"
+      static true
+    }
+  }
+
+  dependencies {
+    api [
+      :projects.core,
+      :projects.uiComponents,
+      :libs.compose.runtime,
+      :libs.compose.foundation,
+      :libs.compose.animation,
+      :libs.compose.components.resources,
+      :libs.koin.compose.viewmodel.navigation,
+      :libs.ktor.client.logging,
+      :libs.ktor.serialization.kotlinx.json,
+      :libs.ktor.client.content.negotiation,
+      :libs.ktor.utils,
+      :libs.kmpnotifier,
+    ]
+    implementation [
+      :libs.kotlinx.datetime,
+      :libs.androidx.lifecycle.runtime.compose,
+      :libs.androidx.navigation3.ui,
+      :libs.androidx.lifecycle.viewmodel.navigation3,
+      :libs.ktor.client.core,
+      :libs.aboutlibraries.core,
+      :libs.settings,
+      :libs.settings.serialization,
+      :libs.settings.observable,
+      :libs.settings.coroutines,
+      :libs.doistx.normalize,
+    ]
+  }
+
+  testing {
+    dependencies {
+      implementation [:libs.kotlin.test, :libs.settings.test, :libs.kotlinx.coroutines.test]
+    }
+  }
+
+  androidPlatform {
+    namespace "org.jetbrains.kotlinconf"
+    kotlin {
+      compilerOptions {
+        freeCompilerArgs [
+          "-P",
+          "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=org.jetbrains.kotlinconf.zoomable.internal.AndroidParcelize",
+        ]
+      }
+    }
+    dependencies {
+      implementation [
+        :libs.android.svg,
+        :libs.androidx.core.ktx,
+        :libs.androidx.preference,
+        :libs.compose.ui.tooling.preview,
+        :libs.ktor.client.okhttp,
+      ]
+      debugImplementation [:libs.compose.ui.tooling]
+    }
+  }
+
+  iosPlatform {
+    dependencies {
+      implementation [:libs.kotlinx.coroutines.core, :libs.ktor.client.darwin]
+    }
+  }
+
+  jvmPlatform {
+    dependencies {
+      implementation [
+        :libs.ktor.client.okhttp,
+        :compose.desktop.currentOs,
+        :libs.android.svg,
+        :libs.kotlinx.coroutines.swing,
+        :libs.slf4j.nop,
+      ]
+    }
+  }
+
+  webPlatform {
+    dependencies {
+      implementation [
+        :libs.ktor.client.js,
+        { npm "@js-joda/timezone", version "2.3.0" },
+      ]
+    }
+  }
+}

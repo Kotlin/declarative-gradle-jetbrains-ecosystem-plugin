@@ -1,0 +1,26 @@
+// Compose Multiplatform support. From the wireframes; not part of the DCL implementation yet.
+package org.jetbrains.ecosystem.forks.springsingleblock
+
+/// Anything that can use Compose Multiplatform. Other ecosystems' project types carry it too (e.g. Android's
+/// `androidApplication`), so `compose { }` reads the same everywhere.
+trait ComposeHost
+
+/// Enables Compose Multiplatform: applies the Compose compiler and Compose Multiplatform plugins.
+///
+/// A settings default `compose { resources { … } }` configures every project that enables Compose, without
+/// enabling it anywhere.
+extension Compose for ComposeHost {
+  compose {
+    /// Compose resources (`composeResources/`) and the generated `Res` class.
+    resources: ComposeResources?
+  }
+}
+
+record ComposeResources {
+  /// Make the generated `Res` class public.
+  publicResClass: Bool?
+  /// Package of the generated `Res` class.
+  packageOfResClass: String?
+  /// Name of the generated `Res` class.
+  nameOfResClass: String?
+}

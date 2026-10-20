@@ -1,0 +1,29 @@
+settings {
+  rootProject {
+    name "fork-android-by-agp-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-android-by-agp", "../fork-android-by-agp-android"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.androidbyagp" }
+    { id "com.android.ecosystem.forks.androidbyagp" }
+  ]
+  defaults [
+    library {
+      platforms [:android, :jvm, :ios, :web]
+
+      // The Android plugin's block inside the JetBrains library, with catalog versions as API levels.
+      androidPlatform {
+        compileSdk :libs.versions.android.compileSdk
+        minSdk :libs.versions.android.minSdk
+        kotlin {
+          compilerOptions {
+            jvmTarget 11
+          }
+        }
+      }
+    }
+  ]
+  include ["core", "ui-components"]
+}

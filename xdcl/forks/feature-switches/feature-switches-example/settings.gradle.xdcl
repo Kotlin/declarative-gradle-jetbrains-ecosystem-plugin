@@ -1,0 +1,28 @@
+settings {
+  rootProject {
+    name "fork-feature-switches-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-feature-switches"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.featureswitches" }
+  ]
+  defaults [
+    jvmApplication {
+      spring { }
+      kotlin {
+        serialization {
+          enabledFormats [:json]
+        }
+      }
+    }
+    library {
+      platforms [:jvm, :web]
+      kotlin {
+        serialization true
+      }
+    }
+  ]
+  include ["backend", "ai", "shared"]
+}

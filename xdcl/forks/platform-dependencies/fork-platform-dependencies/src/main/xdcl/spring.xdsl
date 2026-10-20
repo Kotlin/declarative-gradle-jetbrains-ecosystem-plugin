@@ -1,0 +1,31 @@
+// Spring support. Mocked: Spring would ship this schema in its own plugin, contributing to the JetBrains ecosystem
+// through the extension points (traits) it exposes. It lives in its own package so that move is just a file move.
+package org.jetbrains.ecosystem.forks.platformdependencies.spring
+
+import org.jetbrains.ecosystem.forks.platformdependencies
+
+/// Enables Spring Boot: applies the `org.springframework.boot` plugin and adds the Spring Boot BOM.
+extension Spring for JvmApplicationFeatures {
+  spring {}
+}
+
+/// Spring-specific dependencies. Requires `spring { }` on the application.
+extension SpringDependencies for JvmApplicationDependencyFeatures {
+  spring {
+    /// Dependencies used only during development, e.g. `"org.springframework.boot:spring-boot-docker-compose"`.
+    developmentOnly: [Dependency]?
+  }
+}
+
+/// Spring-specific packaging. Requires `spring { }` on the application.
+extension SpringPackaging for JvmApplicationPackagingFeatures {
+  spring {
+    /// Configures the `bootBuildImage` task.
+    bootBuildImage: BootBuildImage?
+  }
+}
+
+record BootBuildImage {
+  /// Environment variables of the image build, e.g. `[BP_JVM_CDS_ENABLED: "true"]`.
+  environment: [String: String]?
+}

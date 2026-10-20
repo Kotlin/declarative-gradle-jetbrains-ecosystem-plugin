@@ -1,0 +1,14 @@
+// A Java application: no kotlin { }, so no Kotlin.
+jvmApplication {
+  mainClass "xyz.yahor.app.App"
+
+  java {
+    compilerOptions {
+      compilerArgs ["-Xlint:deprecation"]
+    }
+  }
+
+  dependencies {
+    implementation [:projects.utils]
+  }
+}

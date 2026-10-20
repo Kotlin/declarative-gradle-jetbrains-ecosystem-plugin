@@ -1,0 +1,3 @@
+// Schema-only fork of the JetBrains ecosystem plugin, see ../README.md.
+xdclGradlePlugin {
+}

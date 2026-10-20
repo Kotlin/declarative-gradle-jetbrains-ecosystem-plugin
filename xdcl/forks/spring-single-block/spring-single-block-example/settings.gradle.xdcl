@@ -1,0 +1,24 @@
+settings {
+  rootProject {
+    name "fork-spring-single-block-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-spring-single-block"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.springsingleblock" }
+  ]
+  defaults [
+    // Configures Spring wherever a project enables it; enables it nowhere. With the mainline schema this head is
+    // ambiguous: three different extensions are called `spring`.
+    spring {
+      bootBuildImage {
+        environment [
+          BP_JVM_CDS_ENABLED: "true",
+          BP_JVM_VERSION: "25",
+        ]
+      }
+    }
+  ]
+  include ["backend"]
+}

@@ -1,0 +1,12 @@
+// Opts out of both defaults.
+jvmApplication {
+  mainClass "org.example.ai.MainKt"
+
+  spring {
+    enabled false
+  }
+
+  kotlin {
+    serialization false
+  }
+}

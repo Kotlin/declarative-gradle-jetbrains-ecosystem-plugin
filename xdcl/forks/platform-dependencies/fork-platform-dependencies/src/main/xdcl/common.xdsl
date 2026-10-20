@@ -1,0 +1,200 @@
+// Building blocks shared by the JetBrains ecosystem project types.
+package org.jetbrains.ecosystem.forks.platformdependencies
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Dependencies
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// A dependency, written as one of:
+/// - `"group:name:version"`, a module coordinate,
+/// - `:libs.some.library`, a version catalog entry, or `:projects.some.project`, a project of this build,
+/// - a record for anything that needs more than a name, e.g. `{ module "g:n:v", exclude [{ group "g" }] }`.
+type Dependency =
+  /// A module coordinate, `"group:name"` or `"group:name:version"`.
+  String |
+  /// A type-safe accessor: `:libs.<alias>` for a version catalog entry, `:projects.<name>` for a project.
+  Symbol |
+  ModuleDependency |
+  PlatformDependency
+
+/// A module dependency with extra configuration.
+record ModuleDependency {
+  /// The module: a coordinate, a catalog entry (`:libs.…`) or a project (`:projects.…`).
+  module: DependencyNotation
+  /// Transitive dependencies to leave out.
+  exclude: [Exclude]?
+}
+
+/// Alignment with a platform (BOM), Gradle's `platform(…)`.
+record PlatformDependency {
+  platform: DependencyNotation
+}
+
+/// Excludes transitive dependencies by group, module name, or both.
+record Exclude {
+  group: String?
+  module: String?
+}
+
+/// The plain forms of [Dependency]: a coordinate or an accessor.
+type DependencyNotation = String | Symbol
+
+/// A dependency used by tests; adds test fixtures to [Dependency].
+type TestDependency =
+  String |
+  Symbol |
+  ModuleDependency |
+  PlatformDependency |
+  TestFixturesDependency
+
+/// The test fixtures of a module or project, Gradle's `testFixtures(…)`.
+record TestFixturesDependency {
+  testFixtures: DependencyNotation
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// JVM
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Anything with a JVM toolchain. A `JvmToolchainOwner { toolchain { … } }` default reaches every one of them.
+trait JvmToolchainOwner {
+  /// JDK toolchain used both for compilation and tests.
+  toolchain: JvmToolchain?
+}
+
+/// JDK toolchain used both for compilation and tests.
+record JvmToolchain {
+  /// JDK release version, e.g. `21`.
+  releaseVersion: JavaVersion?
+  /// JDK vendor.
+  vendor: JvmVendor?
+  /// Whether the JDK has to be able to build native images.
+  nativeImageCapable: Bool?
+}
+
+/// A Java release number.
+type JavaVersion = Int where it in 8..30
+
+/// JDK vendors known to Gradle toolchain resolution.
+type JvmVendor = Symbol where it in [
+  :adoptium, :adoptOpenJdk, :amazon, :apple, :azul, :bellsoft, :graalVm, :hewlettPackard, :ibm, :jetbrains,
+  :microsoft, :oracle, :sap, :tencent
+]
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Java compilation
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Java compilation configuration.
+record JavaCompilation {
+  compilerOptions: JavaCompilerOptions?
+}
+
+record JavaCompilerOptions {
+  /// Extra arguments passed to `javac`, e.g. `["-Xlint:deprecation"]`.
+  compilerArgs: [String]?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Kotlin compilation
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// The top-level `kotlin { }` block of a project type: where Kotlin features such as `serialization { }` plug in.
+trait KotlinFeatures
+
+/// A Kotlin language or API version, `"major.minor"`.
+type KotlinVersion = String where it matches r"^\d+\.\d+$"
+
+/// Compiler options shared by every Kotlin compilation (KGP's `KotlinCommonCompilerOptions`).
+trait KotlinCommonCompilerOptions {
+  /// Source compatibility with the given Kotlin version, e.g. `"2.3"`.
+  languageVersion: KotlinVersion?
+  /// Allow using declarations only from the given version of the bundled libraries, e.g. `"2.3"`.
+  apiVersion: KotlinVersion?
+  /// Enable progressive compiler mode.
+  progressiveMode: Bool?
+  /// Opt-in requirement markers to enable, e.g. `["kotlin.time.ExperimentalTime"]`.
+  optIn: [String]?
+  /// Report an error if there are any warnings.
+  allWarningsAsErrors: Bool?
+  /// Don't generate any warnings.
+  suppressWarnings: Bool?
+  /// Enable additional declaration, expression and type compiler checks.
+  extraWarnings: Bool?
+  /// Additional compiler arguments, e.g. `["-Xexpect-actual-classes"]`.
+  freeCompilerArgs: [String]?
+}
+
+/// Options for Kotlin compilations shared by all platforms.
+record KotlinCompilerOptions with KotlinCommonCompilerOptions {}
+
+/// Options for Kotlin/JVM compilations (KGP's `KotlinJvmCompilerOptions`).
+record KotlinJvmCompilerOptions with KotlinCommonCompilerOptions {
+  /// Target version of the generated JVM bytecode, e.g. `21`.
+  jvmTarget: JavaVersion?
+  /// Generate metadata for Java reflection on method parameters.
+  javaParameters: Bool?
+  /// Name of the generated `.kotlin_module` file.
+  moduleName: String?
+}
+
+/// Options for Kotlin/JS and Kotlin/Wasm compilations (KGP's `KotlinJsCompilerOptions`).
+record KotlinWebCompilerOptions with KotlinCommonCompilerOptions {
+  /// Generate source maps.
+  sourceMap: Bool?
+  /// Name of the generated module.
+  moduleName: String?
+}
+
+/// Options for Kotlin/Native compilations (KGP's `KotlinNativeCompilerOptions`).
+record KotlinNativeCompilerOptions with KotlinCommonCompilerOptions {
+  /// Name of the generated module, e.g. the Objective-C module name.
+  moduleName: String?
+}
+
+/// Kotlin compilation of a project type; Kotlin features such as `serialization { }` plug in here.
+record KotlinCompilation with KotlinFeatures {
+  compilerOptions: KotlinCompilerOptions?
+}
+
+/// Kotlin/JVM compilation of a project type.
+record KotlinJvmCompilation with KotlinFeatures {
+  compilerOptions: KotlinJvmCompilerOptions?
+}
+
+/// Kotlin/JS and Kotlin/Wasm compilation of a project type.
+record KotlinWebCompilation with KotlinFeatures {
+  compilerOptions: KotlinWebCompilerOptions?
+}
+
+/// Platform-specific Kotlin/JVM options; they override the shared ones.
+record KotlinJvmPlatformCompilation {
+  compilerOptions: KotlinJvmCompilerOptions?
+}
+
+/// Platform-specific Kotlin/JS and Kotlin/Wasm options; they override the shared ones.
+record KotlinWebPlatformCompilation {
+  compilerOptions: KotlinWebCompilerOptions?
+}
+
+/// Platform-specific Kotlin/Native options; they override the shared ones.
+record KotlinNativePlatformCompilation {
+  compilerOptions: KotlinNativeCompilerOptions?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Web
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Sub-platforms of the `web` platform.
+type WebSubplatform = Symbol where it in [:js, :wasmJs]
+
+/// Sub-platforms of the `ios` platform.
+type IosSubplatform = Symbol where it in [:iosArm64, :iosSimulatorArm64, :iosX64]
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Packaging
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Packaging of any application: where packaging features such as `resource { }` plug in.
+trait ApplicationPackaging

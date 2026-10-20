@@ -1,0 +1,17 @@
+settings {
+  rootProject {
+    name "fork-platform-dependencies-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-platform-dependencies"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.platformdependencies" }
+  ]
+  defaults [
+    library {
+      platforms [:android, :jvm, :ios, :web]
+    }
+  ]
+  include ["kotlinconf-shared", "petklinik-shared"]
+}

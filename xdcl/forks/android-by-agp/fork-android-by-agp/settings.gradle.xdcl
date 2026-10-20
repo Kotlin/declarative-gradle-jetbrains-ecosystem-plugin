@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "fork-android-by-agp"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+}

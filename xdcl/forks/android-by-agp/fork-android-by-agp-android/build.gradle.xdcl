@@ -1,0 +1,7 @@
+// Mock of the Android ecosystem plugin for this fork: schema only, no reactions.
+xdclGradlePlugin {
+  dependencies {
+    // The fork's JetBrains ecosystem schema (substituted by the included build).
+    api ["org.jetbrains.ecosystem.forks:fork-android-by-agp"]
+  }
+}

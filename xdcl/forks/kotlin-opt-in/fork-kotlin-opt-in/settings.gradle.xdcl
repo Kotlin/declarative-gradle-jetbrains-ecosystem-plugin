@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "fork-kotlin-opt-in"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+}

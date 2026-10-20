@@ -15,6 +15,17 @@ settings {
       "examples/kotlinconf",
       "forks/petklinik-idiomatic/defaults",
       "forks/petklinik-idiomatic/prefab",
+      "forks/platform-dependencies/fork-platform-dependencies",
+      "forks/platform-dependencies/platform-dependencies-example",
+      "forks/feature-switches/fork-feature-switches",
+      "forks/feature-switches/feature-switches-example",
+      "forks/spring-single-block/fork-spring-single-block",
+      "forks/spring-single-block/spring-single-block-example",
+      "forks/kotlin-opt-in/fork-kotlin-opt-in",
+      "forks/kotlin-opt-in/kotlin-opt-in-example",
+      "forks/android-by-agp/fork-android-by-agp",
+      "forks/android-by-agp/fork-android-by-agp-android",
+      "forks/android-by-agp/android-by-agp-example",
     ]
   }
 }

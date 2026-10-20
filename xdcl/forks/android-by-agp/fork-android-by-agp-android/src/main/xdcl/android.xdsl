@@ -1,0 +1,46 @@
+// Mock: the real schema would be designed and shipped by the Android Gradle plugin. Besides its own project type it
+// owns the `:android` platform of the JetBrains ecosystem's `library`.
+package com.android.ecosystem.fork
+
+import org.jetbrains.ecosystem.forks.androidbyagp
+
+/// An API level: a number, or a version from the version catalog, e.g. `:libs.versions.android.compileSdk`.
+type ApiLevel = Int | Symbol
+
+/// Configuration of the `:android` platform of a JetBrains `library`.
+extension AndroidLibraryPlatform for LibraryFeatures {
+  androidPlatform {
+    /// Minimum API level.
+    minSdk: ApiLevel?
+    /// API level to compile against.
+    compileSdk: ApiLevel?
+    /// Extension level of the `compileSdk` API level.
+    compileSdkExtension: Int?
+    /// Namespace of the generated `R` and `BuildConfig` classes.
+    namespace: String?
+    /// Kotlin/JVM options of the Android compilation (a JetBrains ecosystem type).
+    kotlin: KotlinJvmPlatformCompilation?
+  }
+}
+
+/// Dependencies of the `:android` platform of a JetBrains `library`. Targets the record by name: the JetBrains
+/// ecosystem didn't need to plan for it.
+extension AndroidLibraryDependencies for LibraryDependencies {
+  androidPlatform {
+    api: [Dependency]?
+    implementation: [Dependency]?
+    compileOnly: [Dependency]?
+    runtimeOnly: [Dependency]?
+    /// Dependencies of the debug build only.
+    debugImplementation: [Dependency]?
+  }
+}
+
+/// An Android application.
+template AndroidApplication with ComposeHost {
+  androidApplication {
+    namespace: String?
+    minSdk: ApiLevel?
+    compileSdk: ApiLevel?
+  }
+}

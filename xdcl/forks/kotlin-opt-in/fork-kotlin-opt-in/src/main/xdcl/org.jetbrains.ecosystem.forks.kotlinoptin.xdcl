@@ -1,0 +1,4 @@
+plugin {
+  displayName "JetBrains ecosystem, fork kotlin-opt-in"
+  description "Schema-only fork of the JetBrains ecosystem plugin, see forks/kotlin-opt-in/README.md."
+}

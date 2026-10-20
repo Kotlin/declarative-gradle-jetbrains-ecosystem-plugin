@@ -1,0 +1,12 @@
+settings {
+  rootProject {
+    name "fork-kotlin-opt-in-example"
+  }
+  pluginManagement {
+    includedBuilds ["../fork-kotlin-opt-in"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem.forks.kotlinoptin" }
+  ]
+  include ["app", "utils", "model"]
+}

@@ -1,0 +1,71 @@
+// The jvmApplication project type.
+package org.jetbrains.ecosystem.forks.androidbyagp
+
+/// Anything `jvmApplication`: where application features such as `spring { }` plug in.
+trait JvmApplicationFeatures
+
+/// A JVM application written in Kotlin and/or Java.
+///
+/// ```
+/// jvmApplication {
+///   mainClass "org.example.MainKt"
+///   dependencies {
+///     implementation [:projects.utils]
+///   }
+/// }
+/// ```
+template JvmApplication with JvmApplicationFeatures & JvmToolchainOwner & ComposeHost {
+  jvmApplication {
+    /// Fully qualified name of the class with the `main` function, e.g. `"org.example.MainKt"`.
+    mainClass: String?
+    /// Application name, used e.g. for the start scripts.
+    name: String?
+    /// Name of the application's Java module, if it should run as a module.
+    moduleName: String?
+    /// JVM arguments the application runs with, e.g. `["-Xmx512m"]`.
+    jvmArgs: [String]?
+
+    /// Java compilation.
+    java: JavaCompilation?
+    /// Kotlin compilation.
+    kotlin: KotlinJvmCompilation?
+
+    /// Application dependencies.
+    dependencies: JvmApplicationDependencies?
+    /// Tests of the application.
+    testing: JvmApplicationTesting?
+    /// How the application is packaged and distributed.
+    packaging: JvmApplicationPackaging?
+  }
+}
+
+/// Dependencies of a `jvmApplication`: where dependency features such as `spring { }` plug in.
+trait JvmApplicationDependencyFeatures
+
+/// Dependencies of a `jvmApplication`.
+record JvmApplicationDependencies with JvmApplicationDependencyFeatures {
+  implementation: [Dependency]?
+  compileOnly: [Dependency]?
+  runtimeOnly: [Dependency]?
+}
+
+/// Tests of a `jvmApplication`.
+record JvmApplicationTesting {
+  /// Run tests on the JUnit Platform.
+  useJUnitPlatform: Bool?
+  /// Test dependencies.
+  dependencies: JvmApplicationTestDependencies?
+}
+
+/// Test dependencies of a `jvmApplication`.
+record JvmApplicationTestDependencies {
+  implementation: [TestDependency]?
+  compileOnly: [TestDependency]?
+  runtimeOnly: [TestDependency]?
+}
+
+/// Packaging of a `jvmApplication`: where features such as `distribution { }` plug in.
+trait JvmApplicationPackagingFeatures
+
+/// Packaging of a `jvmApplication`.
+record JvmApplicationPackaging with ApplicationPackaging & JvmApplicationPackagingFeatures {}

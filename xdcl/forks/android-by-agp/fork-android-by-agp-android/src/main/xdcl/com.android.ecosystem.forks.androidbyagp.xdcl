@@ -1,0 +1,5 @@
+plugin {
+  displayName "Android ecosystem (mock, fork android-by-agp)"
+  description "Mock of the Android Gradle plugin's ecosystem, owning the :android platform of JetBrains libraries."
+  plugins ["org.jetbrains.ecosystem.forks.androidbyagp"]
+}

@@ -1,0 +1,196 @@
+// The library project type.
+package org.jetbrains.ecosystem.forks.platformdependencies
+
+/// A platform a `library` is built for.
+///
+/// With `:jvm` alone the library is a plain JVM library; add `:common` to make it multiplatform-ready without adding
+/// another platform yet.
+type LibraryPlatform =
+  Symbol where it in [:jvm, :common, :web, :ios, :android]
+
+/// Anything `library`: where library features plug in.
+trait LibraryFeatures
+
+/// A library written in Kotlin and/or Java, for one or more platforms.
+///
+/// `platforms` is the only required property; the platform blocks are optional configuration.
+///
+/// ```
+/// library {
+///   platforms [:jvm, :web]
+/// }
+/// ```
+template Library with LibraryFeatures & ComposeHost {
+  library {
+    /// Platforms the library is built for, e.g. `[:jvm, :web]`.
+    platforms: [LibraryPlatform]
+
+    /// Kotlin compilation, shared by all platforms.
+    kotlin: KotlinCompilation?
+    /// Java compilation, shared by all JVM-based platforms.
+    java: JavaCompilation?
+
+    /// Configuration of the `:jvm` platform.
+    jvmPlatform: LibraryJvmPlatform?
+    /// Configuration of the `:web` platform.
+    webPlatform: LibraryWebPlatform?
+    /// Configuration of the `:ios` platform.
+    iosPlatform: LibraryIosPlatform?
+    /// Configuration of the `:android` platform.
+    androidPlatform: LibraryAndroidPlatform?
+
+    /// Library dependencies.
+    dependencies: LibraryDependencies?
+    /// Tests of the library.
+    testing: LibraryTesting?
+    /// How the library is published.
+    publishing: LibraryPublishing?
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Platforms
+//
+// Fork: everything about one platform lives in its block, including its dependencies and tests. The top-level
+// `dependencies` and `testing` hold only what applies to every platform.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Configuration of the `:jvm` platform.
+record LibraryJvmPlatform with JvmToolchainOwner {
+  kotlin: KotlinJvmPlatformCompilation?
+  /// Dependencies of the `:jvm` platform only.
+  dependencies: LibraryJvmDependencies?
+  /// Tests on the `:jvm` platform.
+  testing: LibraryJvmTesting?
+}
+
+/// Configuration of the `:web` platform.
+record LibraryWebPlatform {
+  /// Limits the platform to the given sub-platforms. All of them are enabled when omitted.
+  subplatforms: [WebSubplatform]?
+  kotlin: KotlinWebPlatformCompilation?
+  /// Dependencies of the `:web` platform only.
+  dependencies: LibraryWebDependencies?
+  /// Tests on the `:web` platform.
+  testing: LibraryWebTesting?
+}
+
+/// Configuration of the `:ios` platform.
+record LibraryIosPlatform {
+  /// Limits the platform to the given sub-platforms. All of them are enabled when omitted.
+  subplatforms: [IosSubplatform]?
+  kotlin: KotlinNativePlatformCompilation?
+  /// Dependencies of the `:ios` platform only.
+  dependencies: LibraryIosDependencies?
+  /// Tests on the `:ios` platform.
+  testing: LibraryIosTesting?
+}
+
+/// Configuration of the `:android` platform. Requires the Android ecosystem plugin.
+record LibraryAndroidPlatform {
+  /// Minimum API level.
+  minSdk: Int?
+  /// API level to compile against.
+  compileSdk: Int?
+  /// Extension level of the `compileSdk` API level.
+  compileSdkExtension: Int?
+  /// Namespace of the generated `R` and `BuildConfig` classes.
+  namespace: String?
+  kotlin: KotlinJvmPlatformCompilation?
+  /// Dependencies of the `:android` platform only.
+  dependencies: LibraryAndroidDependencies?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Dependencies
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Dependencies of every platform.
+record LibraryDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+}
+
+record LibraryJvmDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+  compileOnly: [Dependency]?
+  runtimeOnly: [Dependency]?
+}
+
+record LibraryWebDependencies {
+  api: [WebDependency]?
+  implementation: [WebDependency]?
+}
+
+record LibraryIosDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+}
+
+record LibraryAndroidDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+  compileOnly: [Dependency]?
+  runtimeOnly: [Dependency]?
+  /// Dependencies of the debug build only.
+  debugImplementation: [Dependency]?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Testing
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Tests on every platform.
+record LibraryTesting {
+  dependencies: LibraryTestDependencies?
+}
+
+record LibraryTestDependencies {
+  implementation: [TestDependency]?
+}
+
+record LibraryJvmTesting {
+  /// Run tests on the JUnit Platform.
+  useJUnitPlatform: Bool?
+  dependencies: LibraryJvmTestDependencies?
+}
+
+record LibraryWebTesting {
+  /// Don't run the tests of this platform.
+  skip: Bool?
+  dependencies: LibraryWebTestDependencies?
+}
+
+record LibraryIosTesting {
+  dependencies: LibraryIosTestDependencies?
+}
+
+record LibraryJvmTestDependencies {
+  implementation: [TestDependency]?
+  compileOnly: [TestDependency]?
+  runtimeOnly: [TestDependency]?
+}
+
+record LibraryWebTestDependencies {
+  implementation: [WebDependency]?
+}
+
+record LibraryIosTestDependencies {
+  implementation: [TestDependency]?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Publishing
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Publishing of a `library`: where publishing features such as `maven { }` plug in.
+trait LibraryPublishingFeatures
+
+/// How a `library` is published.
+record LibraryPublishing with LibraryPublishingFeatures {
+  /// Publication group, e.g. `"com.example"`.
+  group: String?
+  /// Publication version, e.g. `"1.0.0"`.
+  version: String?
+}

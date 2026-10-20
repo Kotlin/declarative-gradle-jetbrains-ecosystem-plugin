@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "fork-spring-single-block"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+}

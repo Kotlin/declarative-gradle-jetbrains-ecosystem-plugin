@@ -1,0 +1,10 @@
+// The same project type, now with Kotlin: adding kotlin { } is the whole migration.
+library {
+  platforms [:jvm]
+
+  kotlin {
+    serialization {
+      enabledFormats [:json]
+    }
+  }
+}

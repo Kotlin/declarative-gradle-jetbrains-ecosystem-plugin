@@ -1,0 +1,25 @@
+library {
+  compose {
+    resources {
+      publicResClass true
+      nameOfResClass "UiRes"
+    }
+  }
+
+  androidPlatform {
+    namespace "com.jetbrains.kotlinconf.ui"
+  }
+
+  dependencies {
+    api [:libs.compose.runtime, :libs.compose.foundation]
+
+    androidPlatform {
+      implementation [:libs.ktor.client.okhttp]
+      debugImplementation [:libs.compose.ui.tooling]
+    }
+
+    jvmPlatform {
+      implementation [:libs.ktor.client.okhttp]
+    }
+  }
+}

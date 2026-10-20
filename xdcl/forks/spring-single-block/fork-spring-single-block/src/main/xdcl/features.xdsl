@@ -1,0 +1,82 @@
+// Optional features of the JetBrains ecosystem. Each one is an extension: writing its block, even an empty one,
+// enables it (and applies the Gradle plugins behind it).
+package org.jetbrains.ecosystem.forks.springsingleblock
+
+/// Enables Kotlin serialization: applies the compiler plugin and adds the runtime libraries.
+extension KotlinSerialization for KotlinFeatures {
+  serialization {
+    /// Version of the kotlinx.serialization libraries.
+    version: String = "1.11.0"
+    /// Serialization formats to add libraries for, e.g. `[:json]`.
+    enabledFormats: [SerializationFormat]?
+  }
+}
+
+/// A kotlinx.serialization format.
+type SerializationFormat = Symbol where it in [:json, :protobuf, :cbor, :hocon, :properties]
+
+/// Enables the Kotlin Parcelize compiler plugin. From the wireframes; not part of the DCL implementation yet.
+extension KotlinParcelize for KotlinFeatures {
+  parcelize {}
+}
+
+/// Bundles the web application with webpack. From the wireframes; not part of the DCL implementation yet.
+extension Webpack for WebApplicationPackagingFeatures {
+  webpack {
+    /// Name of the bundle, e.g. `"app.js"`.
+    outputFileName: String?
+  }
+}
+
+/// Enables a Gradle distribution of the application (the `distribution` plugin).
+extension Distribution for JvmApplicationPackagingFeatures {
+  distribution {
+    /// Name of the distribution.
+    name: String = "main"
+    /// Classifier of the distribution archives.
+    classifier: String?
+  }
+}
+
+/// Exposes the assembled application to other projects, which consume it as a resource.
+extension PackageAsResource for ApplicationPackaging {
+  resource {}
+}
+
+/// Consumes assembled applications of other projects as resources.
+extension ResourceDependencies for JvmApplicationDependencyFeatures {
+  resources {
+    /// Projects whose packaging enables `resource { }`, e.g. `[:projects.frontend]`.
+    resource: [Dependency]?
+  }
+}
+
+/// Enables publishing to a Maven repository (the `maven-publish` plugin).
+extension MavenPublishing for LibraryPublishingFeatures {
+  maven {
+    /// Publication name.
+    name: String?
+    /// URL of the repository to publish to.
+    repositoryUrl: String?
+    /// Also publish documentation.
+    withDocs: Bool?
+    /// Also publish sources.
+    withSources: Bool?
+  }
+}
+
+/// Enables publishing the library as an iOS framework.
+extension IosFrameworkPublishing for LibraryPublishingFeatures {
+  iosFramework {
+    /// Name of the framework. From the wireframes; not part of the DCL implementation yet.
+    baseName: String?
+    /// Link the framework as a static library.
+    static: Bool = false
+    /// Additional options passed to the linker.
+    linkerOpts: [String]?
+    /// Dependencies exported from the framework.
+    export: [Dependency]?
+    /// Export the dependencies in `export` transitively.
+    transitiveExport: Bool?
+  }
+}

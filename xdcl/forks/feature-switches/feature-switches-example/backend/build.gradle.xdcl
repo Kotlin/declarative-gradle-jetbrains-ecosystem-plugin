@@ -1,0 +1,8 @@
+// Spring and serialization (JSON) from the settings defaults; adds a format.
+jvmApplication {
+  kotlin {
+    serialization {
+      enabledFormats { append [:cbor] }
+    }
+  }
+}

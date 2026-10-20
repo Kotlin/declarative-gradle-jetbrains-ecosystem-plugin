@@ -1,0 +1,173 @@
+// The library project type.
+package org.jetbrains.ecosystem.forks.androidbyagp
+
+/// A platform a `library` is built for.
+///
+/// With `:jvm` alone the library is a plain JVM library; add `:common` to make it multiplatform-ready without adding
+/// another platform yet.
+///
+/// Fork: `:android` stays in this closed set although the Android plugin owns the `androidPlatform { }` block; a
+/// refinement can't be extended by another plugin.
+type LibraryPlatform =
+  Symbol where it in [:jvm, :common, :web, :ios, :android]
+
+/// Anything `library`: where library features plug in.
+trait LibraryFeatures
+
+/// A library written in Kotlin and/or Java, for one or more platforms.
+///
+/// `platforms` is the only required property; the platform blocks are optional configuration.
+///
+/// ```
+/// library {
+///   platforms [:jvm, :web]
+/// }
+/// ```
+template Library with LibraryFeatures & ComposeHost {
+  library {
+    /// Platforms the library is built for, e.g. `[:jvm, :web]`.
+    platforms: [LibraryPlatform]
+
+    /// Kotlin compilation, shared by all platforms.
+    kotlin: KotlinCompilation?
+    /// Java compilation, shared by all JVM-based platforms.
+    java: JavaCompilation?
+
+    /// Configuration of the `:jvm` platform.
+    jvmPlatform: LibraryJvmPlatform?
+    /// Configuration of the `:web` platform.
+    webPlatform: LibraryWebPlatform?
+    /// Configuration of the `:ios` platform.
+    iosPlatform: LibraryIosPlatform?
+
+    /// Library dependencies.
+    dependencies: LibraryDependencies?
+    /// Tests of the library.
+    testing: LibraryTesting?
+    /// How the library is published.
+    publishing: LibraryPublishing?
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Platforms
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Configuration of the `:jvm` platform.
+record LibraryJvmPlatform with JvmToolchainOwner {
+  kotlin: KotlinJvmPlatformCompilation?
+}
+
+/// Configuration of the `:web` platform.
+record LibraryWebPlatform {
+  /// Limits the platform to the given sub-platforms. All of them are enabled when omitted.
+  subplatforms: [WebSubplatform]?
+  kotlin: KotlinWebPlatformCompilation?
+}
+
+/// Configuration of the `:ios` platform.
+record LibraryIosPlatform {
+  /// Limits the platform to the given sub-platforms. All of them are enabled when omitted.
+  subplatforms: [IosSubplatform]?
+  kotlin: KotlinNativePlatformCompilation?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Dependencies
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Library dependencies. The top-level lists apply to every platform.
+record LibraryDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+
+  /// Dependencies of the `:jvm` platform only.
+  jvmPlatform: LibraryJvmDependencies?
+  /// Dependencies of the `:web` platform only.
+  webPlatform: LibraryWebDependencies?
+  /// Dependencies of the `:ios` platform only.
+  iosPlatform: LibraryIosDependencies?
+}
+
+record LibraryJvmDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+  compileOnly: [Dependency]?
+  runtimeOnly: [Dependency]?
+}
+
+record LibraryWebDependencies {
+  api: [WebDependency]?
+  implementation: [WebDependency]?
+}
+
+record LibraryIosDependencies {
+  api: [Dependency]?
+  implementation: [Dependency]?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Testing
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Tests of a `library`.
+record LibraryTesting {
+  /// Tests on the `:jvm` platform.
+  jvmPlatform: LibraryJvmTesting?
+  /// Tests on the `:web` platform.
+  webPlatform: LibraryWebTesting?
+  /// Tests on the `:ios` platform.
+  iosPlatform: LibraryIosTesting?
+  /// Test dependencies.
+  dependencies: LibraryTestDependencies?
+}
+
+record LibraryJvmTesting {
+  /// Run tests on the JUnit Platform.
+  useJUnitPlatform: Bool?
+}
+
+record LibraryWebTesting {
+  /// Don't run the tests of this platform.
+  skip: Bool?
+}
+
+record LibraryIosTesting {}
+
+/// Test dependencies of a `library`. The top-level list applies to every platform.
+record LibraryTestDependencies {
+  implementation: [TestDependency]?
+
+  jvmPlatform: LibraryJvmTestDependencies?
+  webPlatform: LibraryWebTestDependencies?
+  iosPlatform: LibraryIosTestDependencies?
+}
+
+record LibraryJvmTestDependencies {
+  implementation: [TestDependency]?
+  compileOnly: [TestDependency]?
+  runtimeOnly: [TestDependency]?
+}
+
+record LibraryWebTestDependencies {
+  implementation: [WebDependency]?
+}
+
+record LibraryIosTestDependencies {
+  implementation: [TestDependency]?
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Publishing
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Publishing of a `library`: where publishing features such as `maven { }` plug in.
+trait LibraryPublishingFeatures
+
+/// How a `library` is published.
+record LibraryPublishing with LibraryPublishingFeatures {
+  /// Publication group, e.g. `"com.example"`.
+  group: String?
+  /// Publication version, e.g. `"1.0.0"`.
+  version: String?
+}

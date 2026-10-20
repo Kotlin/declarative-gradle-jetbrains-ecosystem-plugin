@@ -1,0 +1,4 @@
+// A Java library.
+library {
+  platforms [:jvm]
+}
