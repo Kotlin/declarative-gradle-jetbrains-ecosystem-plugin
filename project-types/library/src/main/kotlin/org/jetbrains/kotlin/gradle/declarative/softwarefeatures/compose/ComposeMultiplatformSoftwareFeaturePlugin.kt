@@ -45,12 +45,9 @@ public class ComposeMultiplatformSoftwareFeaturePlugin : Plugin<Project>, Projec
 
             pluginManager.apply("org.jetbrains.compose")
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
-
-            withComposeMultiplatform {
-                initializeBuildModel(buildModel)
-            }
         }
 
+        @Suppress("unused")
         private inline fun withComposeMultiplatform(crossinline action: ComposeExtension.() -> Unit) {
             pluginManager.withPlugin("org.jetbrains.compose") {
                 project.extensions.getByType(ComposeExtension::class.java).action()
