@@ -1,0 +1,17 @@
+// The whole user-facing surface of the JetBrains ecosystem, one project per project type.
+// The XDCL counterpart of dsl-reference/*.md.
+settings {
+  rootProject {
+    name "reference"
+  }
+  pluginManagement {
+    includedBuilds ["../../ecosystem"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral]
+  }
+  include ["jvm-application", "web-application", "library", "shared"]
+}

@@ -1,0 +1,44 @@
+jvmApplication {
+  kotlin {
+    serialization {
+      enabledFormats [:json]
+    }
+  }
+
+  dependencies {
+    implementation [
+      :projects.shared,
+      {
+        module "org.springframework.boot:spring-boot-starter-webmvc"
+        exclude [{ group "org.springframework.boot", module "spring-boot-starter-jackson" }]
+      },
+      "org.springframework.boot:spring-boot-starter-data-jdbc",
+      "org.springframework.boot:spring-boot-starter-cache",
+      "org.springframework.boot:spring-boot-restclient",
+      "org.springframework.boot:spring-boot-kotlinx-serialization-json",
+
+      "org.jetbrains.kotlin:kotlin-reflect",
+      "org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0",
+      "io.konform:konform:0.11.1",
+    ]
+    runtimeOnly ["org.postgresql:postgresql"]
+
+    spring {
+      developmentOnly ["org.springframework.boot:spring-boot-docker-compose"]
+    }
+
+    resources {
+      resource [:projects.frontend]
+    }
+  }
+
+  testing {
+    dependencies {
+      implementation [
+        "org.springframework.boot:spring-boot-starter-test",
+        "org.jetbrains.kotlin:kotlin-test-junit5",
+      ]
+      runtimeOnly ["org.junit.platform:junit-platform-launcher"]
+    }
+  }
+}

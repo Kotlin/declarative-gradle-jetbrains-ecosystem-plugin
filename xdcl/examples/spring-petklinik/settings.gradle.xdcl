@@ -1,0 +1,54 @@
+// Port of examples/spring-petklinik.
+settings {
+  rootProject {
+    name "Spring-PetKlinik"
+  }
+  pluginManagement {
+    includedBuilds ["../../ecosystem"]
+  }
+  plugins [
+    { id "org.gradle.toolchains.foojay-resolver-convention", version "1.0.0" }
+    { id "org.jetbrains.ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral]
+  }
+  defaults [
+    jvmApplication {
+      toolchain {
+        releaseVersion 17
+      }
+      spring { }
+      packaging {
+        spring {
+          bootBuildImage {
+            environment [
+              BP_JVM_CDS_ENABLED: "true",
+              BP_JVM_VERSION: "25",
+            ]
+          }
+        }
+      }
+      testing {
+        useJUnitPlatform true
+      }
+    }
+    library {
+      platforms [:jvm, :web]
+      jvmPlatform {
+        toolchain {
+          releaseVersion 17
+        }
+      }
+      webPlatform {
+        subplatforms [:wasmJs]
+      }
+      kotlin {
+        serialization {
+          enabledFormats [:json]
+        }
+      }
+    }
+  ]
+  include ["frontend", "backend", "shared", "ai"]
+}

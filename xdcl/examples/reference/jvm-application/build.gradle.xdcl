@@ -1,0 +1,87 @@
+jvmApplication {
+  mainClass "com.example.app.MainKt"
+  name "example-app"
+  moduleName "com.example.app"
+  jvmArgs ["-Xmx512m", "-Dfile.encoding=UTF-8"]
+
+  toolchain {
+    releaseVersion 21
+    vendor :adoptium
+    nativeImageCapable false
+  }
+
+  java {
+    compilerOptions {
+      compilerArgs ["-Xlint:deprecation", "-Xlint:unchecked"]
+    }
+  }
+
+  kotlin {
+    compilerOptions {
+      languageVersion "2.3"
+      apiVersion "2.3"
+      jvmTarget 21
+      optIn ["kotlin.time.ExperimentalTime"]
+      freeCompilerArgs ["-Xcontext-parameters"]
+    }
+
+    serialization {
+      version "1.11.0"
+      enabledFormats [:json]
+    }
+  }
+
+  spring { }
+
+  dependencies {
+    implementation [
+      :projects.shared,
+      "org.jetbrains.kotlin:kotlin-reflect",
+      :libs.kotlinx.coroutines.core,
+      { platform "org.springframework.ai:spring-ai-bom:2.0.0-M1" },
+      {
+        module "org.springframework.boot:spring-boot-starter-webmvc"
+        exclude [{ group "org.springframework.boot", module "spring-boot-starter-jackson" }]
+      },
+    ]
+    compileOnly ["org.jspecify:jspecify:1.0.0"]
+    runtimeOnly ["org.postgresql:postgresql"]
+
+    spring {
+      developmentOnly ["org.springframework.boot:spring-boot-docker-compose"]
+    }
+
+    resources {
+      resource [:projects.web-application]
+    }
+  }
+
+  testing {
+    useJUnitPlatform true
+
+    dependencies {
+      implementation [
+        "org.junit.jupiter:junit-jupiter:5.12.2",
+        { testFixtures :projects.shared },
+      ]
+      compileOnly ["org.jetbrains:annotations:26.0.2"]
+      runtimeOnly ["org.junit.platform:junit-platform-launcher:1.12.2"]
+    }
+  }
+
+  packaging {
+    distribution {
+      name "main"
+      classifier ""
+    }
+
+    spring {
+      bootBuildImage {
+        environment [
+          BP_JVM_CDS_ENABLED: "true",
+          BP_JVM_VERSION: "25",
+        ]
+      }
+    }
+  }
+}

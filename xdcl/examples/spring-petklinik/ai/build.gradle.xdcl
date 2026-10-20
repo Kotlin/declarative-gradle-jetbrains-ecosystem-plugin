@@ -1,0 +1,26 @@
+jvmApplication {
+  kotlin {
+    compilerOptions {
+      freeCompilerArgs ["-Xjsr305=strict"]
+    }
+  }
+
+  dependencies {
+    implementation [
+      { platform "org.springframework.ai:spring-ai-bom:2.0.0-M1" },
+      "org.springframework.boot:spring-boot-starter-web",
+      "org.springframework.ai:spring-ai-starter-model-openai",
+      "org.jetbrains.kotlin:kotlin-reflect",
+    ]
+  }
+
+  testing {
+    dependencies {
+      implementation [
+        "org.springframework.boot:spring-boot-starter-test",
+        "org.jetbrains.kotlin:kotlin-test-junit5",
+      ]
+      runtimeOnly ["org.junit.platform:junit-platform-launcher"]
+    }
+  }
+}

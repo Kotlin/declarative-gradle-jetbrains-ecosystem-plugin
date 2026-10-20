@@ -1,0 +1,3 @@
+library {
+  platforms [:jvm]
+}

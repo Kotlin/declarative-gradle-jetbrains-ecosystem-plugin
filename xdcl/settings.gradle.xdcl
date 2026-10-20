@@ -3,6 +3,12 @@ settings {
     name "xdcl-workspace"
   }
   pluginManagement {
-    includedBuilds ["ecosystem", "examples/hello-world"]
+    includedBuilds [
+      "ecosystem",
+      "examples/hello-world",
+      "examples/idea-wizard",
+      "examples/spring-petklinik",
+      "examples/reference",
+    ]
   }
 }

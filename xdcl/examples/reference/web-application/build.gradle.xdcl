@@ -1,0 +1,26 @@
+webApplication {
+  subplatforms [:js, :wasmJs]
+
+  kotlin {
+    compilerOptions {
+      sourceMap true
+      freeCompilerArgs ["-Xwasm-debugger-custom-formatters"]
+    }
+
+    serialization {
+      enabledFormats [:json]
+    }
+  }
+
+  dependencies {
+    implementation [
+      :projects.shared,
+      "org.jetbrains.kotlinx:kotlinx-browser:0.5.0",
+      { npm "@js-joda/timezone", version "2.3.0" },
+    ]
+  }
+
+  packaging {
+    resource { }
+  }
+}
