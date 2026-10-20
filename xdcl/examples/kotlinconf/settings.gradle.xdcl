@@ -1,5 +1,7 @@
 // The KotlinConf app from the wireframes (docs/[Prototype wireframes] …, "Kotlinconf App" tab). Design only: the
 // Android, Ktor and AboutLibraries plugins are schema-only mocks (xdcl/mocks/).
+// Build-wide policy lives in `defaults` (it never switches a feature on); a kind of project lives in a prefab, which a
+// project opts into by name.
 settings {
   rootProject {
     name "KotlinConfApp"
@@ -49,6 +51,36 @@ settings {
     compose {
       resources {
         packageOfResClass "org.jetbrains.kotlinconf.generated.resources"
+      }
+    }
+  ]
+  prefabs [
+    /// A Ktor server running on Netty, packaged as a container image with Jib.
+    ///
+    /// Candidate to be shipped by the Ktor plugin instead of being defined here.
+    ktorServer: jvmApplication {
+      mainClass "io.ktor.server.netty.EngineMain"
+      ktor { }
+      packaging {
+        jib {
+          container {
+            mainClass "io.ktor.server.netty.EngineMain"
+          }
+        }
+      }
+      testing {
+        useJUnitPlatform true
+      }
+    }
+
+    /// A Compose Multiplatform desktop application.
+    ///
+    /// Candidate to be shipped by the JetBrains ecosystem plugin instead of being defined here.
+    composeDesktopApp: jvmApplication {
+      compose { }
+      // `append`: a project's own `implementation [...]` adds to this instead of replacing it.
+      dependencies {
+        implementation { append [:compose.desktop.currentOs] }
       }
     }
   ]

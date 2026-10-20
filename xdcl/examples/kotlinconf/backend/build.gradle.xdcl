@@ -1,16 +1,6 @@
-jvmApplication {
-  mainClass "io.ktor.server.netty.EngineMain"
-
+ktorServer {
   ktor {
     withDevelopmentBuild { }
-  }
-
-  packaging {
-    jib {
-      container {
-        mainClass "io.ktor.server.netty.EngineMain"
-      }
-    }
   }
 
   dependencies {
@@ -53,7 +43,6 @@ jvmApplication {
   }
 
   testing {
-    useJUnitPlatform true
     dependencies {
       implementation [:libs.ktor.server.test.host, :libs.kotlin.test]
     }
