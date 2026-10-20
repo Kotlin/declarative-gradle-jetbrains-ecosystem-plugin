@@ -1,0 +1,56 @@
+// The KotlinConf app from the wireframes (docs/[Prototype wireframes] …, "Kotlinconf App" tab). Design only: the
+// Android, Ktor and AboutLibraries plugins are schema-only mocks (xdcl/mocks/).
+settings {
+  rootProject {
+    name "KotlinConfApp"
+  }
+  pluginManagement {
+    // Google's Maven repository is a plain URL: settings repositories have no `google()` and no content filters.
+    repositories ["https://dl.google.com/dl/android/maven2/", :gradlePluginPortal, :mavenCentral]
+    includedBuilds [
+      "../../ecosystem",
+      "../../mocks/android-ecosystem",
+      "../../mocks/ktor-ecosystem",
+      "../../mocks/aboutlibraries",
+    ]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem" }
+    { id "com.android.ecosystem" }
+    { id "org.jetbrains.ktor.ecosystem" }
+    { id "com.mikepenz.aboutlibraries" }
+  ]
+  dependencyResolutionManagement {
+    repositories ["https://dl.google.com/dl/android/maven2/", :mavenCentral]
+  }
+  defaults [
+    library {
+      platforms [:android, :jvm, :ios, :web]
+
+      jvmPlatform {
+        toolchain {
+          releaseVersion 21
+        }
+      }
+
+      androidPlatform {
+        // Was `libs.versions.android.compileSdk`: an Int property can't reference the version catalog.
+        compileSdk 36
+        minSdk 24
+        kotlin {
+          compilerOptions {
+            jvmTarget 11
+          }
+        }
+      }
+    }
+
+    // Defaults for an optional block: configures Compose wherever a project enables it, enables it nowhere.
+    compose {
+      resources {
+        packageOfResClass "org.jetbrains.kotlinconf.generated.resources"
+      }
+    }
+  ]
+  include ["androidApp", "desktopApp", "backend", "webApp", "ui-components", "shared", "core"]
+}

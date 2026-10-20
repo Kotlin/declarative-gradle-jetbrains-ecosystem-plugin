@@ -1,0 +1,14 @@
+settings {
+  rootProject {
+    name "android-ecosystem"
+  }
+  pluginManagement {
+    includedBuilds ["../../ecosystem"]
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral, :gradlePluginPortal]
+  }
+}

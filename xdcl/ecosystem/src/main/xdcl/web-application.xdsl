@@ -11,7 +11,7 @@ package org.jetbrains.ecosystem
 ///   }
 /// }
 /// ```
-template WebApplication {
+template WebApplication with ComposeHost {
   webApplication {
     /// Limits the application to the given sub-platforms. All of them are enabled when omitted.
     subplatforms: [WebSubplatform]?
@@ -46,5 +46,8 @@ record NpmDependency {
   version: String
 }
 
+/// Packaging of a `webApplication`: where features such as `webpack { }` plug in.
+trait WebApplicationPackagingFeatures
+
 /// Packaging of a `webApplication`.
-record WebApplicationPackaging with ApplicationPackaging {}
+record WebApplicationPackaging with ApplicationPackaging & WebApplicationPackagingFeatures {}

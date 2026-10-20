@@ -20,7 +20,7 @@ trait LibraryFeatures
 ///   platforms [:jvm, :web]
 /// }
 /// ```
-template Library with LibraryFeatures {
+template Library with LibraryFeatures & ComposeHost {
   library {
     /// Platforms the library is built for, e.g. `[:jvm, :web]`.
     platforms: [LibraryPlatform]

@@ -15,6 +15,19 @@ extension KotlinSerialization for KotlinFeatures {
 /// A kotlinx.serialization format.
 type SerializationFormat = Symbol where it in [:json, :protobuf, :cbor, :hocon, :properties]
 
+/// Enables the Kotlin Parcelize compiler plugin. From the wireframes; not part of the DCL implementation yet.
+extension KotlinParcelize for KotlinFeatures {
+  parcelize {}
+}
+
+/// Bundles the web application with webpack. From the wireframes; not part of the DCL implementation yet.
+extension Webpack for WebApplicationPackagingFeatures {
+  webpack {
+    /// Name of the bundle, e.g. `"app.js"`.
+    outputFileName: String?
+  }
+}
+
 /// Enables a Gradle distribution of the application (the `distribution` plugin).
 extension Distribution for JvmApplicationPackagingFeatures {
   distribution {
@@ -55,6 +68,8 @@ extension MavenPublishing for LibraryPublishingFeatures {
 /// Enables publishing the library as an iOS framework.
 extension IosFrameworkPublishing for LibraryPublishingFeatures {
   iosFramework {
+    /// Name of the framework. From the wireframes; not part of the DCL implementation yet.
+    baseName: String?
     /// Link the framework as a static library.
     static: Bool = false
     /// Additional options passed to the linker.

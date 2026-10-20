@@ -14,7 +14,7 @@ trait JvmApplicationFeatures
 ///   }
 /// }
 /// ```
-template JvmApplication with JvmApplicationFeatures & JvmToolchainOwner {
+template JvmApplication with JvmApplicationFeatures & JvmToolchainOwner & ComposeHost {
   jvmApplication {
     /// Fully qualified name of the class with the `main` function, e.g. `"org.example.MainKt"`.
     mainClass: String?

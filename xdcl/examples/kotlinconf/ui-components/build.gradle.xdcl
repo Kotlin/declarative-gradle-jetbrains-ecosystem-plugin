@@ -1,0 +1,55 @@
+library { // nonAndroidMain custom shared source set is not covered
+  kotlin {
+    compilerOptions {
+      freeCompilerArgs ["-Xexpect-actual-classes"]
+    }
+  }
+
+  compose {
+    resources {
+      publicResClass true
+      nameOfResClass "UiRes"
+    }
+  }
+
+  androidPlatform {
+    namespace "com.jetbrains.kotlinconf.ui"
+  }
+
+  dependencies {
+    api [
+      :libs.compose.runtime,
+      :libs.compose.foundation,
+      :libs.compose.animation,
+      :libs.compose.components.resources,
+    ]
+    implementation [
+      :libs.compose.material.ripple,
+      :libs.compose.ui.tooling.preview,
+
+      :libs.coil.compose,
+      :libs.coil.network.ktor3,
+      :libs.androidx.lifecycle.runtime.compose,
+      :libs.androidx.lifecycle.viewmodel.compose,
+
+      :libs.multiplatform.markdown.renderer,
+    ]
+
+    iosPlatform {
+      implementation [:libs.ktor.client.darwin]
+    }
+
+    androidPlatform {
+      implementation [:libs.ktor.client.okhttp]
+      debugImplementation [:libs.compose.ui.tooling]
+    }
+
+    jvmPlatform {
+      implementation [:libs.ktor.client.okhttp]
+    }
+
+    webPlatform {
+      implementation [:libs.ktor.client.js]
+    }
+  }
+}

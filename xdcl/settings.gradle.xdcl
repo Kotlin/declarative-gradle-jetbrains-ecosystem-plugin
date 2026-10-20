@@ -5,10 +5,14 @@ settings {
   pluginManagement {
     includedBuilds [
       "ecosystem",
+      "mocks/android-ecosystem",
+      "mocks/ktor-ecosystem",
+      "mocks/aboutlibraries",
       "examples/hello-world",
       "examples/idea-wizard",
       "examples/spring-petklinik",
       "examples/reference",
+      "examples/kotlinconf",
     ]
   }
 }

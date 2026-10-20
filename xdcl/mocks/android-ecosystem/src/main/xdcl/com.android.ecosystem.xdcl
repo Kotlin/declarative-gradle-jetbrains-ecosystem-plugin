@@ -1,0 +1,5 @@
+plugin {
+  displayName "Android ecosystem (mock)"
+  description "Mock of the Android Gradle plugin's ecosystem: schema only."
+  plugins ["org.jetbrains.ecosystem"]
+}

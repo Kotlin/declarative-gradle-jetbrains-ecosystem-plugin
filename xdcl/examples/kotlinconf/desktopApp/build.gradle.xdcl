@@ -1,0 +1,14 @@
+jvmApplication {
+  mainClass "org.jetbrains.kotlinconf.MainKt"
+
+  compose { }
+
+  dependencies {
+    implementation [
+      :projects.shared,
+      :compose.desktop.currentOs,
+      :libs.kotlinx.coroutines.swing,
+      :libs.slf4j.nop,
+    ]
+  }
+}

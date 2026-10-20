@@ -1,0 +1,7 @@
+// Mock of the aboutlibraries plugin: schema only, no reactions.
+xdclGradlePlugin {
+  dependencies {
+    // The JetBrains ecosystem schema this plugin contributes to (substituted by the included build).
+    api ["org.jetbrains.ecosystem:jetbrains-ecosystem"]
+  }
+}

@@ -1,0 +1,17 @@
+library {
+  kotlin {
+    serialization { }
+  }
+
+  androidPlatform {
+    namespace "com.jetbrains.kotlinconf.model"
+  }
+
+  dependencies {
+    api [
+      :libs.kotlinx.datetime,
+      :libs.kotlinx.serialization.core,
+      :libs.kotlinx.serialization.json,
+    ]
+  }
+}

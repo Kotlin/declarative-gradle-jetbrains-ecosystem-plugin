@@ -1,0 +1,14 @@
+settings {
+  rootProject {
+    name "ktor-ecosystem"
+  }
+  pluginManagement {
+    includedBuilds ["../../ecosystem"]
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral, :gradlePluginPortal]
+  }
+}

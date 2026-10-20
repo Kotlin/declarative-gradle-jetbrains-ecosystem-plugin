@@ -1,0 +1,23 @@
+// Mock: the real schema would be designed and shipped by the Android Gradle plugin.
+package com.android.ecosystem
+
+import org.jetbrains.ecosystem
+
+/// An Android application. Carries the JetBrains ecosystem's [ComposeHost], so `compose { }` works here too.
+template AndroidApplication with ComposeHost {
+  androidApplication {
+    /// Namespace of the generated `R` and `BuildConfig` classes.
+    namespace: String?
+    /// Minimum API level.
+    minSdk: Int?
+    /// API level to compile against.
+    compileSdk: Int?
+    /// Application dependencies.
+    dependencies: AndroidApplicationDependencies?
+  }
+}
+
+record AndroidApplicationDependencies {
+  implementation: [Dependency]?
+  debugImplementation: [Dependency]?
+}

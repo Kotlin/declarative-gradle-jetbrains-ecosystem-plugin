@@ -1,0 +1,26 @@
+// Mock: the real schema would be designed and shipped by AboutLibraries. It plugs into the JetBrains ecosystem's
+// library through the traits that ecosystem exposes.
+package com.mikepenz.aboutlibraries
+
+import org.jetbrains.ecosystem
+
+/// Collects the licenses of the dependencies.
+extension AboutLibraries for LibraryFeatures {
+  aboutLibraries {
+    library: AboutLibrariesLibrary?
+    export: AboutLibrariesExport?
+  }
+}
+
+record AboutLibrariesLibrary {
+  duplicationMode: DuplicateMode?
+  duplicationRule: DuplicateRule?
+}
+
+type DuplicateMode = Symbol where it in [:keep, :merge, :link]
+type DuplicateRule = Symbol where it in [:exact, :simple]
+
+record AboutLibrariesExport {
+  /// Where to write the collected data, relative to the project directory.
+  outputFile: String?
+}

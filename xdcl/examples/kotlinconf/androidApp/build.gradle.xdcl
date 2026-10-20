@@ -1,0 +1,11 @@
+androidApplication {
+  // … DSL designed by the Android Gradle plugin team (mocked)
+  namespace "org.jetbrains.kotlinconf.android"
+
+  // Compose Multiplatform from the JetBrains ecosystem, in Android's project type.
+  compose { }
+
+  dependencies {
+    implementation [:projects.shared]
+  }
+}

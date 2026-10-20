@@ -1,0 +1,5 @@
+plugin {
+  displayName "AboutLibraries (mock)"
+  description "Mock of the AboutLibraries plugin: schema only."
+  plugins ["org.jetbrains.ecosystem"]
+}

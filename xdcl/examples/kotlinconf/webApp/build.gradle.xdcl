@@ -1,0 +1,11 @@
+webApplication {
+  packaging {
+    webpack {
+      outputFileName "kotlinconf-app.js"
+    }
+  }
+
+  dependencies {
+    implementation [:projects.shared]
+  }
+}

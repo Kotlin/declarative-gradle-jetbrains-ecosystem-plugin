@@ -1,0 +1,27 @@
+// Mock: the real schema would be designed and shipped by Ktor. It plugs into the JetBrains ecosystem's
+// jvmApplication through the traits that ecosystem exposes.
+package org.jetbrains.ktor.ecosystem
+
+import org.jetbrains.ecosystem
+
+/// Enables Ktor server support: applies the `io.ktor.plugin` Gradle plugin.
+extension Ktor for JvmApplicationFeatures {
+  ktor {
+    /// Run with `-Dio.ktor.development=true` during development.
+    withDevelopmentBuild: DevelopmentBuild?
+  }
+}
+
+record DevelopmentBuild {}
+
+/// Builds a container image with Jib (applied by the Ktor plugin).
+extension Jib for JvmApplicationPackagingFeatures {
+  jib {
+    container: JibContainer?
+  }
+}
+
+record JibContainer {
+  /// Main class of the containerized application.
+  mainClass: String?
+}

@@ -1,0 +1,5 @@
+plugin {
+  displayName "Ktor ecosystem (mock)"
+  description "Mock of a Ktor ecosystem plugin: schema only."
+  plugins ["org.jetbrains.ecosystem"]
+}
