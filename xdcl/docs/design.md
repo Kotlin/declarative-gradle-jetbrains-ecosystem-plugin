@@ -41,14 +41,14 @@ is an error. Kotlin compiler options are a curated subset of KGP's (see [P6](#p6
 
 ## Forks
 
-| Fork | Question | Status |
+| Fork | Question | Decision |
 |---|---|---|
-| [`petklinik-idiomatic`](../forks/petklinik-idiomatic) | How should a build use defaults: ambient defaults vs a named prefab? | Same schema, two consumer builds |
-| [`platform-dependencies`](../forks/platform-dependencies) | Per-platform dependencies/tests under `dependencies { jvmPlatform { } }` or under `jvmPlatform { dependencies { } }`? | Schema fork |
-| [`feature-switches`](../forks/feature-switches) | How does a project switch off a feature a default switched on? `serialization false` vs `spring { enabled false }` | Schema fork |
-| [`spring-single-block`](../forks/spring-single-block) | One `spring { }` block instead of three | Schema fork |
-| [`kotlin-opt-in`](../forks/kotlin-opt-in) | Does `kotlin { }` enable Kotlin (Java/Kotlin symmetry)? | Schema fork |
-| [`android-by-agp`](../forks/android-by-agp) | Does the Android plugin own `androidPlatform { }`? | Schema fork + Android mock |
+| [`petklinik-idiomatic`](../forks/petklinik-idiomatic) | How should a build use defaults: ambient defaults vs a named prefab? | Prefabs adopted |
+| [`platform-dependencies`](../forks/platform-dependencies) | Per-platform dependencies/tests under `dependencies { jvmPlatform { } }` or under `jvmPlatform { dependencies { } }`? | Keep the mainline |
+| [`feature-switches`](../forks/feature-switches) | How does a project switch off a feature a default switched on? `serialization false` vs `spring { enabled false }` | Not adopted |
+| [`spring-single-block`](../forks/spring-single-block) | One `spring { }` block instead of three | Keep three blocks |
+| [`kotlin-opt-in`](../forks/kotlin-opt-in) | Does `kotlin { }` enable Kotlin (Java/Kotlin symmetry)? | Keep the mainline: Kotlin and Java always on, react to source files |
+| [`android-by-agp`](../forks/android-by-agp) | Does the Android plugin own `androidPlatform { }`? | No change for the prototype; owned by Android in the final design |
 | [`dependency-notation`](../forks/dependency-notation) | `:projects.shared` vs `":shared"` vs `{ project ":shared" }` | Schema fork |
 
 Forks are copies of the mainline schema (`scripts/new-fork.sh`) with one change each; they don't follow later mainline

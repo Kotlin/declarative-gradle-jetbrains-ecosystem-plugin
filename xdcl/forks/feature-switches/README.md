@@ -1,5 +1,7 @@
 # Fork: features that can be switched off again
 
+**Decision:** Not adopted: no switch-off mechanism is added to the schema.
+
 **Problem.** In the mainline a feature is an extension (`serialization { }`, `spring { }`): writing its block enables
 it. When a settings default enables it (`defaults [ jvmApplication { spring { } } ]`), a project has no way to switch it
 off. There is no `null`, and `reset` only exists for lists and maps.

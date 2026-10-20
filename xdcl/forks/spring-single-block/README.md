@@ -1,5 +1,7 @@
 # Fork: one `spring { }` block
 
+**Decision:** Not adopted: keep the three `spring { }` blocks (use-case sections).
+
 **Problem.** The current DSL (and the mainline) has three Spring blocks: `jvmApplication { spring { } }`,
 `dependencies { spring { developmentOnly … } }` and `packaging { spring { bootBuildImage … } }`. The latter two
 "require `spring { }` on the application", a constraint between properties that XDCL cannot express, so writing

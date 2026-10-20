@@ -1,5 +1,7 @@
 # Fork: `kotlin { }` enables Kotlin
 
+**Decision:** Not adopted: Kotlin and Java are always enabled; the implementation reacts to the presence of source files. `kotlin { }` holds settings only.
+
 **Question.** The wireframes say `kotlin { } // Enabling Kotlin support and Kotlin specific configuration`, and argue
 for "full symmetry between Java and Kotlin": a Java project uses the same project type, and adding Kotlin should be
 low-commitment. The DCL implementation always applies Kotlin, and `kotlin { }` is just configuration.

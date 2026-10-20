@@ -1,5 +1,7 @@
 # Fork: platform-specific dependencies and tests inside the platform block
 
+**Decision:** Not adopted: keep `dependencies { jvmPlatform { } }` (use-case sections, as for Spring).
+
 **Question.** Where does configuration of one platform live: grouped by *concern* (`dependencies`, `testing`) with
 platforms inside, or grouped by *platform* with concerns inside?
 

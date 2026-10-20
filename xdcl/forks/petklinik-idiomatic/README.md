@@ -1,5 +1,7 @@
 # Fork: spring-petklinik, written idiomatically for XDCL
 
+**Decision:** Prefabs adopted. They go into the improved examples.
+
 Same schema as the mainline (`xdcl/ecosystem`). The question is how a real build should *use* XDCL's defaults
 machinery, compared to the 1:1 port in [`examples/spring-petklinik`](../../examples/spring-petklinik).
 

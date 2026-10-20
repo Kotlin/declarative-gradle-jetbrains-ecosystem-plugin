@@ -1,5 +1,7 @@
 # Fork: the Android plugin owns `androidPlatform { }`
 
+**Decision:** No change for the prototype: `androidPlatform { }` stays in the JetBrains schema. In the final design it is owned by the Android plugin.
+
 **Question.** The wireframes mark `androidPlatform { }` as "Software feature provided by Android External Target
 plugin". The DCL implementation declares it in the JetBrains schema and only requires the Android ecosystem plugin
 to be applied. XDCL lets another plugin extend our types, so the Android plugin can own the block.
