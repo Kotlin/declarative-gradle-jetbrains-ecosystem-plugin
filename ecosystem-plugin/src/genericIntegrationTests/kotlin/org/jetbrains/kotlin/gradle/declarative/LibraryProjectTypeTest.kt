@@ -735,7 +735,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    platforms = listOf(android)
                 |    
                 |    androidPlatform {
-                |        compileSdk = 36
+                |        compileSdk = release(37, 2)
                 |        namespace = "base-ecosystem-project"
                 |    }
                 |}    
@@ -787,7 +787,7 @@ class LibraryProjectTypeTest : BaseTest() {
                 |    platforms = listOf(android)
                 |    
                 |    androidPlatform {
-                |        compileSdk = 36
+                |        compileSdk = release(36)
                 |        namespace = "base-ecosystem-project"
                 |    }
                 |}    

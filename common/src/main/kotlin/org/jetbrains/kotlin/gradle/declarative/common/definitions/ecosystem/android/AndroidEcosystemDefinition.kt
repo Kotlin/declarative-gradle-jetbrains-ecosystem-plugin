@@ -6,16 +6,9 @@ import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.Ko
 
 public interface AndroidEcosystemDefinition {
 
-    //TODO: figure out how to force users to set either minSdk or minSdkPreview exclusively, same goes for compileSdk
-    public val minSdk: Property<Int>
+    public val minSdk: Property<MinSdkVersion>
 
-    public val minSdkPreview: Property<String>
-
-    public val compileSdk: Property<Int>
-
-    public val compileSdkExtension: Property<Int>
-
-    public val compileSdkPreview: Property<String>
+    public val compileSdk: Property<CompileSdkVersion>
 
     public val namespace: Property<String>
 
@@ -24,4 +17,16 @@ public interface AndroidEcosystemDefinition {
 
     @get:Nested
     public val kotlin: KotlinJvmCompilationExtension
+
+    public fun release(version: Int): SdkVersion.Release
+
+    public fun preview(codeName: String): SdkVersion.Preview
+
+    public fun release(version: Int, minorVersion: Int? = null, extension: Int? = null): CompileSdkVersion
+
+    public fun canary(date: String): CompileSdkVersion
+
+    public fun beta(version: Int, minorVersion: Int? = null, betaVersion: Int? = null): CompileSdkVersion
+
+    public fun addon(vendor: String, name: String, version: Int): CompileSdkVersion
 }

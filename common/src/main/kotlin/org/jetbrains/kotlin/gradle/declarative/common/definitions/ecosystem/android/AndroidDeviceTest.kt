@@ -3,11 +3,7 @@ package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.and
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
-public interface AndroidDeviceTest : AndroidPlatformTestBuilder {
-
-    public val targetSdk: Property<Int>
-
-    public val targetSdkPreview: Property<String>
+public interface AndroidDeviceTest : AndroidPlatformTest {
 
     public val applicationId: Property<String>
 

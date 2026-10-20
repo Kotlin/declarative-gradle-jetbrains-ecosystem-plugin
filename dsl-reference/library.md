@@ -77,8 +77,10 @@ library {
     }
 
     androidPlatform { // Android platform specific configurations
-        minSdk = 21 // Minimum API level, can be overridden with `minSdkPreview`
-        compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`
+        minSdk = release(21) // Minimum API level, can be specified by `release(<version>) or `preview(<code-name>)` SDK version
+        compileSdk = release(37, 1) // API level to compile the library against
+        // Compile SDK version can be specified by `release(<version>, <minor-version> (optional), <extension> (optional))`, `preview(<code-name>)`, `canary(<date>)`, `beta(<version>, <minor-version> (optional), <beta-version> (optional))`, or `addon(<vendor-name>, <addon-name>, <version>)` SDK version
+        // Specific SDK package versions can be found in SDK Manager in Android Studio or Intellij (https://developer.android.com/tools/releases/platforms)
         namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
         
         androidResources { // Configuration of AAPT Android resources and assets
@@ -137,6 +139,7 @@ library {
                 // KotlinMultiplatformAndroidHostTest members are available here, see more at:
                 // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
                 sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
+                targetSdk = release(36) // API level that the tests are targeting, can be also specified by `preview(<code-name>)` SDK version
                 includeAndroidResources = true // Allows host (unit) tests to use Android resources, assets, and manifests
             }
 
