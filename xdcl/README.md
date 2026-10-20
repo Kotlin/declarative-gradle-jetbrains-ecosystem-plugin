@@ -83,6 +83,52 @@ scripts/check.sh                 # sync + validate all .xdsl/.xdcl files + run h
 
 Editing an `.xdsl` schema needs no re-sync; the language server reads schemas from source live.
 
+## Setup and workflow for agents
+
+Instructions for coding agents working in `xdcl/`. All commands run from `xdcl/`.
+
+### Setup
+
+1. **JDK 17 or newer** must be available (`java -version`). Everything in the toolchain runs on it.
+2. **Toolkit.** The expected version is `XDCL_TOOLKIT_VERSION` in [`scripts/toolkit.sh`](scripts/toolkit.sh), the single
+   source of truth. Check `~/xdcl/xdcl-toolkit-<version>/bin/xdcl-gradle-sync` exists. If not, install it with the
+   commands in [Toolkit](#1-toolkit) above, verifying the checksum, into `~/xdcl`. If it lives elsewhere, set
+   `XDCL_TOOLKIT` to its directory.
+3. **Gradle** comes from the wrapper (pinned to the XDCL-enabled distribution). Don't use a `gradle` from `PATH`, and
+   don't change the wrapper version: the toolkit, the IntelliJ plugin and the distribution have to come from the same
+   XDCL commit (see the [Downloads](https://gradle.github.io/xdcl-starter-kit/downloads.html) page).
+4. **Verify:** `scripts/check.sh` must end with `OK`. The first run downloads the Gradle distribution (about 150 MB).
+
+To call the CLIs directly, put the toolkit on `PATH` for the shell session:
+`export PATH="$HOME/xdcl/xdcl-toolkit-<version>/bin:$PATH"`.
+
+### Workflow
+
+- **Validate after every edit** of an `.xdsl` or `.xdcl` file: `scripts/check.sh --no-run` (sync + validate every
+  file). This is the check; a Gradle build is not needed to validate XDCL files.
+- **Validate single files** without syncing: `xdcl-lsp-client validate --root . <files…>`. Always pass `--root .` (the
+  `xdcl/` directory), never an example's own directory: the schemas are only visible from the umbrella build.
+  Exit codes: 0 clean, 1 diagnostics, 2 nothing validated (read stderr; `cannot read file` means a wrong path).
+- **Re-sync** (`scripts/sync.sh`, or `check.sh`, which syncs) after changing `pluginManagement`, `plugins` or `include`
+  in any settings file, or a plugin descriptor (`<plugin-id>.xdcl`). Schema (`.xdsl`) edits need no sync.
+- **Inspect resolved values** with `xdcl-lsp-client effective --root . <build file>` (values and where each comes from)
+  and `xdcl-lsp-client explain --root . <build file>` (every contribution, including overridden ones).
+- **When refactoring examples** (moving things into defaults or prefabs), compare `effective` output before and after:
+  the resolved values must stay the same.
+- **New builds** (examples, mocks, forks) must be added to `includedBuilds` in the umbrella
+  [`settings.gradle.xdcl`](settings.gradle.xdcl), and their directory names must be unique across the umbrella (Gradle
+  names included builds after their directory). A plugin build depending on the ecosystem schema needs the ecosystem
+  build's `group` (see [`ecosystem/gradle.properties`](ecosystem/gradle.properties)) and its own separate build: schemas
+  are scoped per jar, not per plugin id.
+- **New schema forks** start with `scripts/new-fork.sh <name>`; record the question, the trade-offs and the decision in
+  `forks/<name>/README.md` and in the forks table of [`docs/design.md`](docs/design.md).
+- **Reference documentation** for both languages and the Gradle integration is in the toolkit's `skills/` folder
+  (`xdcl-lang/skills/xdcl-authoring/reference/` and `xdcl-gradle-lang/skills/*/reference/`). Read it there; don't install
+  the skills as plugins.
+- **Design context** is in [`docs/design.md`](docs/design.md) (decisions, forks, known problems) and the
+  [wireframes](docs/%5BPrototype%20wireframes%5D%20JetBrains%20Ecosystem%20plugin%20for%20Declarative%20Gradle.md). The DCL
+  implementation in the repository root is the source of truth for the DSL surface.
+
 ## Decisions
 
 ### One umbrella build for the plugin and all examples
