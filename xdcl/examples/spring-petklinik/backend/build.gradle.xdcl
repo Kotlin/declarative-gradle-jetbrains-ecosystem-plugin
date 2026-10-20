@@ -1,8 +1,6 @@
-jvmApplication {
+springBootApp {
   kotlin {
-    serialization {
-      enabledFormats [:json]
-    }
+    serialization { }
   }
 
   dependencies {
@@ -17,7 +15,6 @@ jvmApplication {
       "org.springframework.boot:spring-boot-restclient",
       "org.springframework.boot:spring-boot-kotlinx-serialization-json",
 
-      "org.jetbrains.kotlin:kotlin-reflect",
       "org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0",
       "io.konform:konform:0.11.1",
     ]
@@ -29,16 +26,6 @@ jvmApplication {
 
     resources {
       resource [:projects.frontend]
-    }
-  }
-
-  testing {
-    dependencies {
-      implementation [
-        "org.springframework.boot:spring-boot-starter-test",
-        "org.jetbrains.kotlin:kotlin-test-junit5",
-      ]
-      runtimeOnly ["org.junit.platform:junit-platform-launcher"]
     }
   }
 }

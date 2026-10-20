@@ -1,6 +1,10 @@
 library {
   // platforms [:jvm, :web] come from the settings defaults
 
+  kotlin {
+    serialization { }
+  }
+
   dependencies {
     implementation [
       "org.jetbrains.kotlinx:kotlinx-html:0.12.0",

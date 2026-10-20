@@ -2,9 +2,7 @@ webApplication {
   subplatforms [:wasmJs]
 
   kotlin {
-    serialization {
-      enabledFormats [:json]
-    }
+    serialization { }
   }
 
   packaging {
