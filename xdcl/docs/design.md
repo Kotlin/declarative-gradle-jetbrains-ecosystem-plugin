@@ -49,7 +49,7 @@ is an error. Kotlin compiler options are a curated subset of KGP's (see [P6](#p6
 | [`spring-single-block`](../forks/spring-single-block) | One `spring { }` block instead of three | Keep three blocks |
 | [`kotlin-opt-in`](../forks/kotlin-opt-in) | Does `kotlin { }` enable Kotlin (Java/Kotlin symmetry)? | Keep the mainline: Kotlin and Java always on, react to source files |
 | [`android-by-agp`](../forks/android-by-agp) | Does the Android plugin own `androidPlatform { }`? | No change for the prototype; owned by Android in the final design |
-| [`dependency-notation`](../forks/dependency-notation) | `:projects.shared` vs `":shared"` vs `{ project ":shared" }` | Schema fork |
+| [`dependency-notation`](../forks/dependency-notation) | `:projects.shared` vs `":shared"` vs `{ project ":shared" }` | Discarded for now: to discuss with Gradle |
 
 Forks are copies of the mainline schema (`scripts/new-fork.sh`) with one change each; they don't follow later mainline
 changes.

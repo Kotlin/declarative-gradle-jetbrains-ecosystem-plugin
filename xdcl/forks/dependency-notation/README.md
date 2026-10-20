@@ -1,5 +1,7 @@
 # Fork: how to write project and catalog dependencies
 
+**Decision:** Discarded for now: a larger topic to discuss with Gradle. The mainline notation stays as is.
+
 **Problem.** DCL has `project(":shared")`, `projects.shared`, `libs.kotlinx.datetime` and `testFixtures(…)`. XDCL has
 no function calls and no accessors, only values validated against the schema, and the schema comes from a plugin. So
 it can't know the build's projects or its version catalog.
