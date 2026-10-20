@@ -3,11 +3,12 @@
 **Decision:** Prefabs adopted. They go into the improved examples.
 
 Same schema as the mainline (`xdcl/ecosystem`). The question is how a real build should *use* XDCL's defaults
-machinery, compared to the 1:1 port in [`examples/spring-petklinik`](../../examples/spring-petklinik).
+machinery, compared to the one-to-one port (in git history: `git show c849342:xdcl/examples/spring-petklinik/…`). Variant B was
+adopted: [`examples/spring-petklinik`](../../examples/spring-petklinik) now uses a `springBootApp` prefab.
 
 | | Build | Shared setup lives in | A project opts in by |
 |---|---|---|---|
-| Port | [`examples/spring-petklinik`](../../examples/spring-petklinik) | settings `defaults` (template rules only), test dependencies repeated per project | nothing: every `jvmApplication` is a Spring app |
+| Port | `c849342:xdcl/examples/spring-petklinik` | settings `defaults` (template rules only), test dependencies repeated per project | nothing: every `jvmApplication` is a Spring app |
 | A | [`defaults/`](defaults) | settings `defaults`, using `append`, trait and extension rules | nothing: every `jvmApplication` is a Spring app |
 | B | [`prefab/`](prefab) | settings `prefabs`: a named `springBootApp` bundle | writing `springBootApp { … }` instead of `jvmApplication { … }` |
 

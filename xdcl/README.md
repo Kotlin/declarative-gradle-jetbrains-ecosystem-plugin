@@ -24,10 +24,10 @@ xdcl/
 │       └── kotlin/…                              reactions: evaluated config -> Gradle API (hello world only)
 ├── examples/
 │   ├── hello-world/          `jvmApplication { mainClass "…" }`, runs
-│   ├── idea-wizard/          1:1 port of examples/idea-wizard
-│   ├── spring-petklinik/     1:1 port of examples/spring-petklinik
+│   ├── idea-wizard/          port of examples/idea-wizard
+│   ├── spring-petklinik/     port of examples/spring-petklinik, with a `springBootApp` prefab
 │   ├── reference/            every property of every project type (= dsl-reference/*.md)
-│   └── kotlinconf/           the KotlinConf app from the wireframes
+│   └── kotlinconf/           the KotlinConf app from the wireframes, with `ktorServer` and `composeDesktopApp` prefabs
 ├── mocks/                    schema-only Android, Ktor and AboutLibraries plugins extending the ecosystem
 ├── forks/                    alternative designs, one directory per question, each with a README
 └── scripts/

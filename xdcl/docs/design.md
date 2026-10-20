@@ -13,7 +13,7 @@ spirit and fill gaps (see [Deviations](#deviations-from-the-dcl-implementation-a
 | | |
 |---|---|
 | Mainline schema | [`ecosystem/src/main/xdcl/`](../ecosystem/src/main/xdcl) |
-| Mainline examples | [`examples/`](../examples): `idea-wizard` and `spring-petklinik` (1:1 ports), `reference` (every property, = `dsl-reference/*.md`), `kotlinconf` (the wireframe) |
+| Mainline examples | [`examples/`](../examples): `idea-wizard` and `spring-petklinik` (ports), `reference` (every property, = `dsl-reference/*.md`), `kotlinconf` (the wireframe). They use defaults and prefabs as described in [Improved examples](#improved-examples-defaults-for-policy-prefabs-for-kinds-of-project). |
 | Mock third-party plugins | [`mocks/`](../mocks): Android, Ktor (with Jib), AboutLibraries, extending the JetBrains schema |
 | Forks | [`forks/`](../forks), one directory per open question, each with a README |
 
@@ -38,6 +38,23 @@ Everything is validated by `scripts/check.sh`. To try a variant in the IDE, open
 Smaller choices: `jvmTarget 21` (an `Int`, like `releaseVersion`) instead of `JVM_21`; language/API versions as strings
 (`"2.3"`, since `2.10` as a `Float` would be `2.1`); `KotlinVersion` and `JavaVersion` are refinements, so `jvmTarget 7`
 is an error. Kotlin compiler options are a curated subset of KGP's (see [P6](#p6-kotlin-compiler-options-are-mirrored-by-hand)).
+
+## Improved examples: defaults for policy, prefabs for kinds of project
+
+After walking through the forks, the examples were rewritten in place with one rule:
+
+- **Settings `defaults`** hold build-wide policy and never switch a feature on: JDK version, JUnit Platform, library
+  platforms, Android SDK levels, "serialization uses JSON" (`serialization { enabledFormats [:json] }`), the Compose
+  resources package. Lists use `append`, so projects keep writing plain lists.
+- **Prefabs** describe kinds of project. They switch features on and bring their dependencies: `springBootApp`
+  (spring-petklinik), `ktorServer` and `composeDesktopApp` (kotlinconf). A project opts in by starting with the prefab's
+  name instead of the project type. The prefabs are defined in each build's settings to showcase them; they are
+  candidates to be shipped by the plugin that owns the feature (Spring, Ktor, the JetBrains ecosystem).
+
+The effective definition of every rewritten project is identical to the previous version's (checked by comparing
+`xdcl-lsp-client effective` output). Project files got shorter (spring-petklinik `backend` 44 to 31 lines, `ai` 26 to
+15, kotlinconf `backend` 61 to 50); the settings got longer by the prefab definitions, which plugins would take over.
+The previous one-to-one ports are in git history (`git show c849342:xdcl/examples/spring-petklinik/…`).
 
 ## Forks
 
