@@ -11,18 +11,29 @@ own Gradle distribution. The DCL prototype stays the reference for the design.
 
 ```
 xdcl/
-├── settings.gradle.xdcl      umbrella build: includes the plugin and every example build (see Decisions)
+├── settings.gradle.xdcl      umbrella build: includes every build below (see Decisions)
 ├── settings.gradle           comment-only marker, so IntelliJ IDEA recognizes the Gradle build
 ├── gradlew, gradle/          wrapper pinned to the XDCL-enabled Gradle distribution
-├── ecosystem/                the `org.jetbrains.ecosystem` plugin build
-│   ├── settings.gradle.xdcl, build.gradle.xdcl
+├── docs/
+│   ├── design.md             design exploration: decisions, forks, problems  <- start here
+│   └── [Prototype wireframes] …md
+├── ecosystem/                the `org.jetbrains.ecosystem` plugin build (the mainline)
 │   └── src/main/
-│       ├── xdcl/jetbrains-ecosystem.xdsl         the schema: what users can write
+│       ├── xdcl/*.xdsl                           the schema: what users can write
 │       ├── xdcl/org.jetbrains.ecosystem.xdcl     the plugin descriptor (file name = plugin id)
-│       └── kotlin/…                              reactions: evaluated config -> Gradle API
+│       └── kotlin/…                              reactions: evaluated config -> Gradle API (hello world only)
 ├── examples/
-│   └── hello-world/          consumer build: `jvmApplication { mainClass "…" }`
-└── scripts/check.sh          sync + validate every XDCL file + run hello-world
+│   ├── hello-world/          `jvmApplication { mainClass "…" }`, runs
+│   ├── idea-wizard/          1:1 port of examples/idea-wizard
+│   ├── spring-petklinik/     1:1 port of examples/spring-petklinik
+│   ├── reference/            every property of every project type (= dsl-reference/*.md)
+│   └── kotlinconf/           the KotlinConf app from the wireframes
+├── mocks/                    schema-only Android, Ktor and AboutLibraries plugins extending the ecosystem
+├── forks/                    alternative designs, one directory per question, each with a README
+└── scripts/
+    ├── check.sh              sync + validate every XDCL file + run hello-world
+    ├── sync.sh               refresh the schema manifest for the IDE
+    └── new-fork.sh           start a schema fork from the mainline
 ```
 
 ## Setup
