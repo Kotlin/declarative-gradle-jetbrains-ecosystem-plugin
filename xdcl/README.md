@@ -43,17 +43,14 @@ curl -LO https://gradle.github.io/xdcl-starter-kit/toolkit/xdcl-toolkit-$V.zip
 curl -LO https://gradle.github.io/xdcl-starter-kit/toolkit/xdcl-toolkit-$V.zip.sha256
 sha256sum -c xdcl-toolkit-$V.zip.sha256
 unzip xdcl-toolkit-$V.zip -d ~/xdcl
-# add to your shell profile:
-export PATH="$HOME/xdcl/xdcl-toolkit-0.1.0-dev.20261008.gd14cf948/bin:$PATH"
 ```
 
-The toolkit also ships Claude Code skills (`skills/`), installable as a local plugin marketplace:
+The scripts in `scripts/` find the toolkit in `~/xdcl` (override with `XDCL_TOOLKIT`), so it does not need to be on
+`PATH`. Put its `bin/` on `PATH` only if you want to call the tools directly. The IntelliJ plugin bundles its own
+language server; the toolkit is needed for `xdcl-gradle-sync`, which IntelliJ never runs.
 
-```shell
-claude plugin marketplace add ~/xdcl/xdcl-toolkit-0.1.0-dev.20261008.gd14cf948/skills
-claude plugin install xdcl-lang@xdcl
-claude plugin install xdcl-gradle-lang@xdcl
-```
+The toolkit's `skills/` folder contains Claude Code skills; they are used as reference documentation only, not
+installed.
 
 ### 2. IntelliJ IDEA
 
@@ -68,7 +65,7 @@ claude plugin install xdcl-gradle-lang@xdcl
 
 ```shell
 cd xdcl
-xdcl-gradle-sync sync .          # re-run after changing settings (plugins/include) or a plugin descriptor
+scripts/sync.sh                  # re-run after changing settings (plugins/include) or a plugin descriptor
 scripts/check.sh                 # sync + validate all .xdsl/.xdcl files + run hello-world
 ./gradlew :hello-world:app:run   # prints "Hello, World!"
 ```

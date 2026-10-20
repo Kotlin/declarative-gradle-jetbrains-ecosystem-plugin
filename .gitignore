@@ -9,3 +9,5 @@ build/
 .kotlin/
 
 local.properties
+# macOS
+.DS_Store

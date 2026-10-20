@@ -4,17 +4,13 @@
 #   2. validates every .xdsl / .xdcl file in the workspace (no Gradle involved),
 #   3. runs the hello-world app and checks its output.
 #
-# Requires the XDCL toolkit on PATH, or XDCL_TOOLKIT pointing at its root.
+# Uses the XDCL toolkit from XDCL_TOOLKIT (default: ~/xdcl/xdcl-toolkit-<version>, see xdcl/README.md).
 # Usage: xdcl/scripts/check.sh [--no-run]
 set -euo pipefail
 
 workspace="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-if [ -n "${XDCL_TOOLKIT:-}" ]; then
-  export PATH="$XDCL_TOOLKIT/bin:$PATH"
-fi
-for tool in xdcl-gradle-sync xdcl-lsp-client; do
-  command -v "$tool" >/dev/null || { echo "error: $tool not on PATH (see xdcl/README.md)" >&2; exit 2; }
-done
+# shellcheck source=toolkit.sh
+. "$workspace/scripts/toolkit.sh"
 
 cd "$workspace"
 
