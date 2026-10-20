@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompi
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinNativeCompilerOptionsAsConvention
+import org.jetbrains.kotlin.gradle.declarative.util.configureAndroidPlatform
 import org.jetbrains.kotlin.gradle.declarative.util.configureAndroidTesting
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
@@ -64,8 +65,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     "library",
                     LibraryApplyAction::class
                 )
+                .withUnsafeDefinitionImplementationType(DefaultLibraryProjectType::class.java)
                 .withUnsafeApplyAction()
-                .withUnsafeDefinition()
         }
     }
 
@@ -501,26 +502,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         )
                         DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(compilerOptions, project)
                     }
-                }
-            }
-        }
-
-        private fun LibraryAndroidEcosystemDefinition.configureAndroidPlatform() {
-            withKmpPlugin {
-                android {
-                    this@configureAndroidPlatform.minSdk.orNull?.let { minSdk = it }
-                        ?: this@configureAndroidPlatform.minSdkPreview.orNull?.let { minSdkPreview = it }
-                    this@configureAndroidPlatform.compileSdk.orNull?.let {
-                        compileSdk = it
-                        this@configureAndroidPlatform.compileSdkExtension.orNull?.let { compileSdkExtension = it }
-                    } ?: this@configureAndroidPlatform.compileSdkPreview.orNull?.let { compileSdkPreview = it }
-                    this@configureAndroidPlatform.namespace.orNull?.let { namespace = it }
-                    this@configureAndroidPlatform.androidResources.enable.orNull?.let { androidResources.enable = it }
-                    this@configureAndroidPlatform.androidResources.resourcePrefix.orNull?.let { androidResources.resourcePrefix = it }
-                    this@configureAndroidPlatform.androidResources.ignoreAssetsPatterns.orNull?.let { androidResources.ignoreAssetsPatterns += it }
-                    this@configureAndroidPlatform.androidResources.noCompress.orNull?.let { androidResources.noCompress += it }
-                    this@configureAndroidPlatform.androidResources.failOnMissingConfigEntry.orNull?.let { androidResources.failOnMissingConfigEntry = it }
-                    this@configureAndroidPlatform.androidResources.additionalParameters.orNull?.let { androidResources.additionalParameters += it }
                 }
             }
         }

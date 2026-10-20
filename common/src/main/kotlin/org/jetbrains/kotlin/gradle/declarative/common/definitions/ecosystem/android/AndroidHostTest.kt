@@ -2,15 +2,11 @@ package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.and
 
 import org.gradle.api.provider.Property
 
-public interface AndroidHostTest : AndroidPlatformTestBuilder {
+public interface AndroidHostTest : AndroidPlatformTest {
 
     public val returnDefaultValues: Property<Boolean>
 
     public val includeAndroidResources: Property<Boolean>
 
     public val enableCoverage: Property<Boolean>
-
-    public val targetSdk: Property<Int>
-
-    public val targetSdkPreview: Property<String>
 }

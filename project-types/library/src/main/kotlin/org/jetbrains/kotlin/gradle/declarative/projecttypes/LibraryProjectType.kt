@@ -1,10 +1,13 @@
 package org.jetbrains.kotlin.gradle.declarative.projecttypes
 
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.JavaJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinCompilationExtension
+import javax.inject.Inject
+import kotlin.jvm.java
 
 @Suppress("UnstableApiUsage")
 public interface LibraryProjectType : Definition<LibraryBuildModel> {
@@ -43,4 +46,11 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 
 public enum class LibraryPlatform {
     jvm, common, web, ios, android
+}
+
+internal abstract class DefaultLibraryProjectType @Inject constructor(objectFactory: ObjectFactory) : LibraryProjectType {
+
+    override val androidPlatform: LibraryAndroidEcosystemDefinition = objectFactory.newInstance(DefaultLibraryAndroidEcosystemDefinition::class.java)
+
+    override val testing: LibraryTestingExtension = objectFactory.newInstance(DefaultLibraryTestingExtension::class.java)
 }
