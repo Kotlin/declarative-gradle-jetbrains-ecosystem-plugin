@@ -1,0 +1,8 @@
+settings {
+  rootProject {
+    name "xdcl-workspace"
+  }
+  pluginManagement {
+    includedBuilds ["ecosystem", "examples/hello-world"]
+  }
+}

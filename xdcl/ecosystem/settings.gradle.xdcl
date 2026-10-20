@@ -1,0 +1,14 @@
+// The JetBrains ecosystem plugin build. Declarative too: the built-in plugin-development-ecosystem
+// contributes the xdclGradlePluginKotlin project type used in build.gradle.xdcl.
+settings {
+  rootProject {
+    name "jetbrains-ecosystem"
+  }
+  plugins [
+    { id "plugin-development-ecosystem" }
+    { id "embedded-kotlin", apply false }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral, :gradlePluginPortal]
+  }
+}

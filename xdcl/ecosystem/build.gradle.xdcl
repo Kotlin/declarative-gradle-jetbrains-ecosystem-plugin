@@ -1,0 +1,7 @@
+// Kotlin reactions; the schema and the descriptor live in src/main/xdcl/.
+xdclGradlePluginKotlin {
+  dependencies {
+    // Reactions apply KGP to consuming projects, so it has to be on the plugin's runtime classpath.
+    implementation ["org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21"]
+  }
+}

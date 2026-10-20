@@ -1,0 +1,10 @@
+// Hello-world schema of the JetBrains ecosystem plugin: a single jvmApplication project type.
+package org.jetbrains.ecosystem
+
+/// A JVM application written in Kotlin and/or Java.
+template JvmApplication {
+  jvmApplication {
+    /// Fully qualified name of the class with the `main` function, e.g. `"org.example.MainKt"`.
+    mainClass: String
+  }
+}

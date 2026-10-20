@@ -1,0 +1,15 @@
+settings {
+  rootProject {
+    name "hello-world"
+  }
+  pluginManagement {
+    includedBuilds ["../../ecosystem"]
+  }
+  plugins [
+    { id "org.jetbrains.ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral]
+  }
+  include ["app"]
+}

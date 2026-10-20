@@ -1,0 +1,5 @@
+plugin {
+  displayName "JetBrains ecosystem"
+  description "Project types and features for Kotlin and Java builds."
+  reactions [:org.jetbrains.ecosystem.JvmApplicationReaction]
+}
