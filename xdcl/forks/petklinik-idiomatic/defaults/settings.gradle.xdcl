@@ -1,0 +1,72 @@
+// spring-petklinik with everything shared moved into ambient settings defaults.
+settings {
+  rootProject {
+    name "petklinik-defaults"
+  }
+  pluginManagement {
+    includedBuilds ["../../../ecosystem"]
+  }
+  plugins [
+    { id "org.gradle.toolchains.foojay-resolver-convention", version "1.0.0" }
+    { id "org.jetbrains.ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral]
+  }
+  defaults [
+    // Every JVM toolchain in the build: jvmApplication, and library's jvmPlatform when present.
+    JvmToolchainOwner {
+      toolchain {
+        releaseVersion 17
+      }
+    }
+
+    jvmApplication {
+      spring { }
+      packaging {
+        spring {
+          bootBuildImage {
+            environment [
+              BP_JVM_CDS_ENABLED: "true",
+              BP_JVM_VERSION: "25",
+            ]
+          }
+        }
+      }
+      // `append` (not a plain list): a project's own plain `implementation [...]` keeps these.
+      dependencies {
+        implementation { append ["org.jetbrains.kotlin:kotlin-reflect"] }
+      }
+      testing {
+        useJUnitPlatform true
+        dependencies {
+          implementation {
+            append [
+              "org.springframework.boot:spring-boot-starter-test",
+              "org.jetbrains.kotlin:kotlin-test-junit5",
+            ]
+          }
+          runtimeOnly { append ["org.junit.platform:junit-platform-launcher"] }
+        }
+      }
+    }
+
+    library {
+      platforms [:jvm, :web]
+      // Materializes jvmPlatform, so the JvmToolchainOwner default above reaches it.
+      jvmPlatform { }
+      webPlatform {
+        subplatforms [:wasmJs]
+      }
+      kotlin {
+        serialization { }
+      }
+    }
+
+    // Wherever serialization is enabled, use JSON. Enables it nowhere by itself.
+    serialization {
+      enabledFormats [:json]
+    }
+  ]
+  include ["frontend", "backend", "shared", "ai"]
+}

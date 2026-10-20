@@ -1,0 +1,69 @@
+// spring-petklinik with the Spring setup as a named prefab: projects opt in by name instead of every
+// jvmApplication getting Spring from an ambient default.
+settings {
+  rootProject {
+    name "petklinik-prefab"
+  }
+  pluginManagement {
+    includedBuilds ["../../../ecosystem"]
+  }
+  plugins [
+    { id "org.gradle.toolchains.foojay-resolver-convention", version "1.0.0" }
+    { id "org.jetbrains.ecosystem" }
+  ]
+  dependencyResolutionManagement {
+    repositories [:mavenCentral]
+  }
+  defaults [
+    JvmToolchainOwner {
+      toolchain {
+        releaseVersion 17
+      }
+    }
+    library {
+      platforms [:jvm, :web]
+      jvmPlatform { }
+      webPlatform {
+        subplatforms [:wasmJs]
+      }
+      kotlin {
+        serialization { }
+      }
+    }
+    serialization {
+      enabledFormats [:json]
+    }
+  ]
+  prefabs [
+    /// A Spring Boot application: `springBootApp { … }` instead of `jvmApplication { … }`.
+    springBootApp: jvmApplication {
+      spring { }
+      packaging {
+        spring {
+          bootBuildImage {
+            environment [
+              BP_JVM_CDS_ENABLED: "true",
+              BP_JVM_VERSION: "25",
+            ]
+          }
+        }
+      }
+      dependencies {
+        implementation { append ["org.jetbrains.kotlin:kotlin-reflect"] }
+      }
+      testing {
+        useJUnitPlatform true
+        dependencies {
+          implementation {
+            append [
+              "org.springframework.boot:spring-boot-starter-test",
+              "org.jetbrains.kotlin:kotlin-test-junit5",
+            ]
+          }
+          runtimeOnly { append ["org.junit.platform:junit-platform-launcher"] }
+        }
+      }
+    }
+  ]
+  include ["frontend", "backend", "shared", "ai"]
+}
