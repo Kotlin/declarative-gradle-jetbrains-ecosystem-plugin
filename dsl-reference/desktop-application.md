@@ -31,8 +31,7 @@ desktopApplication {
     
     packaging { // Application packaging configuration
         name = "..." // The application's (package) name
-        version = "..." // The application's (package) version
-        icon = layout.projectDirectory.file("...") // The application's icon file
+        version = "<any-format>" // The application's (package) version 
         copyright = "..." // The application's copyright information
         description = "..." // The description of the application
         vendor = "..." // The application's vendor
@@ -43,8 +42,8 @@ desktopApplication {
 
         linuxDistribution { // Linux platform options
             name = "..." // Optional property for the application's name on Linux platform, overrides the version value in `packaging { }`
-            version = "..." // Optional property for the application's version on Linux platform, overrides the version value in `packaging { }`
-            icon = layout.projectDirectory.file("...") // Optional property for the application's icon on Linux plaftform, overrides the icon value in `packaging { }`
+            version = "<any-format>" // Optional property for the application's version on Linux platform, overrides the version value in `packaging { }`
+            icon = layout.projectDirectory.file("...") // The application's icon on Linux plaftform (.png)
             formats = listOf(deb, rpm) // Limits the distribution formats for the application to packaged into on Linux platform, defaults to `deb` and `rpm`
             
             shortcut = true // Enables creating a Linux shortcut upon installation
@@ -53,12 +52,12 @@ desktopApplication {
 
             distribution { // Distribution format configuration options
                 deb { // .deb target format options
-                    version = "..." // Optional property for the application's version for .deb target, overrides the version value in `linuxPlatform { }`
+                    version = debVersion("<upstream-version>", <epoch-int> (optional), "<debianRevision>" (optional)) // Optional property for the application's version for .deb target, overrides the version value in `linuxPlatform { }`
                     maintainer = "..." // Optional property for the maintainer for the .deb distribution
                 }
 
                 rpm { // .rpm target format options
-                    version = "..." // Optional property for the application's version for .rpm target, overrides the version value in `linuxPlatform { }`
+                    version = "<any-format>" // Optional property for the application's version for .rpm target, overrides the version value in `linuxPlatform { }`
                     licenseType = "..."// Optional property for the RPM license type
                 }
             }
@@ -66,15 +65,15 @@ desktopApplication {
 
         macosDistribution { // macOS platform options
             name = "..." // Optional property for the application's name for macOS platform, overrides the version value in `packaging { }`
-            version = "..." // Optional property for the application's version for macOS platform, overrides the version value in `packaging { }`
-            icon = layout.projectDirectory.file("...") // Optional property for the application's icon on macOS plaftform, overrides the icon value in `packaging { }`
+            version = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for the application's version for macOS platform, overrides the version value in `packaging { }`
+            icon = layout.projectDirectory.file("...") // the application's icon on macOS plaftform (.icns)
             // Limits the distribution formats for the application to packaged into on macOS platform, defaults to `jvmDmg`, `jvmPkg`, `nativeExecutable`, and `nativeDmg`
             // The reason for distinguishing between `jvm` and `native` distributions is that we can distribute the desktop application ONLY as an JVM application (with jpackage).
             // However, on macOS it is also possible to package the application natively (provided the project is configured with native macOS targets).
             // It can be packaged as a native application (executable) or as both the executable AND a .dmg package
             formats = listOf(jvmDmg, jvmPkg, nativeExecutable, nativeDmg)
             
-            buildVersion = "..." // The application's (build) version visible to the system, defaults to the application's version
+            buildVersion = iosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // The application's (build) version visible to the system, defaults to the application's version
             minimumSystemVersion = "..." // The minimum macOS version required to run the application
             bundleId = "..." // The unique identifier for the application, defaults to the reference of the main class
             // The category of the app in App Store (see more https://developer.apple.com/documentation/bundleresources/information-property-list/lsapplicationcategorytype), default is "public.app-category.utilities"
@@ -87,13 +86,13 @@ desktopApplication {
                     appStoreDistribution = true // Enables the building and signing of the application for Apple App Store
                     
                     dmg { // .dmg target format options, specifies options for `jvmDmg` distribution
-                        version = "..." // Optional property for th application's version for .dmg target, overrides the version value in `macosPlatform { }`
-                        buildVersion = "..." // Optional property for the application's (build) version visible to the system for the .dmg target, overrides the build version value in `macosPlatform { }`
+                        version = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for th application's version for .dmg target, overrides the version value in `macosPlatform { }`
+                        buildVersion = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for the application's (build) version visible to the system for the .dmg target, overrides the build version value in `macosPlatform { }`
                     }
 
                     pkg { // .pkg target format options, specifies options for `jvmPkg` distribution
-                        version = "..." // Optional application version for .pkg target, overrides the version value in `macosPlatform { }`
-                        buildVersion = "..." // Optional property for the application's (build) version visible to the system for the .pkg target, overrides the build version value in `macosPlatform { }`
+                        version = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional application version for .pkg target, overrides the version value in `macosPlatform { }`
+                        buildVersion = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for the application's (build) version visible to the system for the .pkg target, overrides the build version value in `macosPlatform { }`
                     }
 
                     signing { // The signing options for macOS distribution
@@ -112,16 +111,16 @@ desktopApplication {
 
                 native { // Configuration options for Native-based distribution formats
                     dmg { // .dmg target format options, specifies options for `nativeDmg` distribution
-                        version = "..." // Optional property for th application's version for .dmg target, overrides the version value in `macosPlatform { }`
-                        buildVersion = "..." // Optional property for the application's (build) version visible to the system for the .dmg target, overrides the build version value in `macosPlatform { }`
+                        version = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for th application's version for .dmg target, overrides the version value in `macosPlatform { }`
+                        buildVersion = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for the application's (build) version visible to the system for the .dmg target, overrides the build version value in `macosPlatform { }`
                     }
                 }
             }
         }
 
         windowsDistribution { // Windows platform options
-            version = "..." // Optional property for the application's version for Windows platform, overrides the version value in `packaging { }`
-            icon = layout.projectDirectory.file("...") // Optional property for the application's icon on Windows plaftform, overrides the icon value in `packaging { }`
+            version = windowsVersion(<major-int>, <minor-int>, <build-int>) // Optional property for the application's version for Windows platform, overrides the version value in `packaging { }`
+            icon = layout.projectDirectory.file("...") // The application's icon on Windows plaftform (.ico)
             // Limits the distribution formats for the application to packaged into on Windows platform, defaults to `msi` and `exe`
             formats = listOf(msi, exe)
 
@@ -138,11 +137,11 @@ desktopApplication {
 
             distribution { // Distribution configuration options
                 msi { // .msi target format options
-                    version = "..." // Optional application version for .msi target, overrides the version value in `windowsPlatform { }`
+                    version = windowsVersion(<major-int>, <minor-int>, <build-int>) // Optional application version for .msi target, overrides the version value in `windowsPlatform { }`
                 }
 
                 exe { // .exe target format options
-                    version = "..." // Optional application version for .exe target, overrides the version value in `windowsPlatform { }`
+                    version = windowsVersion(<major-int>, <minor-int>, <build-int>) // Optional application version for .exe target, overrides the version value in `windowsPlatform { }`
                 }
             }
         }
@@ -154,7 +153,7 @@ desktopApplication {
 1. The decision to include the distribution OS platforms in `packaging { ... }` is arbitrary, they could be declared in the top-level block. However, given the fact their configuration specifies the packaging form of each distribution, it made sense to declare them here.
 2. `distribution { ... }` does not provide any functionality. It only serves to create the mental separation between the declaration of the enclosing OS distribution and specific distribution format options.
   - *Question:* If it makes sense to keep the block, what would be a better name for it?
-3. A possible design for the `notarization { ... }` block could be a single property representing the path to the file with the notarization information/secrets for privacy.
+3. A possible design for the `notarization { ... }` block could be a single property representing the path to the file with the notarization information/secrets for privacy, or only allow users to declare them in Gradle's `.properties` files
 4. The main difference between Compose Desktop DSL and our `desktopApplication` is that, for the former, the packaging information is separate between _JVM application_ and _Native application_. But in the latter, it is split between platforms (which are subsumed by either the JVM application or native application) because the information for the same platforms (only macOS in this case) on different applications, usually, tends to be the same. Therefore, the configuration of the `packaging { ... }` properties `name`, `version`, `icon`, `copyright`, `description`, `vendor`, and `licence` are shared between JVM and Native application platforms.
   - *Question:* Should we allow users to provide separate specification of these properties between JVM and native?
 5. The same principle is applied to `macosDistribution` as we want the user to focus on how the distribution of the application looks like for a specific OS platform, instead of focusing on which Kotlin platform is the application compiled on.
@@ -184,4 +183,4 @@ Contains the low-level configuration for additional content and signing (both on
 - For signing:
   1. `entitlementsFile` file property
   2. `runtimeEntitlementsFile` file property
-- Extra raw configuration for `info.plist`
+- Extra raw configuration for `Info.plist`
