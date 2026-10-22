@@ -1,6 +1,6 @@
 # Desktop Application DSL Reference
 
-```declarative
+```kotlin
 desktopApplication {
     // Specifies the application distribution type, defaults to empty list
     platforms = listOf(jvm, native)
