@@ -18,7 +18,7 @@ desktopApplication {
     
     nativePlatform { // Native application specific configurations
         // Limits native macOS executable targets to the given subplatforms, defaults to all subplatforms (iosArm64, iosSimulatorArm64, and iosX64)
-        // The property is used to specify the KMP target with an executable binary for each specified subplatform
+        // The property is used to instantiate the KMP target with an executable binary for each specified subplatform
         subplatforms = listOf(iosArm64, iosSimulatorArm64, iosX64)
         kotlin { // Kotlin Native compilation configuration, overrides common configuration
             compilerOptions { // Compiler arguments to apply for all Kotlin Native compilations
@@ -66,7 +66,7 @@ desktopApplication {
         macosDistribution { // macOS platform options
             name = "..." // Optional property for the application's name for macOS platform, overrides the version value in `packaging { }`
             version = macosVersion(<major-int>, <minor-int> (optional), <patch-int> (optional)) // Optional property for the application's version for macOS platform, overrides the version value in `packaging { }`
-            icon = layout.projectDirectory.file("...") // the application's icon on macOS plaftform (.icns)
+            icon = layout.projectDirectory.file("...") // The application's icon on macOS plaftform (.icns)
             // Limits the distribution formats for the application to packaged into on macOS platform, defaults to `jvmDmg`, `jvmPkg`, `nativeExecutable`, and `nativeDmg`
             // The reason for distinguishing between `jvm` and `native` distributions is that we can distribute the desktop application ONLY as an JVM application (with jpackage).
             // However, on macOS it is also possible to package the application natively (provided the project is configured with native macOS targets).
