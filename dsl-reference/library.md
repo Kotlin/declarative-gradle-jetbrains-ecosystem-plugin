@@ -77,10 +77,11 @@ library {
     }
 
     androidPlatform { // Android platform specific configurations
-        minSdk = release(21) // Minimum API level, can be specified by `release(<version>) or `preview(<code-name>)` SDK version
-        compileSdk = release(37, 1) // API level to compile the library against
+        minSdk = release(21) // Minimum Android SDK version the library supports, can be specified by `release(<version>) or `preview(<code-name>)` SDK version
+        // Android SDK version to compile the library against
         // Compile SDK version can be specified by `release(<version>, <minor-version> (optional), <extension> (optional))`, `preview(<code-name>)`, `canary(<date>)`, `beta(<version>, <minor-version> (optional), <beta-version> (optional))`, or `addon(<vendor-name>, <addon-name>, <version>)` SDK version
         // Specific SDK package versions can be found in SDK Manager in Android Studio or Intellij (https://developer.android.com/tools/releases/platforms)
+        compileSdk = release(37, 1) // In this example, the release version has API level 37 and minor version 1
         namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
         
         androidResources { // Configuration of AAPT Android resources and assets
@@ -177,7 +178,7 @@ library {
                 }
 
                 deviceTest { // Device testing dependencies
-                    implementation(""androidx.test:runner:1.7.0")
+                    implementation("androidx.test:runner:1.7.0")
                 }
             }
         }
