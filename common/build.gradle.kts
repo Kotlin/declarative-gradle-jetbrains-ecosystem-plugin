@@ -12,6 +12,7 @@ dependencies {
     api(libs.kotlin.gradle.plugin)
 
     implementation(libs.kotlin.gradle.plugin.serialization)
+    compileOnly(libs.android.kotlin.multiplatform)
 }
 
 commonPublishing {

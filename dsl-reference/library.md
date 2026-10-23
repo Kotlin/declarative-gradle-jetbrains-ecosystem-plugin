@@ -77,10 +77,21 @@ library {
     }
 
     androidPlatform { // Android platform specific configurations
-        minSdk = 21 // Minimum API level
-        compileSdk = 37 // API level to compile the library against, can be specified further with `compileSdkExtension`
+        minSdk = release(21) // Minimum Android SDK version the library supports, can be specified by `release(<version>) or `preview(<code-name>)` SDK version
+        // Android SDK version to compile the library against
+        // Compile SDK version can be specified by `release(<version>, <minor-version> (optional), <extension> (optional))`, `preview(<code-name>)`, `canary(<date>)`, `beta(<version>, <minor-version> (optional), <beta-version> (optional))`, or `addon(<vendor-name>, <addon-name>, <version>)` SDK version
+        // Specific SDK package versions can be found in SDK Manager in Android Studio or Intellij (https://developer.android.com/tools/releases/platforms)
+        compileSdk = release(37, 1) // In this example, the release version has API level 37 and minor version 1
         namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
         
+        androidResources { // Configuration of AAPT Android resources and assets
+            // LibraryAndroidResources members are available here, see more at:
+            // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/LibraryAndroidResources
+            enable = true // Enables Android resource processing in this library, by default it is `false` for KMP projects
+            resourcePrefix = "lib_" // This library's resource prefix in Android Studio (only useful when working with Android Studio)
+            ignoreAssetsPatterns = listOf("dont-ignore-anything") // A list of patterns of ignored assets
+        }
+    
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions { // Compiler arguments to apply for all library's Android (JVM) compilations
                 // KotlinJvmCompilerOptions members are available here, see more at:
@@ -91,9 +102,9 @@ library {
         }
     }
 
-    dependencies { // library dependencies
-        api(project(":shared")) // common dependency for all platforms
-        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // common dependency fro all platforms
+    dependencies { // Library dependencies
+        api(project(":shared")) // Common dependency for all platforms
+        implementation("org.jetbrains.kotlinx:kotlinx-html:0.12.0") // Common dependency for all platforms
 
         jvmPlatform { // JVM specific dependencies
             api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
@@ -109,6 +120,10 @@ library {
         iosPlatform { // iOS specific dependencies
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         }
+    
+        androidPlatform { // Android specific dependencies
+            implementation("androidx.compose.ui:ui:1.12.1")
+        }
     }
 
     testing { // Library testing configuration
@@ -118,6 +133,23 @@ library {
 
         webPlatform { // Testing configuration for Web platform
             skip = true // Skip web tests
+        }
+
+        androidPlatform { // Testing configuration for Android platform
+            hostTest { // Creates and configures a compilation for tests that run on the JVM
+                // KotlinMultiplatformAndroidHostTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
+                targetSdk = release(36) // API level that the tests are targeting, can be also specified by `preview(<code-name>)` SDK version
+                includeAndroidResources = true // Allows host (unit) tests to use Android resources, assets, and manifests
+            }
+
+            deviceTest { // Creates and configures a compilation for tests that run on a device
+                // KotlinMultiplatformAndroidDeviceTest members are available here, see more at:
+                // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest
+                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" // Test instrumentation runner class name
+            }
         }
 
         dependencies { // Testing dependencies
@@ -138,6 +170,16 @@ library {
 
             iosPlatform { // iOS platform testing dependencies
                 implementation("org.jetbrains.kotlin:kotlin-test")
+            }
+
+            androidPlatform { // Android platform testing dependencies
+                hostTest { // Host (JVM) testing dependencies
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+                }
+
+                deviceTest { // Device testing dependencies
+                    implementation("androidx.test:runner:1.7.0")
+                }
             }
         }
     }
