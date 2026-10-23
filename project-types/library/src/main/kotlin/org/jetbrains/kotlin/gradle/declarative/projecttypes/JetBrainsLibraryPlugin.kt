@@ -122,6 +122,12 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                 }
             }
 
+            //TODO: implement actual compose software feature
+            if (definition.enableCompose.getOrElse(false)) {
+                pluginManager.apply("org.jetbrains.compose")
+                pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+            }
+
             definition.dependencies.wireDependencies(buildModel)
             definition.testing.dependencies.wireTestingDependencies(buildModel)
 
@@ -555,8 +561,13 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             publishingBuildModel.enabledWebSubplatforms.value(buildModel.enabledWebSubplatforms)
             publishingBuildModel.enabledIosSubplatforms.value(buildModel.enabledIosSubplatforms)
 
-            project.group = group.getOrElse(project.path.replace(":", "."))
+            project.group = group.getOrElse(project.path.replace(":", ".").asValidGroupValue)
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
+        }
+
+        private val String.asValidGroupValue: String get() = when {
+            startsWith(".") -> project.group.toString()
+            else -> this
         }
 
         private fun withJvmPlugin(action: KotlinJvmExtension.() -> Unit) {
