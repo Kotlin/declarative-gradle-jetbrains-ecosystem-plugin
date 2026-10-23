@@ -1,18 +1,31 @@
 package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.android
 
-public interface SdkVersion {
+import com.android.build.api.dsl.CompileSdkSpec
+import com.android.build.api.dsl.MinSdkSpec
+import com.android.build.api.dsl.TargetSdkSpec
 
-    public interface Release : SdkVersion, MinSdkVersion, CompileSdkVersion, TargetSdkVersion {
+public sealed interface SdkVersion {
+
+    public sealed interface Release : SdkVersion, MinSdkVersion, CompileSdkVersion, TargetSdkVersion {
         public val apiLevel: Int
     }
 
-    public interface Preview : SdkVersion, MinSdkVersion, CompileSdkVersion, TargetSdkVersion {
+    public sealed interface Preview : SdkVersion, MinSdkVersion, CompileSdkVersion, TargetSdkVersion {
         public val codeName: String
     }
 }
 
-public interface MinSdkVersion : SdkVersion
+public sealed interface MinSdkVersion : SdkVersion
 
-public interface CompileSdkVersion : SdkVersion
+context(spec: MinSdkSpec)
+public fun MinSdkVersion.populateSpec(): Unit = (this as MinSdkVersionImpl).populateSpec()
 
-public interface TargetSdkVersion : SdkVersion
+public sealed interface CompileSdkVersion : SdkVersion
+
+context(spec: CompileSdkSpec)
+public fun CompileSdkVersion.populateSpec(): Unit = (this as CompileSdkVersionImpl).populateSpec()
+
+public sealed interface TargetSdkVersion : SdkVersion
+
+context(spec: TargetSdkSpec)
+public fun TargetSdkVersion.populateSpec(): Unit = (this as TargetSdkVersionImpl).populateSpec()

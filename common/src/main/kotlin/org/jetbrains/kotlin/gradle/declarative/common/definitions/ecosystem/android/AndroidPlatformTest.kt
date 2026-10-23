@@ -2,13 +2,9 @@ package org.jetbrains.kotlin.gradle.declarative.common.definitions.ecosystem.and
 
 import org.gradle.api.provider.Property
 
-public interface AndroidPlatformTest {
+public interface AndroidPlatformTest : AndroidSdkVersionModifiers {
 
     public val sourceSetTreeName: Property<String>
 
     public val targetSdk: Property<TargetSdkVersion>
-
-    public fun release(version: Int): SdkVersion.Release
-
-    public fun preview(codeName: String): SdkVersion.Preview
 }

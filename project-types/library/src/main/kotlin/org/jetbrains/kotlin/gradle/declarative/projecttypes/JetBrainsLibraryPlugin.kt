@@ -311,15 +311,15 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
 
                 if (hasAndroidEcosystemPlugin && LibraryPlatform.android in enabledPlatforms) {
                     // Test source sets are configured given the `androidPlatform` containing either the `hostTest` and/or `deviceTest` extensions
-                    sourceSets.findByName("androidHostTest")?.let { androidHostTestSourceSet ->
-                        addDependencies(androidHostTestSourceSet.implementationConfigurationName, androidPlatform.hostTest.implementation)
-                        addDependencies(androidHostTestSourceSet.compileOnlyConfigurationName, androidPlatform.hostTest.compileOnly)
-                        addDependencies(androidHostTestSourceSet.runtimeOnlyConfigurationName, androidPlatform.hostTest.runtimeOnly)
+                    sourceSets.findByName("androidHostTest")?.let { sourceSet ->
+                        addDependencies(sourceSet.implementationConfigurationName, androidPlatform.hostTest.implementation)
+                        addDependencies(sourceSet.compileOnlyConfigurationName, androidPlatform.hostTest.compileOnly)
+                        addDependencies(sourceSet.runtimeOnlyConfigurationName, androidPlatform.hostTest.runtimeOnly)
                     }
-                    sourceSets.findByName("androidDeviceTest")?.let { androidDeviceTestSourceSet ->
-                        addDependencies(androidDeviceTestSourceSet.implementationConfigurationName, androidPlatform.deviceTest.implementation)
-                        addDependencies(androidDeviceTestSourceSet.compileOnlyConfigurationName, androidPlatform.deviceTest.compileOnly)
-                        addDependencies(androidDeviceTestSourceSet.runtimeOnlyConfigurationName, androidPlatform.deviceTest.runtimeOnly)
+                    sourceSets.findByName("androidDeviceTest")?.let { sourceSet ->
+                        addDependencies(sourceSet.implementationConfigurationName, androidPlatform.deviceTest.implementation)
+                        addDependencies(sourceSet.compileOnlyConfigurationName, androidPlatform.deviceTest.compileOnly)
+                        addDependencies(sourceSet.runtimeOnlyConfigurationName, androidPlatform.deviceTest.runtimeOnly)
                     }
                 }
             }
