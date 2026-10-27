@@ -19,8 +19,8 @@ desktopApplication {
     nativePlatform { // Native application specific configurations
         // Limits native macOS executable targets to the given subplatforms, defaults to all subplatforms (iosArm64, iosSimulatorArm64, and iosX64)
         // The property is used to instantiate the KMP target with an executable binary for each specified subplatform
-        subplatforms = listOf(iosArm64, iosSimulatorArm64, iosX64)
-        kotlin { // Kotlin Native compilation configuration, overrides common configuration
+        subplatforms = listOf(macosArm64, macosX64)
+        kotlin { // Kotlin Native compilation configuration
             compilerOptions { // Compiler arguments to apply for all Kotlin Native compilations
                 // KotlinNativeCompilerOptions members are available here, see more at:
                 // https://kotlinlang.org/api/kotlin-gradle-plugin/kotlin-gradle-plugin-api/org.jetbrains.kotlin.gradle.dsl/-kotlin-native-compiler-options/
@@ -99,7 +99,6 @@ desktopApplication {
                         enable = true // Enables signing for declared macOS distribution
                         identity = "..." // The signing certificate's name
                         keychain = "..." // The path to the certificate's keychain
-                        prefix = "..." //
                     }
 
                     notarization { // The notarization options for distribution outside Apple App Store
