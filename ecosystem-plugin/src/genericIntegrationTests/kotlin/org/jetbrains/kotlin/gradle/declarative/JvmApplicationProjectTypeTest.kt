@@ -249,7 +249,7 @@ class JvmApplicationProjectTypeTest : BaseTest() {
 
     @DisplayName("kotlin serialization is enabled")
     @GradleTest
-    fun testKotlinSerializationSoftwareFeature(
+    fun testKotlinSerializationProjectFeature(
         gradleVersion: GradleVersion
     ) {
         project("base-ecosystem-project", gradleVersion) {

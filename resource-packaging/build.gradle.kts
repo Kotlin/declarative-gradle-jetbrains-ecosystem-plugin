@@ -3,7 +3,7 @@ plugins {
     id("common-publishing")
 }
 
-description = "Implements 'resource' Declarative Gradle software feature"
+description = "Implements 'resource' Declarative Gradle project feature"
 
 kotlin {
     explicitApi()

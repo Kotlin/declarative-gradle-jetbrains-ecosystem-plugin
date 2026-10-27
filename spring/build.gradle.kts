@@ -3,7 +3,7 @@ plugins {
     id("common-publishing")
 }
 
-description = "Implements 'spring' Declarative Gradle software feature"
+description = "Implements 'spring' Declarative Gradle project feature"
 
 kotlin {
     explicitApi()
