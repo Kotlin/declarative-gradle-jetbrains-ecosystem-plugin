@@ -58,7 +58,7 @@ public class IosFrameworkPublishingProjectFeaturePlugin : Plugin<Project>, Proje
                     val target = targets.getByName(subplatform.name) as KotlinNativeTarget
                     target.binaries.framework {
                         definition.static.orNull?.let { isStatic = it }
-                        definition.linkerOpts.orNull?.let { linkerOpts = it }
+                        definition.linkerOptions.orNull?.let { linkerOpts = it }
                         freeCompilerArgs = target.compilerOptions.freeCompilerArgs.getOrElse(emptyList())
                         project.configurations.getByName(exportConfigurationName).fromDependencyCollector(definition.export)
                         definition.transitiveExport.orNull?.let { transitiveExport = it }
