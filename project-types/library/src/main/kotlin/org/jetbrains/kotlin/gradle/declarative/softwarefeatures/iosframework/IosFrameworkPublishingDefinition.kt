@@ -12,7 +12,7 @@ public interface IosFrameworkPublishingDefinition : Definition<BuildModel.None>,
 
     public val static: Property<Boolean>
 
-    public val linkerOpts: ListProperty<String>
+    public val linkerOptions: ListProperty<String>
 
     public val export: DependencyCollector
 
