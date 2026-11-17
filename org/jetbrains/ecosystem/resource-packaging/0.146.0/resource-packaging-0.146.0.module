@@ -1,0 +1,110 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.ecosystem",
+    "module": "resource-packaging",
+    "version": "0.146.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.146.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.146.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "resource-packaging-0.146.0.jar",
+          "url": "resource-packaging-0.146.0.jar",
+          "size": 28351,
+          "sha512": "4057c7cdbf1c4b48d94a14b7a2804d3680248a6987dcf3ef3d8c602e533b0fc7faf1ef5889667e4caf55bd7cf1dfc75251a3c9244d0ba552a6e7f2a8a4965dd1",
+          "sha256": "f44e45d92328e7ba9e2f57645cbb4f4110724a2427cdf8ecd1ce07a3bc32ca8f",
+          "sha1": "ee35d094ff455b7df4e715193ec62071880754d5",
+          "md5": "f66ffd764d2bfc6a2fa316c018ccd89f"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "common",
+          "version": {
+            "requires": "0.146.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.ecosystem",
+          "module": "jvm-application",
+          "version": {
+            "requires": "0.146.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "resource-packaging-0.146.0.jar",
+          "url": "resource-packaging-0.146.0.jar",
+          "size": 28351,
+          "sha512": "4057c7cdbf1c4b48d94a14b7a2804d3680248a6987dcf3ef3d8c602e533b0fc7faf1ef5889667e4caf55bd7cf1dfc75251a3c9244d0ba552a6e7f2a8a4965dd1",
+          "sha256": "f44e45d92328e7ba9e2f57645cbb4f4110724a2427cdf8ecd1ce07a3bc32ca8f",
+          "sha1": "ee35d094ff455b7df4e715193ec62071880754d5",
+          "md5": "f66ffd764d2bfc6a2fa316c018ccd89f"
+        }
+      ]
+    }
+  ]
+}
