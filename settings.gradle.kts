@@ -32,6 +32,7 @@ include(
     ":project-types:jvm-application",
     ":project-types:web-application",
     ":project-types:library",
+    ":project-types:desktop-application",
     ":spring",
     ":resource-packaging",
 )
