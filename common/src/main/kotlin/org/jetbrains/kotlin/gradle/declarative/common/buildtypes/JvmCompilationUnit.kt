@@ -24,7 +24,8 @@ public interface JvmEcosystem : BuildModel {
 
 public sealed interface JvmCompilationType : Named
 
-public interface KotlinJvmCompilationType : JvmCompilationType {
+@Suppress("UnstableApiUsage")
+public interface KotlinJvmCompilationType : JvmCompilationType, BuildModel {
     override fun getName(): String = "kotlin"
 
     public val kotlinCompilerClasspath: FileCollection
