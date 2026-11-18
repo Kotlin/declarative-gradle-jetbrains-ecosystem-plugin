@@ -1,5 +1,6 @@
 pluginManagement {
     includeBuild("gradle/build-logic")
+    includeBuild("project-types/ios-application/xcode-project-parsing")
     repositories {
         mavenCentral()
         gradlePluginPortal()
@@ -16,6 +17,7 @@ rootProject.name = "declarative-gradle-jetbrains-ecosystem-plugin"
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
+        mavenLocal()
         mavenCentral()
         google {
             mavenContent {
@@ -28,10 +30,13 @@ dependencyResolutionManagement {
 
 include(
     ":ecosystem-plugin",
+    ":compiler-plugin",
+    ":compiler-plugin:annotations",
     ":common",
     ":project-types:jvm-application",
     ":project-types:web-application",
     ":project-types:library",
+    ":project-types:ios-application",
     ":spring",
     ":resource-packaging",
 )

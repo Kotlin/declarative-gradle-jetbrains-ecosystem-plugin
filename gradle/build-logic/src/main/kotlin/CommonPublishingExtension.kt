@@ -5,13 +5,11 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import javax.inject.Inject
 
-abstract class CommonPublishingExtension @Inject constructor(
-    private val project: Project
-) {
+abstract class CommonPublishingExtension @Inject constructor(private val project: Project) {
     val publishedRepo = project.rootDir.resolve("build").resolve("repo")
 
     fun configureDefaultJvmPublication() {
-        project.extensions.configure<PublishingExtension>() {
+        project.extensions.configure<PublishingExtension> {
             publications {
                 register("maven", MavenPublication::class.java) {
                     from(project.components["java"])

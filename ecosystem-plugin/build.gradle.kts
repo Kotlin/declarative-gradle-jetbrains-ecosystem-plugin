@@ -12,9 +12,12 @@ kotlin {
 }
 
 dependencies {
+    api(project(":compiler-plugin"))
+    api(project(":compiler-plugin:annotations"))
     api(project(":project-types:jvm-application"))
     api(project(":project-types:web-application"))
     api(project(":project-types:library"))
+    api(project(":project-types:ios-application"))
     api(project(":spring"))
     api(project(":resource-packaging"))
 
@@ -90,9 +93,12 @@ testing {
                     testTask.configure {
                         dependsOn("publishJetbrains-ecosystem-pluginPluginMarkerMavenPublicationToRepoLocalRepository")
                         dependsOn("publishPluginMavenPublicationToRepoLocalRepository")
+                        dependsOn(":compiler-plugin:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":compiler-plugin:annotations:publishAllPublicationsToRepoLocalRepository")
                         dependsOn(":project-types:jvm-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:web-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":project-types:library:publishMavenPublicationToRepoLocalRepository")
+                        dependsOn(":project-types:ios-application:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":common:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":spring:publishMavenPublicationToRepoLocalRepository")
                         dependsOn(":resource-packaging:publishMavenPublicationToRepoLocalRepository")

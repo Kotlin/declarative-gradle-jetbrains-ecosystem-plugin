@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.gradle.declarative.softwarefeature.resource.Resource
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.MavenPublishSoftwareFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.iosframework.IosFrameworkPublishingProjectFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.softwarefeatures.spring.SpringSoftwareFeaturePlugin
+import kotlin.jvm.java
 
 @Suppress("UnstableApiUsage")
 @RegistersProjectFeatures(
@@ -31,5 +32,10 @@ public class JetbrainsEcosystemPlugin : Plugin<Settings> {
 
     override fun apply(target: Settings) {
         logger.info("JetbrainsEcosystemPlugin applied to settings")
+
+        // Apply the declarative annotations compiler plugin to all projects
+        target.gradle.allprojects { project ->
+            project.pluginManager.apply(JetBrainsDeclarativeGradleCompilerSupportPlugin::class.java)
+        }
     }
 }

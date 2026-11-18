@@ -140,9 +140,9 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
         ): List<S> where S : Subplatform, S : Enum<S> = when {
             platform in enabledPlatforms.get() ->
                 definition.subplatforms
-                    .getOrElse(allSubplatforms.toList())
+                    .getOrElse(allSubplatforms)
                     // ListProperty default value is empty list
-                    .ifEmpty { allSubplatforms.toList() }
+                    .ifEmpty { allSubplatforms }
             else -> emptyList()
         }
 

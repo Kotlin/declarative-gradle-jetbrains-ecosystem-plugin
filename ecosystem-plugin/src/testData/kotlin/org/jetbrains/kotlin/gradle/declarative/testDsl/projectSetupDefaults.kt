@@ -42,6 +42,7 @@ internal fun getKotlinRepositoryBlock(
     """
     |
     |    repositories {
+    |        maven { url = uri("${System.getProperty("maven.repo.url")}") }
     |        mavenCentral()
     |        google()
     |        
