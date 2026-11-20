@@ -12,19 +12,20 @@ iosApplication {
     }
      
     xcodeProject {
-        path = ... // default: <project-dir>/xcodeProject
-        generatedFormat = auto | pbxproj | xcproj
-        generatedEntryPoint = auto | reference("...")
+        // @IosApplicationEntryPoint
+        entryPoint = auto | reference("...")
     }
+    // signing & publishing
+    
+    // src/iosMain/kotlin/org/example/MainView.kt ->> UIViewController
     
     dependencies {
         api("...")
-        implementation("...")
-        exportApi("...")
+        // implementation("...")
+        exportApi("...") // api + export to shared framework
+        // spm dependencies only to kotlin code
     }
     
-    packaging {
-        resource { }
-    }
+    // other apps use swift export
 }
 ```

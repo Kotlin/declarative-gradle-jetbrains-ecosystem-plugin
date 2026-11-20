@@ -1,0 +1,342 @@
+Subject: [PATCH] swift-java
+---
+Index: Sources/Library/CollectionUtils.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Sources/Library/CollectionUtils.swift b/Sources/Library/CollectionUtils.swift
+new file mode 100644
+--- /dev/null	(date 1795187118578)
++++ b/Sources/Library/CollectionUtils.swift	(date 1795187118578)
+@@ -0,0 +1,209 @@
++import Foundation
++
++// Sets
++
++// Required by XCSchema.Project
++public func emptyCapabilitySet() -> Set<XCSchema.Capability> {
++    []
++}
++
++public func insertIntoCapabilitySet(set: Set<XCSchema.Capability>, element: XCSchema.Capability) -> Set<XCSchema.Capability> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromCapabilitySet(set: Set<XCSchema.Capability>, element: XCSchema.Capability) -> Set<XCSchema.Capability> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Required by XCSchema.ProjectLocalizationInfo
++public func emptyLanguageSet() -> Set<XCSchema.Language> {
++    []
++}
++
++public func insertIntoLanguageSet(set: Set<XCSchema.Language>, element: XCSchema.Language) -> Set<XCSchema.Language> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromLanguageSet(set: Set<XCSchema.Language>, element: XCSchema.Language) -> Set<XCSchema.Language> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Required by XCSchema.TargetDependency, XCSchema.BuildFileProperties, XCSchema.CommonExceptionSetProperties
++public func emptyPlatformFilterSet() -> Set<XCSchema.PlatformFilter> {
++    []
++}
++
++public func insertIntoPlatformFilterSet(set: Set<XCSchema.PlatformFilter>, element: XCSchema.PlatformFilter) -> Set<XCSchema.PlatformFilter> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromPlatformFilterSet(set: Set<XCSchema.PlatformFilter>, element: XCSchema.PlatformFilter) -> Set<XCSchema.PlatformFilter> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Required by XCSchema.Folder, XCSchema.TargetExceptionSet, XCSchema.CommonExceptionSetProperties
++public func emptyFolderMemberIDSet() -> Set<XCSchema.FolderMemberID> {
++    []
++}
++
++public func insertIntoFolderMemberIDSet(set: Set<XCSchema.FolderMemberID>, element: XCSchema.FolderMemberID) -> Set<XCSchema.FolderMemberID> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromFolderMemberIDSet(set: Set<XCSchema.FolderMemberID>, element: XCSchema.FolderMemberID) -> Set<XCSchema.FolderMemberID> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Required by XCSchema.BuildFileProperties, XCSchema.CommonExceptionSetProperties
++public func emptyAssetTagSet() -> Set<XCSchema.AssetTag> {
++    []
++}
++
++public func insertIntoAssetTagSet(set: Set<XCSchema.AssetTag>, element: XCSchema.AssetTag) -> Set<XCSchema.AssetTag> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromAssetTagSet(set: Set<XCSchema.AssetTag>, element: XCSchema.AssetTag) -> Set<XCSchema.AssetTag> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Required by XCSchema.Folder
++public func emptyLocalTargetReferenceSet() -> Set<XCSchema.LocalTargetReference> {
++    []
++}
++
++public func insertIntoLocalTargetReferenceSet(set: Set<XCSchema.LocalTargetReference>, element: XCSchema.LocalTargetReference) -> Set<XCSchema.LocalTargetReference> {
++    var copy = set
++    copy.insert(element)
++    return copy
++}
++
++public func removeFromLocalTargetReferenceSet(set: Set<XCSchema.LocalTargetReference>, element: XCSchema.LocalTargetReference) -> Set<XCSchema.LocalTargetReference> {
++    var copy = set
++    copy.remove(element)
++    return copy
++}
++
++// Dictionaries
++
++// Required by XCSchema.Project, XCSchema.CommonTargetProperties
++public func emptyStringToBuildSettingDictionary() -> [String : XCSchema.BuildSetting] {
++    [:]
++}
++
++public func putIntoStringToBuildSettingDictionary(dictionary: [String : XCSchema.BuildSetting], key: String, value: XCSchema.BuildSetting) -> [String : XCSchema.BuildSetting] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromStringToBuildSettingDictionary(dictionary: [String : XCSchema.BuildSetting], key: String) -> [String : XCSchema.BuildSetting] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
++
++// Required by XCSchema.TargetExceptionSet
++public func emptyFolderMemberIDToStringDictionary() -> [XCSchema.FolderMemberID : String] {
++    [:]
++}
++
++public func putIntoFolderMemberIDToStringDictionary(dictionary: [XCSchema.FolderMemberID : String], key: XCSchema.FolderMemberID, value: String) -> [XCSchema.FolderMemberID : String] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromFolderMemberIDToStringDictionary(dictionary: [XCSchema.FolderMemberID : String], key: XCSchema.FolderMemberID) -> [XCSchema.FolderMemberID : String] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
++
++// Required by XCSchema.CommonExceptionSetProperties
++public func emptyFolderMemberIDToPlatformFiltersDictionary() -> [XCSchema.FolderMemberID : Set<XCSchema.PlatformFilter>] {
++    [:]
++}
++
++public func putIntoFolderMemberIDToPlatformFiltersDictionary(dictionary: [XCSchema.FolderMemberID : Set<XCSchema.PlatformFilter>], key: XCSchema.FolderMemberID, value: Set<XCSchema.PlatformFilter>) -> [XCSchema.FolderMemberID : Set<XCSchema.PlatformFilter>] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromFolderMemberIDToPlatformFiltersDictionary(dictionary: [XCSchema.FolderMemberID : Set<XCSchema.PlatformFilter>], key: XCSchema.FolderMemberID) -> [XCSchema.FolderMemberID : Set<XCSchema.PlatformFilter>] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
++
++// Required by XCSchema.CommonExceptionSetProperties
++public func emptyFolderMemberIDToBuildFileAttributesDictionary() -> [XCSchema.FolderMemberID : XCSchema.BuildFileAttributes] {
++    [:]
++}
++
++public func putIntoFolderMemberIDToBuildFileAttributesDictionary(dictionary: [XCSchema.FolderMemberID : XCSchema.BuildFileAttributes], key: XCSchema.FolderMemberID, value: XCSchema.BuildFileAttributes) -> [XCSchema.FolderMemberID : XCSchema.BuildFileAttributes] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromFolderMemberIDToBuildFileAttributesDictionary(dictionary: [XCSchema.FolderMemberID : XCSchema.BuildFileAttributes], key: XCSchema.FolderMemberID) -> [XCSchema.FolderMemberID : XCSchema.BuildFileAttributes] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
++
++// Required by XCSchema.CommonExceptionSetProperties
++public func emptyFolderMemberIDToAssetTagsDictionary() -> [XCSchema.FolderMemberID : Set<XCSchema.AssetTag>] {
++    [:]
++}
++
++public func putIntoFolderMemberIDToAssetTagsDictionary(dictionary: [XCSchema.FolderMemberID : Set<XCSchema.AssetTag>], key: XCSchema.FolderMemberID, value: Set<XCSchema.AssetTag>) -> [XCSchema.FolderMemberID : Set<XCSchema.AssetTag>] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromFolderMemberIDToAssetTagsDictionary(dictionary: [XCSchema.FolderMemberID : Set<XCSchema.AssetTag>], key: XCSchema.FolderMemberID) -> [XCSchema.FolderMemberID : Set<XCSchema.AssetTag>] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
++
++// Required by XCSchema.Folder
++public func emptyFolderMemberIDToFileTypeIDDictionary() -> [XCSchema.FolderMemberID : XCSchema.FileTypeID] {
++    [:]
++}
++
++public func putIntoFolderMemberIDToFileTypeIDDictionary(dictionary: [XCSchema.FolderMemberID : XCSchema.FileTypeID], key: XCSchema.FolderMemberID, value: XCSchema.FileTypeID) -> [XCSchema.FolderMemberID : XCSchema.FileTypeID] {
++    var copy = dictionary
++    copy[key] = value
++    return copy
++}
++
++public func removeKeyFromFolderMemberIDToFileTypeIDDictionary(dictionary: [XCSchema.FolderMemberID : XCSchema.FileTypeID], key: XCSchema.FolderMemberID) -> [XCSchema.FolderMemberID : XCSchema.FileTypeID] {
++    var copy = dictionary
++    copy[key] = nil
++    return copy
++}
+Index: Sources/Library/swift-java.config
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Sources/Library/swift-java.config b/Sources/Library/swift-java.config
+new file mode 100644
+--- /dev/null	(date 1795190596603)
++++ b/Sources/Library/swift-java.config	(date 1795190596603)
+@@ -0,0 +1,12 @@
++{
++    "javaPackage": "com.apple.xcode.project.format",
++    "mode": "jni",
++    "memoryManagementMode": "allowGlobalAutomatic",
++    "swiftFilterInclude": ["Schema/**", "CollectionUtils.swift"],
++    "swiftFilterExclude": ["Comparable"],
++    "overrideStaticBlockLibraryLoading": [
++        "SwiftLibraries.loadLibraryWithFallbacks(SwiftLibraries.LIB_NAME_SWIFT_JAVA);",
++        "SwiftLibraries.loadLibraryWithFallbacks(\"SwiftRuntimeFunctions\");",
++        "SwiftLibraries.loadLibraryWithFallbacks(LIB_NAME);",
++    ]
++}
+Index: Package.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Package.swift b/Package.swift
+--- a/Package.swift	(revision 0a7242a207038472e4a36b29bffb135b94792410)
++++ b/Package.swift	(date 1795171454732)
+@@ -16,6 +16,7 @@
+     products: [
+         .library(
+             name: "XcodeProjectFormat",
++            type: .dynamic,
+             targets: ["XcodeProjectFormat"]
+         ),
+         .executable(
+@@ -23,7 +24,9 @@
+             targets: ["XcodeProjectTool"]
+         ),
+     ],
+-    dependencies: [],
++    dependencies: [
++        .package(url: "https://github.com/swiftlang/swift-java", from: "0.7.0"),
++    ],
+     targets: [
+         .executableTarget(
+             name: "XcodeProjectTool",
+@@ -32,8 +35,20 @@
+         ),
+         .target(
+             name: "XcodeProjectFormat",
+-            dependencies: [],
++            dependencies: [
++                .product(name: "SwiftJava", package: "swift-java"),
++                .product(name: "SwiftRuntimeFunctions", package: "swift-java"),
++            ],
+             path: "Sources/Library",
++            exclude: [
++                "swift-java.config",
++            ],
++            swiftSettings: [
++                .swiftLanguageMode(.v5)
++            ],
++            plugins: [
++                .plugin(name: "JExtractSwiftPlugin", package: "swift-java")
++            ]
+         ),
+         .testTarget(
+             name: "XcodeProjectFormatTests",
+Index: Sources/Library/Schema/Target/Dependencies/SwiftPackageProductReference.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Sources/Library/Schema/Target/Dependencies/SwiftPackageProductReference.swift b/Sources/Library/Schema/Target/Dependencies/SwiftPackageProductReference.swift
+--- a/Sources/Library/Schema/Target/Dependencies/SwiftPackageProductReference.swift	(revision 0a7242a207038472e4a36b29bffb135b94792410)
++++ b/Sources/Library/Schema/Target/Dependencies/SwiftPackageProductReference.swift	(date 1795166959920)
+@@ -12,20 +12,20 @@
+     /// Usually used to form an explicit target dependency, or to make the product of a package an input to a link or copy build phase.
+     public struct SwiftPackageProductReference: Hashable, Sendable {
+         public var objectID: ObjectID?
+-        public var package: SwiftPackageName?
++        public var packageName: SwiftPackageName?
+         public var productName: String
+         public var productType: XCSchema.SwiftPackageProductType
+ 
+-        public init(objectID: ObjectID?, package: SwiftPackageName?, productName: String, productType: XCSchema.SwiftPackageProductType) {
++        public init(objectID: ObjectID?, packageName: SwiftPackageName?, productName: String, productType: XCSchema.SwiftPackageProductType) {
+             self.objectID = objectID
+-            self.package = package
++            self.packageName = packageName
+             self.productName = productName
+             self.productType = productType
+         }
+ 
+         var encodingOrder: some Comparable {
+             return LexicographicalOrder(
+-                package?.packageName ?? "",
++                packageName?.packageName ?? "",
+                 productName,
+                 productType.encodableStringRepresentation,
+             )
+@@ -35,14 +35,14 @@
+ 
+ extension XCSchema.SwiftPackageProductReference: XCJSON.InlineKeyedCodable {
+     package func encode(with container: XCJSON.Encoder.KeyedContainer) throws {
+-        try container.encode(package, for: "package", defaultValue: nil)
++        try container.encode(packageName, for: "package", defaultValue: nil)
+         try container.encode(objectID, for: "id", defaultValue: nil)
+         try container.encode(productName, for: "product-name", unconditionally: .affirmative)
+         try container.encode(productType, for: "product-type", defaultValue: .other)
+     }
+ 
+     package init(with container: XCJSON.Decoder.KeyedContainer) throws {
+-        self.package = try container.decode("package", defaultValue: nil)
++        self.packageName = try container.decode("package", defaultValue: nil)
+         self.objectID = try container.decode("id", defaultValue: nil)
+         self.productName = try container.decode("product-name")
+         self.productType = try container.decode("product-type", defaultValue: .other)

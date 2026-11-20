@@ -52,12 +52,15 @@ public class JetBrainsIosApplicationPlugin : Plugin<Project>, ProjectTypeBinding
             definition.applyKotlinMultiplatformPlugin(buildModel)
             definition.wireKotlinCompilerOptions(buildModel)
             definition.dependencies.wireDependencies(buildModel)
-            definition.xcodeProject.registerXcodeProjectGenerationTasks()
+            context(buildModel) {
+                definition.xcodeProject.registerXcodeProjectGenerationTasks()
+            }
         }
 
         private fun IosApplicationProjectType.applyKotlinMultiplatformPlugin(buildModel: IosApplicationBuildModel) {
             pluginManager.apply("org.jetbrains.kotlin.multiplatform")
             withKmpPlugin {
+                applyDefaultHierarchyTemplate()
                 val enablesSubplatforms = subplatforms.getOrElse(IosSubplatform.entries).ifEmpty { IosSubplatform.entries }
                 buildModel.enabledSubplatforms.value(enablesSubplatforms)
                 enablesSubplatforms.forEach {

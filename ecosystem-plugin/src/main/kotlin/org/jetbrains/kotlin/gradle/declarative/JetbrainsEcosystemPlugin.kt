@@ -20,6 +20,7 @@ import kotlin.jvm.java
     JetBrainsJvmApplicationPlugin::class,
     WebApplicationPlugin::class,
     JetBrainsLibraryPlugin::class,
+    JetBrainsIosApplicationPlugin::class,
     DistributionSoftwareFeaturePlugin::class,
     KotlinSerializationSoftwareFeaturePlugin::class,
     SpringSoftwareFeaturePlugin::class,

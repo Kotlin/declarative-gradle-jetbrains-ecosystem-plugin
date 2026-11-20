@@ -1,28 +1,20 @@
 package org.jetbrains.kotlin.gradle.declarative
 
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface XcodeProjectGenerationExtension : Definition<BuildModel.None>, GeneratedXcodeEntryPointModifiers {
+public interface XcodeProjectGenerationExtension : Definition<BuildModel.None>, IosApplicationEntryPointModifiers {
 
-    public val path: DirectoryProperty
-
-    public val generatedFormat: GeneratedXcodeProjectFormat
-
-    public val generatedEntryPoint: GeneratedXcodeEntryPoint
+    public val entryPoint: Property<IosApplicationEntryPoint>
 }
 
-public enum class GeneratedXcodeProjectFormat {
-    auto, pbxproj, xcproj
-}
+public sealed interface IosApplicationEntryPoint {
 
-public sealed interface GeneratedXcodeEntryPoint {
+    public sealed interface Auto : IosApplicationEntryPoint
 
-    public sealed interface Auto : GeneratedXcodeEntryPoint
-
-    public sealed interface Reference : GeneratedXcodeEntryPoint {
+    public sealed interface Reference : IosApplicationEntryPoint {
         public val qualifiedReference: String
     }
 }

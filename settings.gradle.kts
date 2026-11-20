@@ -1,6 +1,5 @@
 pluginManagement {
     includeBuild("gradle/build-logic")
-    includeBuild("project-types/ios-application/xcode-project-parsing")
     repositories {
         mavenCentral()
         gradlePluginPortal()

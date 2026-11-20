@@ -6,4 +6,4 @@ import javax.inject.Inject
 internal abstract class DefaultXcodeProjectGenerationExtension
 @Inject constructor(objectFactory: ObjectFactory) :
     XcodeProjectGenerationExtension,
-    GeneratedXcodeEntryPointModifiers by objectFactory.newGeneratedXcodeEntryPointModifiers()
+    IosApplicationEntryPointModifiers by objectFactory.newIosApplicationEntryPointModifiers()
