@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, kmp-ios-application ]
   pull_request:
 
 jobs:
