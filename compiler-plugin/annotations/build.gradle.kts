@@ -6,6 +6,7 @@ plugins {
 kotlin {
     jvm()
     iosArm64()
+    iosX64()
 
     applyDefaultHierarchyTemplate()
 

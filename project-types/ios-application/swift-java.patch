@@ -226,15 +226,15 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/Sources/Library/swift-java.config b/Sources/Library/swift-java.config
 new file mode 100644
---- /dev/null	(date 1795190596603)
-+++ b/Sources/Library/swift-java.config	(date 1795190596603)
+--- /dev/null	(date 1795516539853)
++++ b/Sources/Library/swift-java.config	(date 1795516539853)
 @@ -0,0 +1,12 @@
 +{
 +    "javaPackage": "com.apple.xcode.project.format",
 +    "mode": "jni",
 +    "memoryManagementMode": "allowGlobalAutomatic",
 +    "swiftFilterInclude": ["Schema/**", "CollectionUtils.swift"],
-+    "swiftFilterExclude": ["Comparable"],
++    "swiftFilterExclude": ["Comparable", "Schema/Values/String.Encoding+JSONCodable.swift"],
 +    "overrideStaticBlockLibraryLoading": [
 +        "SwiftLibraries.loadLibraryWithFallbacks(SwiftLibraries.LIB_NAME_SWIFT_JAVA);",
 +        "SwiftLibraries.loadLibraryWithFallbacks(\"SwiftRuntimeFunctions\");",
@@ -340,3 +340,84 @@ diff --git a/Sources/Library/Schema/Target/Dependencies/SwiftPackageProductRefer
          self.objectID = try container.decode("id", defaultValue: nil)
          self.productName = try container.decode("product-name")
          self.productType = try container.decode("product-type", defaultValue: .other)
+Index: Sources/Library/Serialization/Conformances.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Sources/Library/Serialization/Conformances.swift b/Sources/Library/Serialization/Conformances.swift
+--- a/Sources/Library/Serialization/Conformances.swift	(revision 0a7242a207038472e4a36b29bffb135b94792410)
++++ b/Sources/Library/Serialization/Conformances.swift	(date 1795516323755)
+@@ -28,6 +28,16 @@
+     }
+ }
+ 
++extension UInt: XCJSON.Codable {
++    package func encode(with coder: XCJSON.Encoder) throws {
++        coder.openPrimitiveContainer().encode(Int(self))
++    }
++
++    package init(with coder: XCJSON.Decoder) throws {
++        self = try UInt(coder.openPrimitiveContainer().decode())
++    }
++}
++
+ extension Double: XCJSON.Codable {
+     package func encode(with coder: XCJSON.Encoder) throws {
+         coder.openPrimitiveContainer().encode(self)
+Index: Sources/Library/Schema/Values/TextEncoding.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Sources/Library/Schema/Values/TextEncoding.swift b/Sources/Library/Schema/Values/TextEncoding.swift
+--- a/Sources/Library/Schema/Values/TextEncoding.swift	(revision 0a7242a207038472e4a36b29bffb135b94792410)
++++ b/Sources/Library/Schema/Values/TextEncoding.swift	(date 1795516467208)
+@@ -13,12 +13,33 @@
+     /// A subset of the text encodings usable as the explicit encoding of a file reference.
+     ///
+     /// Specifically, a subset of `String.Encoding` values usable with a `project.xcproj` file as the explicit text encoding of ``FileReference`` objects.
+-    public struct TextEncoding: Hashable, Sendable {
+-        public var rawValue: String.Encoding
++    public struct TextEncoding: RawRepresentable, Sendable, Equatable {
++        public var rawValue: UInt
++        public init(rawValue: UInt) { self.rawValue = rawValue }
+ 
+-        public init(rawValue: String.Encoding) {
+-            self.rawValue = rawValue
+-        }
++        public static let ascii: TextEncoding = TextEncoding(rawValue: 1)
++        public static let nextstep: TextEncoding = TextEncoding(rawValue: 2)
++        public static let japaneseEUC: TextEncoding = TextEncoding(rawValue: 3)
++        public static let utf8: TextEncoding = TextEncoding(rawValue: 4)
++        public static let isoLatin1: TextEncoding = TextEncoding(rawValue: 5)
++        public static let symbol: TextEncoding = TextEncoding(rawValue: 6)
++        public static let nonLossyASCII: TextEncoding = TextEncoding(rawValue: 7)
++        public static let shiftJIS: TextEncoding = TextEncoding(rawValue: 8)
++        public static let isoLatin2: TextEncoding = TextEncoding(rawValue: 9)
++        public static let unicode: TextEncoding = TextEncoding(rawValue: 10)
++        public static let windowsCP1251: TextEncoding = TextEncoding(rawValue: 11)
++        public static let windowsCP1252: TextEncoding = TextEncoding(rawValue: 12)
++        public static let windowsCP1253: TextEncoding = TextEncoding(rawValue: 13)
++        public static let windowsCP1254: TextEncoding = TextEncoding(rawValue: 14)
++        public static let windowsCP1250: TextEncoding = TextEncoding(rawValue: 15)
++        public static let iso2022JP: TextEncoding = TextEncoding(rawValue: 21)
++        public static let macOSRoman: TextEncoding = TextEncoding(rawValue: 30)
++        public static let utf16: TextEncoding = TextEncoding.unicode
++        public static let utf16BigEndian: TextEncoding = TextEncoding(rawValue: 0x90000100)
++        public static let utf16LittleEndian: TextEncoding = TextEncoding(rawValue: 0x94000100)
++        public static let utf32: TextEncoding = TextEncoding(rawValue: 0x8c000100)
++        public static let utf32BigEndian: TextEncoding = TextEncoding(rawValue: 0x98000100)
++        public static let utf32LittleEndian: TextEncoding = TextEncoding(rawValue: 0x9c000100)
+     }
+ }
+ 
+@@ -28,7 +49,7 @@
+     }
+ 
+     package init(with coder: XCJSON.Decoder) throws {
+-        rawValue = try String.Encoding(with: coder)
++        rawValue = try UInt(with: coder)
+     }
+ }
+ 

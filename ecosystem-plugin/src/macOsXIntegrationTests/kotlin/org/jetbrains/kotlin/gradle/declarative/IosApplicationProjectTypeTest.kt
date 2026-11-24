@@ -3,7 +3,7 @@ package org.jetbrains.kotlin.gradle.declarative
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.declarative.testDsl.BaseTest
 import org.jetbrains.kotlin.gradle.declarative.testDsl.GradleTest
-import org.jetbrains.kotlin.gradle.declarative.testDsl.assertOutputContains
+import org.jetbrains.kotlin.gradle.declarative.testDsl.assertTasksExecuted
 import org.jetbrains.kotlin.gradle.declarative.testDsl.build
 import org.jetbrains.kotlin.gradle.declarative.testDsl.project
 import org.junit.jupiter.api.DisplayName
@@ -29,9 +29,11 @@ class IosApplicationProjectTypeTest : BaseTest() {
                 """.trimMargin()
             )
 
-            build("help") {
-                assertOutputContains("JetbrainsEcosystemPlugin applied to settings")
-                println(output)
+            println(gradleRunner.arguments)
+
+            build("build") {
+                assertTasksExecuted("generateEmptyXcodeProject")
+                assertTasksExecuted("buildIosApp")
             }
         }
     }

@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.gradle.declarative.xcode.registerXcodeProjectGenerat
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import java.io.File
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
@@ -49,11 +48,13 @@ public class JetBrainsIosApplicationPlugin : Plugin<Project>, ProjectTypeBinding
             definition: IosApplicationProjectType,
             buildModel: IosApplicationBuildModel
         ) {
+            buildModel.productName.value(project.name)
+            buildModel.productBundleIdentifier.value(project.group.toString().ifEmpty { "com.example" })
             definition.applyKotlinMultiplatformPlugin(buildModel)
             definition.wireKotlinCompilerOptions(buildModel)
             definition.dependencies.wireDependencies(buildModel)
             context(buildModel) {
-                definition.xcodeProject.registerXcodeProjectGenerationTasks()
+                definition.xcodeProject.registerXcodeProjectGenerationTasks(project)
             }
         }
 
