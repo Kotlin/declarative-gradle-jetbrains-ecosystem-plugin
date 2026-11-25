@@ -2,12 +2,10 @@ package org.jetbrains.kotlin.gradle.declarative.projecttype
 
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
-import org.gradle.features.binding.Definition
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.JavaJvmCompilationExtension
-import org.jetbrains.kotlin.gradle.declarative.common.definitions.KotlinCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.JavaJvmCompilationExtension
+import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinCompilationExtension
 
-@Suppress("UnstableApiUsage")
-public interface LibraryProjectType : Definition<LibraryBuildModel> {
+public interface LibraryProjectType : LibraryDefinition {
     /**
      * See available platforms at [LibraryPlatform].
      */
@@ -21,9 +19,6 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 
     @get:Nested
     public val iosPlatform: LibraryIosEcosystemDefinition
-
-    @get:Nested
-    public val androidPlatform: LibraryAndroidEcosystemDefinition
 
     @get:Nested
     public val java: JavaJvmCompilationExtension

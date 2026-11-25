@@ -1,4 +1,4 @@
-package org.jetbrains.kotlin.gradle.declarative.common.definitions
+package org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation
 
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested

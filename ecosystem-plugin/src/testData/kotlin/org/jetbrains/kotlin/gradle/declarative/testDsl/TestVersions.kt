@@ -18,7 +18,7 @@ interface TestVersions {
     }
 
     object Android {
-        const val NIGHTLY_BUILD = "16651964"
+        const val NIGHTLY_BUILD = "16752335"
         const val ECOSYSTEM_PLUGIN = "9.6.0-dev"
     }
 }

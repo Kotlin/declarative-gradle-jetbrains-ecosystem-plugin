@@ -9,7 +9,7 @@ import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface LibraryDependenciesExtension : Definition<BuildModel.None>,
+public interface LibraryDependenciesExtension : LibraryDefinition,
     Dependencies,
     PlatformDependencyModifiers {
     public val api: DependencyCollector
@@ -52,7 +52,7 @@ public interface LibraryIosPlatformDependencies : Definition<BuildModel.None>,
 }
 
 @Suppress("UnstableApiUsage")
-public interface LibraryTestingDependenciesExtension : Definition<BuildModel.None>,
+public interface LibraryTestingDependenciesExtension : LibraryDefinition,
     Dependencies,
     PlatformDependencyModifiers {
     public val implementation: DependencyCollector
@@ -64,7 +64,7 @@ public interface LibraryTestingDependenciesExtension : Definition<BuildModel.Non
     public val webPlatform: LibraryTestingWebPlatformDependencies
 
     @get:Nested
-    public val iosPlatformDependencies: LibraryTestingIosPlatformDependencies
+    public val iosPlatform: LibraryTestingIosPlatformDependencies
 }
 
 @Suppress("UnstableApiUsage")
