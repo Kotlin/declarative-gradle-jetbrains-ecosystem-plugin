@@ -13,8 +13,5 @@ public interface AndroidEcosystemDefinition : AndroidSdkVersionModifiers, Androi
     public val namespace: Property<String>
 
     @get:Nested
-    public val androidResources: AndroidResources
-
-    @get:Nested
     public val kotlin: KotlinJvmCompilationExtension
 }

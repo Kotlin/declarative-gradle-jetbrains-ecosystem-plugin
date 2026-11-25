@@ -785,11 +785,6 @@ class LibraryProjectTypeTest : BaseTest() {
                 """
                 |library {
                 |    platforms = listOf(android)
-                |    
-                |    androidPlatform {
-                |        compileSdk = release(36)
-                |        namespace = "base-ecosystem-project"
-                |    }
                 |}    
                 """.trimMargin()
             )

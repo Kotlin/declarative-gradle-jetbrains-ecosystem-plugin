@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import org.gradle.api.logging.Logging
 import org.gradle.features.annotations.RegistersProjectFeatures
+import org.jetbrains.kotlin.gradle.declarative.projectfeature.androidecosystem.AndroidEcosystemProjectFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.projecttype.JetBrainsJvmApplicationPlugin
 import org.jetbrains.kotlin.gradle.declarative.projectfeature.distribution.DistributionProjectFeaturePlugin
 import org.jetbrains.kotlin.gradle.declarative.projectfeature.kotlinserialization.KotlinSerializationProjectFeaturePlugin
@@ -25,6 +26,7 @@ import org.jetbrains.kotlin.gradle.declarative.projectfeature.spring.SpringProje
     ResourceProjectFeaturePlugin::class,
     MavenPublishProjectFeaturePlugin::class,
     IosFrameworkPublishingProjectFeaturePlugin::class,
+    AndroidEcosystemProjectFeaturePlugin::class,
 )
 public class JetbrainsEcosystemPlugin : Plugin<Settings> {
     private val logger = Logging.getLogger(JetbrainsEcosystemPlugin::class.java)

@@ -6,7 +6,5 @@ public interface AndroidHostTest : AndroidPlatformTest {
 
     public val returnDefaultValues: Property<Boolean>
 
-    public val includeAndroidResources: Property<Boolean>
-
     public val enableCoverage: Property<Boolean>
 }

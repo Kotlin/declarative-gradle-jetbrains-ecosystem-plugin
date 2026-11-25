@@ -1,16 +1,11 @@
 package org.jetbrains.kotlin.gradle.declarative.projecttype
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
-import org.gradle.features.binding.Definition
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.JavaJvmCompilationExtension
 import org.jetbrains.kotlin.gradle.declarative.common.definitions.compilation.KotlinCompilationExtension
-import javax.inject.Inject
-import kotlin.jvm.java
 
-@Suppress("UnstableApiUsage")
-public interface LibraryProjectType : Definition<LibraryBuildModel> {
+public interface LibraryProjectType : LibraryDefinition {
     /**
      * See available platforms at [LibraryPlatform].
      */
@@ -24,9 +19,6 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 
     @get:Nested
     public val iosPlatform: LibraryIosEcosystemDefinition
-
-    @get:Nested
-    public val androidPlatform: LibraryAndroidEcosystemDefinition
 
     @get:Nested
     public val java: JavaJvmCompilationExtension
@@ -46,11 +38,4 @@ public interface LibraryProjectType : Definition<LibraryBuildModel> {
 
 public enum class LibraryPlatform {
     jvm, common, web, ios, android
-}
-
-internal abstract class DefaultLibraryProjectType @Inject constructor(objectFactory: ObjectFactory) : LibraryProjectType {
-
-    override val androidPlatform: LibraryAndroidEcosystemDefinition = objectFactory.newInstance(DefaultLibraryAndroidEcosystemDefinition::class.java)
-
-    override val testing: LibraryTestingExtension = objectFactory.newInstance(DefaultLibraryTestingExtension::class.java)
 }

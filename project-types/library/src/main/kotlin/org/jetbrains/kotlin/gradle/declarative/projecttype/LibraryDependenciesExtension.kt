@@ -9,7 +9,7 @@ import org.gradle.features.binding.BuildModel
 import org.gradle.features.binding.Definition
 
 @Suppress("UnstableApiUsage")
-public interface LibraryDependenciesExtension : Definition<BuildModel.None>,
+public interface LibraryDependenciesExtension : LibraryDefinition,
     Dependencies,
     PlatformDependencyModifiers {
     public val api: DependencyCollector
@@ -23,9 +23,6 @@ public interface LibraryDependenciesExtension : Definition<BuildModel.None>,
 
     @get:Nested
     public val iosPlatform: LibraryIosPlatformDependencies
-
-    @get:Nested
-    public val androidPlatform: LibraryAndroidPlatformDependencies
 }
 
 @Suppress("UnstableApiUsage")
@@ -55,18 +52,7 @@ public interface LibraryIosPlatformDependencies : Definition<BuildModel.None>,
 }
 
 @Suppress("UnstableApiUsage")
-public interface LibraryAndroidPlatformDependencies : Definition<BuildModel.None>,
-    Dependencies,
-    PlatformDependencyModifiers {
-    public val api: DependencyCollector
-    public val implementation: DependencyCollector
-    public val compileOnly: DependencyCollector
-    public val runtimeOnly: DependencyCollector
-    public val runtimeClasspath: DependencyCollector
-}
-
-@Suppress("UnstableApiUsage")
-public interface LibraryTestingDependenciesExtension : Definition<BuildModel.None>,
+public interface LibraryTestingDependenciesExtension : LibraryDefinition,
     Dependencies,
     PlatformDependencyModifiers {
     public val implementation: DependencyCollector
@@ -79,9 +65,6 @@ public interface LibraryTestingDependenciesExtension : Definition<BuildModel.Non
 
     @get:Nested
     public val iosPlatform: LibraryTestingIosPlatformDependencies
-
-    @get:Nested
-    public val androidPlatform: LibraryTestingAndroidPlatformDependencies
 }
 
 @Suppress("UnstableApiUsage")
@@ -106,21 +89,4 @@ public interface LibraryTestingIosPlatformDependencies : Definition<BuildModel.N
     Dependencies,
     PlatformDependencyModifiers {
     public val implementation: DependencyCollector
-}
-
-@Suppress("UnstableApiUsage")
-public interface LibraryAndroidPlatformTestDependencies : Dependencies, PlatformDependencyModifiers {
-    public val implementation: DependencyCollector
-    public val compileOnly: DependencyCollector
-    public val runtimeOnly: DependencyCollector
-}
-
-@Suppress("UnstableApiUsage")
-public interface LibraryTestingAndroidPlatformDependencies : Definition<BuildModel.None> {
-
-    @get:Nested
-    public val hostTest: LibraryAndroidPlatformTestDependencies
-
-    @get:Nested
-    public val deviceTest: LibraryAndroidPlatformTestDependencies
 }

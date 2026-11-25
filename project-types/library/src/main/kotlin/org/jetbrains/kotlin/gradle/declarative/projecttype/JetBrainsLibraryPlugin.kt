@@ -2,7 +2,6 @@
 
 package org.jetbrains.kotlin.gradle.declarative.projecttype
 
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,8 +33,6 @@ import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinCommonCompi
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJvmCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinJsCompilerOptionsAsConvention
 import org.jetbrains.kotlin.gradle.declarative.common.sync.syncKotlinNativeCompilerOptionsAsConvention
-import org.jetbrains.kotlin.gradle.declarative.util.configureAndroidPlatform
-import org.jetbrains.kotlin.gradle.declarative.util.configureAndroidTesting
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptionsDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptionsDefault
@@ -66,7 +63,7 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     "library",
                     LibraryApplyAction::class
                 )
-                .withUnsafeDefinitionImplementationType(DefaultLibraryProjectType::class.java)
+                .withUnsafeDefinition()
                 .withUnsafeApplyAction()
         }
     }
@@ -115,27 +112,21 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             val enabledIosSubplatforms = buildModel.collectSubplatforms(LibraryPlatform.ios, IosSubplatform.entries, definition.iosPlatform)
             buildModel.enabledIosSubplatforms.value(enabledIosSubplatforms)
 
-            applyKotlinPlugin(buildModel)
+            context(context, buildModel) {
+                applyKotlinPlugin()
 
-            if (hasAndroidEcosystemPlugin && LibraryPlatform.android in buildModel.enabledPlatforms.get()) {
-                withKmpPlugin {
-                    android { definition.androidPlatform.configureAndroidPlatform() }
+                definition.dependencies.wireDependencies()
+                definition.testing.dependencies.wireTestingDependencies()
+
+                definition.wireKotlinCompilerOptions()
+
+                if (LibraryPlatform.jvm in buildModel.enabledPlatforms.get()) {
+                    definition.configureJvmPlatform()
                 }
-            }
 
-            definition.dependencies.wireDependencies(buildModel)
-            definition.testing.dependencies.wireTestingDependencies(buildModel)
+                definition.testing.configureTesting()
 
-            definition.wireKotlinCompilerOptions(buildModel)
-
-            if (LibraryPlatform.jvm in buildModel.enabledPlatforms.get()) {
-                definition.configureJvmPlatform()
-            }
-
-            definition.testing.configureTesting(buildModel)
-
-            context(context) {
-                definition.publishing.configurePublishing(buildModel)
+                definition.publishing.configurePublishing()
             }
         }
 
@@ -152,10 +143,20 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             else -> emptyList()
         }
 
-        private fun applyKotlinPlugin(buildModel: LibraryBuildModel) {
-            val enabledPlatforms = buildModel.enabledPlatforms.get()
-            val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
-            val enabledIosSubplatforms = buildModel.enabledIosSubplatforms.get()
+        context(context: ProjectFeatureApplicationContext, topLevelBuildModel: LibraryBuildModel)
+        private inline fun <D : LibraryDefinition> D.syncBuildModel(action: D.(LibraryBuildModel) -> Unit) {
+            val buildModel = context.getBuildModel(this)
+            buildModel.enabledPlatforms.value(topLevelBuildModel.enabledPlatforms)
+            buildModel.enabledIosSubplatforms.value(topLevelBuildModel.enabledIosSubplatforms)
+            buildModel.enabledWebSubplatforms.value(topLevelBuildModel.enabledWebSubplatforms)
+            action(buildModel)
+        }
+
+        context(topLevelBuildModel: LibraryBuildModel)
+        private fun applyKotlinPlugin() {
+            val enabledPlatforms = topLevelBuildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = topLevelBuildModel.enabledWebSubplatforms.get()
+            val enabledIosSubplatforms = topLevelBuildModel.enabledIosSubplatforms.get()
             when {
                 enabledPlatforms.isEmpty() -> throw GradleException(
                     "No library platform was specified. Please specify at least one of ${LibraryPlatform.entries.joinToString { it.name }}"
@@ -206,7 +207,8 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryDependenciesExtension.wireDependencies(buildModel: LibraryBuildModel) {
+        context(context: ProjectFeatureApplicationContext, topLevelBuildModel: LibraryBuildModel)
+        private fun LibraryDependenciesExtension.wireDependencies() = syncBuildModel { buildModel ->
             val enabledPlatforms = buildModel.enabledPlatforms.get()
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
@@ -255,19 +257,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     addDependencies(iosMainSourceSet.apiConfigurationName, iosPlatform.api)
                     addDependencies(iosMainSourceSet.implementationConfigurationName, iosPlatform.implementation)
                 }
-
-                if (hasAndroidEcosystemPlugin && LibraryPlatform.android in enabledPlatforms) {
-                    val androidMainSourceSet = sourceSets.getByName("androidMain")
-                    addDependencies(androidMainSourceSet.apiConfigurationName, androidPlatform.api)
-                    addDependencies(androidMainSourceSet.implementationConfigurationName, androidPlatform.implementation)
-                    addDependencies(androidMainSourceSet.compileOnlyConfigurationName, androidPlatform.compileOnly)
-                    addDependencies(androidMainSourceSet.runtimeOnlyConfigurationName, androidPlatform.runtimeOnly)
-                    addDependencies("androidRuntimeClasspath", androidPlatform.runtimeClasspath)
-                }
             }
         }
 
-        private fun LibraryTestingDependenciesExtension.wireTestingDependencies(buildModel: LibraryBuildModel) {
+        context(context: ProjectFeatureApplicationContext, topLevelBuildModel: LibraryBuildModel)
+        private fun LibraryTestingDependenciesExtension.wireTestingDependencies() = syncBuildModel { buildModel ->
             val enabledPlatforms = buildModel.enabledPlatforms.get()
             val configurations = this@LibraryApplyAction.project.configurations
             withJvmPlugin {
@@ -308,20 +302,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                     val iosTestSourceSet = sourceSets.getByName("iosTest")
 
                     addDependencies(iosTestSourceSet.implementationConfigurationName, iosPlatform.implementation)
-                }
-
-                if (hasAndroidEcosystemPlugin && LibraryPlatform.android in enabledPlatforms) {
-                    // Test source sets are configured given the `androidPlatform` containing either the `hostTest` and/or `deviceTest` extensions
-                    sourceSets.findByName("androidHostTest")?.let { sourceSet ->
-                        addDependencies(sourceSet.implementationConfigurationName, androidPlatform.hostTest.implementation)
-                        addDependencies(sourceSet.compileOnlyConfigurationName, androidPlatform.hostTest.compileOnly)
-                        addDependencies(sourceSet.runtimeOnlyConfigurationName, androidPlatform.hostTest.runtimeOnly)
-                    }
-                    sourceSets.findByName("androidDeviceTest")?.let { sourceSet ->
-                        addDependencies(sourceSet.implementationConfigurationName, androidPlatform.deviceTest.implementation)
-                        addDependencies(sourceSet.compileOnlyConfigurationName, androidPlatform.deviceTest.compileOnly)
-                        addDependencies(sourceSet.runtimeOnlyConfigurationName, androidPlatform.deviceTest.runtimeOnly)
-                    }
                 }
             }
         }
@@ -394,10 +374,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             }
         }
 
-        private fun LibraryProjectType.wireKotlinCompilerOptions(buildModel: LibraryBuildModel) {
-            val enabledPlatforms = buildModel.enabledPlatforms.get()
-            val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
-            val enabledIosSubplatforms = buildModel.enabledIosSubplatforms.get()
+        context(topLevelBuildModel: LibraryBuildModel)
+        private fun LibraryProjectType.wireKotlinCompilerOptions() {
+            val enabledPlatforms = topLevelBuildModel.enabledPlatforms.get()
+            val enabledWebSubplatforms = topLevelBuildModel.enabledWebSubplatforms.get()
+            val enabledIosSubplatforms = topLevelBuildModel.enabledIosSubplatforms.get()
             withJvmPlugin {
                 val defaultJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
                 val intermediateJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
@@ -487,27 +468,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         )
                     }
                 }
-
-                if (hasAndroidEcosystemPlugin && LibraryPlatform.android in enabledPlatforms) {
-                    android {
-                        val defaultAndroidJvmOptions = objectFactory.newInstance(KotlinJvmCompilerOptionsDefault::class.java)
-                        syncKotlinCommonCompilerOptionsAsConvention(
-                            this@withKmpPlugin.compilerOptions,
-                            defaultAndroidJvmOptions,
-                            defaultCommonOptions
-                        )
-                        syncKotlinJvmCompilerOptionsAsConvention(
-                            this@wireKotlinCompilerOptions.androidPlatform.kotlin.compilerOptions,
-                            compilerOptions,
-                            defaultAndroidJvmOptions
-                        )
-                        DefaultKotlinJavaToolchain.wireJvmTargetToToolchain(compilerOptions, project)
-                    }
-                }
             }
         }
 
-        private fun LibraryTestingExtension.configureTesting(buildModel: LibraryBuildModel) {
+        context(context: ProjectFeatureApplicationContext, topLevelBuildModel: LibraryBuildModel)
+        private fun LibraryTestingExtension.configureTesting() = syncBuildModel { buildModel ->
             val enabledPlatforms = buildModel.enabledPlatforms.get()
             val enabledWebSubplatforms = buildModel.enabledWebSubplatforms.get()
 
@@ -541,21 +506,11 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
                         }
                     }
                 }
-
-                if (hasAndroidEcosystemPlugin && LibraryPlatform.android in enabledPlatforms) {
-                    android { androidPlatform.configureAndroidTesting() }
-                }
             }
         }
 
-        context(context: ProjectFeatureApplicationContext)
-        private fun LibraryPublishingExtension.configurePublishing(buildModel: LibraryBuildModel) {
-            val publishingBuildModel = context.getBuildModel(this)
-            // Sync the build models as they are different instances under different definitions
-            publishingBuildModel.enabledPlatforms.value(buildModel.enabledPlatforms)
-            publishingBuildModel.enabledWebSubplatforms.value(buildModel.enabledWebSubplatforms)
-            publishingBuildModel.enabledIosSubplatforms.value(buildModel.enabledIosSubplatforms)
-
+        context(context: ProjectFeatureApplicationContext, topLevelBuildModel: LibraryBuildModel)
+        private fun LibraryPublishingExtension.configurePublishing() = syncBuildModel {
             project.group = group.getOrElse(project.path.replace(":", "."))
             project.version = version.getOrElse(Project.DEFAULT_VERSION)
         }
@@ -571,12 +526,6 @@ public class JetBrainsLibraryPlugin : Plugin<Project> {
             pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
                 val kmpExtension = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
                 action(kmpExtension)
-            }
-        }
-
-        private inline fun KotlinMultiplatformExtension.android(crossinline action: KotlinMultiplatformAndroidLibraryTarget.() -> Unit = {}) {
-            pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
-                extensions.getByType(KotlinMultiplatformAndroidLibraryTarget::class.java).action()
             }
         }
 

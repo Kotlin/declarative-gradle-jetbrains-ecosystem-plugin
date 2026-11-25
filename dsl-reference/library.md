@@ -83,14 +83,6 @@ library {
         // Specific SDK package versions can be found in SDK Manager in Android Studio or Intellij (https://developer.android.com/tools/releases/platforms)
         compileSdk = release(37, 1) // In this example, the release version has API level 37 and minor version 1
         namespace = "com.example.library" // The namespace of the generated R and BuildConfig files
-        
-        androidResources { // Configuration of AAPT Android resources and assets
-            // LibraryAndroidResources members are available here, see more at:
-            // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/LibraryAndroidResources
-            enable = true // Enables Android resource processing in this library, by default it is `false` for KMP projects
-            resourcePrefix = "lib_" // This library's resource prefix in Android Studio (only useful when working with Android Studio)
-            ignoreAssetsPatterns = listOf("dont-ignore-anything") // A list of patterns of ignored assets
-        }
     
         kotlin { // Kotlin compilation configuration, overrides common configuration
             compilerOptions { // Compiler arguments to apply for all library's Android (JVM) compilations
@@ -139,16 +131,13 @@ library {
             hostTest { // Creates and configures a compilation for tests that run on the JVM
                 // KotlinMultiplatformAndroidHostTest members are available here, see more at:
                 // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTest
-                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidHostTestCompilation
                 targetSdk = release(36) // API level that the tests are targeting, can be also specified by `preview(<code-name>)` SDK version
-                includeAndroidResources = true // Allows host (unit) tests to use Android resources, assets, and manifests
             }
 
-            deviceTest { // Creates and configures a compilation for tests that run on a device
+            deviceTest { // Creates and configures a compilation for instrumentation tests that run on an Android device
                 // KotlinMultiplatformAndroidDeviceTest members are available here, see more at:
                 // https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest
-                sourceSetTreeName = "test" // The name of the sourceSet tree, see: https://developer.android.com/reference/tools/gradle-api/9.5/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation
-                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" // Test instrumentation runner class name
+                handleProfiling = true // Whether or not the instrumentation runner should automatically decide when to start/stop profiling, default value is `false` (profiling runs all the time)
             }
         }
 
